@@ -125,7 +125,7 @@ public final class LegacyAnimationBinary {
         boolean isBody = name.equals("body");
         boolean isCape = name.equals("cape");
         writeKeyframes(buf, part.positionKeyFrames().xKeyframes(), def.x(), version, easeBefore, isBody, isItem || isCape || isBody);
-        writeKeyframes(buf, isItem ? part.positionKeyFrames().zKeyframes() : part.positionKeyFrames().yKeyframes(), def.y(), version, easeBefore, isBody, false);
+        writeKeyframes(buf, isItem ? part.positionKeyFrames().zKeyframes() : part.positionKeyFrames().yKeyframes(), def.y(), version, easeBefore, isBody, !isBody);
         writeKeyframes(buf, isItem ? part.positionKeyFrames().yKeyframes() : part.positionKeyFrames().zKeyframes(), def.z(), version, easeBefore, isBody, isCape);
         writeKeyframes(buf, part.rotationKeyFrames().xKeyframes(), version, easeBefore, isItem || isCape || isBody);
         writeKeyframes(buf, isItem ? part.rotationKeyFrames().zKeyframes() : part.rotationKeyFrames().yKeyframes(), version, easeBefore, isItem || isBody);
@@ -278,7 +278,7 @@ public final class LegacyAnimationBinary {
         boolean isItem = ITEM_BONE.test(name);
         boolean isCape = name.equals("cape");
         readKeyframes(buf, part.positionKeyFrames().xKeyframes(), def.x(), version, keyframeSize, isBody, isItem || isCape || isBody, PlayerAnimatorLoader.ZERO);
-        readKeyframes(buf, part.positionKeyFrames().yKeyframes(), def.y(), version, keyframeSize, isBody, false, PlayerAnimatorLoader.ZERO);
+        readKeyframes(buf, part.positionKeyFrames().yKeyframes(), def.y(), version, keyframeSize, isBody, !isBody, PlayerAnimatorLoader.ZERO);
         readKeyframes(buf, part.positionKeyFrames().zKeyframes(), def.z(), version, keyframeSize, isBody, isCape, PlayerAnimatorLoader.ZERO);
         readKeyframes(buf, part.rotationKeyFrames().xKeyframes(), version, keyframeSize, isItem || isCape || isBody, PlayerAnimatorLoader.ZERO);
         readKeyframes(buf, part.rotationKeyFrames().yKeyframes(), version, keyframeSize, isItem || isBody, PlayerAnimatorLoader.ZERO);
