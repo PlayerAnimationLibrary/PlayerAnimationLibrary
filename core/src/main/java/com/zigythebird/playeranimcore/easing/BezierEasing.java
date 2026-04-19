@@ -7,7 +7,6 @@ import team.unnamed.mocha.MochaEngine;
 import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.runtime.standard.MochaMath;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BezierEasing implements EasingTypeTransformer {
@@ -38,15 +37,15 @@ public class BezierEasing implements EasingTypeTransformer {
             rightTime = 0.1f;
         }
 
-        float transitionLength = animationPoint.transitionLength()/20f;
+        transitionLength /= 20f;
 
         float time_handle_before = Math.clamp(rightTime/transitionLength, 0, 1);
         float time_handle_after  = Math.clamp(leftTime/transitionLength, -1, 0);
 
-        ModVector2d P0 = new ModVector2d(0, animationPoint.animationStartValue());
-        ModVector2d P1 = new ModVector2d(time_handle_before, animationPoint.animationStartValue() + rightValue);
-        ModVector2d P2 = new ModVector2d(time_handle_after + 1, animationPoint.animationEndValue() + leftValue);
-        ModVector2d P3 = new ModVector2d(1, animationPoint.animationEndValue());
+        Vector2f P0 = new Vector2f(0, startValue);
+        Vector2f P1 = new Vector2f(time_handle_before, startValue + rightValue);
+        Vector2f P2 = new Vector2f(time_handle_after + 1, endValue + leftValue);
+        Vector2f P3 = new Vector2f(1, endValue);
 
         // Determine t
         float t;
@@ -62,7 +61,7 @@ public class BezierEasing implements EasingTypeTransformer {
             float c = -3 * P0.x + 3 * P1.x;
             float d = P0.x - lerpValue;
             Float tTemp = SolveCubic(a, b, c, d);
-            if (tTemp == null) return animationPoint.animationEndValue();
+            if (tTemp == null) return endValue;
             t = tTemp;
         }
 
