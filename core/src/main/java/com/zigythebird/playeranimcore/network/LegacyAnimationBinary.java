@@ -256,6 +256,9 @@ public final class LegacyAnimationBinary {
             boneAnimations.put("right_leg", readPart(buf, "right_leg", new BoneAnimation(), version, keyframeSize, easeBefore));
             boneAnimations.put("left_leg", readPart(buf, "left_leg", new BoneAnimation(), version, keyframeSize, easeBefore));
         }
+        // Remove empty phantom bones (v1 always creates 6 bones even if they have no data)
+        boneAnimations.values().removeIf(bone -> !bone.hasKeyframes());
+
         BoneAnimation body = boneAnimations.get("body");
         if (body != null && !body.bendKeyFrames().isEmpty()) {
             BoneAnimation torso = boneAnimations.computeIfAbsent("torso", name -> new BoneAnimation());

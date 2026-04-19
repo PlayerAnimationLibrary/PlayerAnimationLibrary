@@ -1,0 +1,7 @@
+classTweaker v1 official
+extendable class net/minecraft/client/model/geom/ModelPart
+accessible field net/minecraft/client/renderer/LevelRenderer levelRenderState Lnet/minecraft/client/renderer/state/level/LevelRenderState;
+accessible field net/minecraft/client/renderer/entity/layers/RenderLayer renderer Lnet/minecraft/client/renderer/entity/RenderLayerParent;
+accessible field net/minecraft/client/renderer/entity/LivingEntityRenderer layers Ljava/util/List;
+transitive-inject-interface net/minecraft/world/entity/Avatar com/zigythebird/playeranim/accessors/IAnimatedAvatar
+transitive-inject-interface net/minecraft/client/renderer/entity/state/AvatarRenderState com/zigythebird/playeranim/accessors/IAvatarAnimationState

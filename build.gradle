@@ -2,14 +2,14 @@ import org.redlance.dima_dencep.gradle.publish2discord.tasks.PublishDiscordTask
 import org.apache.commons.lang3.StringUtils
 
 plugins {
-    id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.6"
-    id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
-    id "architectury-plugin" version "3.4-SNAPSHOT" apply false
-    id "com.gradleup.shadow" version "9.3.0" apply false
+    id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.8"
+    id "xyz.wagyourtail.unimined" version "1.4.2+redlance.3" apply false
+    id "com.gradleup.shadow" version "9.4.1" apply false
 }
 
 allprojects {
     apply plugin: "java"
+    apply plugin: "java-library"
     apply plugin: "maven-publish"
 
     base.archivesName = "${rootProject.archives_base_name}${StringUtils.capitalize(project.name)}"
@@ -36,7 +36,7 @@ allprojects {
 
     tasks.withType(JavaCompile).configureEach {
         options.encoding = "UTF-8"
-        options.release.set 21
+        options.release.set 25
     }
 
     java {
@@ -60,13 +60,13 @@ allprojects {
 tasks.register("publishToDiscord", PublishDiscordTask) {
     url.set(providers.environmentVariable("DISCORD_WEBHOOK"))
     username.set("PlayerAnimationLibrary Updates")
-    avatar.set("https://raw.githubusercontent.com/ZigyTheBird/PlayerAnimationLibrary/refs/heads/main/minecraft/fabric/src/main/resources/icon.png")
+    avatar.set("https://raw.githubusercontent.com/ZigyTheBird/PlayerAnimationLibrary/refs/heads/main/minecraft/src/main/resources/icon.png")
 
     container {
         it.title = "## ✨ ${rootProject.archives_base_name}\n### v${version} is out!"
         it.description = "### Changes:\n${rootProject.file("CHANGELOG.md").getText("UTF-8")}"
 
-        it.thumbnail("https://raw.githubusercontent.com/ZigyTheBird/PlayerAnimationLibrary/refs/heads/main/minecraft/fabric/src/main/resources/icon.png")
+        it.thumbnail("https://raw.githubusercontent.com/ZigyTheBird/PlayerAnimationLibrary/refs/heads/main/minecraft/src/main/resources/icon.png")
         it.timestamp(System.currentTimeMillis())
     }
 

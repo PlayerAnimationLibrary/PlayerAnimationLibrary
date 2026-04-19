@@ -23,12 +23,14 @@ public class BinarySizeTest {
     public void newBinarySizeTest() throws IOException {
         Animation animation = EmoteDataHashingTest.loadAnimation();
 
-        for (int version = 1; version <= AnimationBinary.CURRENT_VERSION; version++) {
+        for (int version = 1; version <= AnimationBinary.getCurrentVersion(); version++) {
             ByteBuf byteBuf = Unpooled.buffer();
+            long start = System.nanoTime();
             AnimationBinary.write(byteBuf, version, animation);
+            long elapsed = System.nanoTime() - start;
 
             int size = byteBuf.readableBytes();
-            System.out.println("[NEW] in version " + version + " size " + size);
+            System.out.println("[NEW] in version " + version + " size " + size + " time " + (elapsed / 1_000_000.0) + "ms");
             Assertions.assertTrue(size < MAX_PACKET_SIZE, "size exceeds");
         }
     }
@@ -40,10 +42,12 @@ public class BinarySizeTest {
 
         for (int version = 1; version <= LegacyAnimationBinary.getCurrentVersion(); version++) {
             ByteBuf byteBuf = Unpooled.buffer(LegacyAnimationBinary.calculateSize(animation, version));
+            long start = System.nanoTime();
             LegacyAnimationBinary.write(animation, byteBuf, version);
+            long elapsed = System.nanoTime() - start;
 
             int size = byteBuf.readableBytes();
-            System.out.println("[LEGACY] in version " + version + " size " + size);
+            System.out.println("[LEGACY] in version " + version + " size " + size + " time " + (elapsed / 1_000_000.0) + "ms");
             Assertions.assertTrue(size < MAX_PACKET_SIZE, "size exceeds");
             byteBuf.release();
         }

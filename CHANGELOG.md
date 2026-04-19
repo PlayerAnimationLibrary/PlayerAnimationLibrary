@@ -1,2 +1,4 @@
-- Removed `architectury-plugin` from the compilation process
-- Updated dependencies
+- Fix cape
+- Add item pivots
+- Fix state handler
+- Fix bend applying to other bones

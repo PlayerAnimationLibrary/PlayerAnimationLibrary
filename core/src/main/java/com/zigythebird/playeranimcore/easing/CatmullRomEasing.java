@@ -1,6 +1,5 @@
 package com.zigythebird.playeranimcore.easing;
 
-import com.zigythebird.playeranimcore.animation.keyframe.AnimationPoint;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.mocha.MochaEngine;
@@ -34,15 +33,13 @@ public class CatmullRomEasing implements EasingTypeTransformer {
     }
 
     @Override
-    public float apply(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue)  {
-        if (animationPoint.currentTick() >= animationPoint.transitionLength())
-            return animationPoint.animationEndValue();
+    public float apply(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
+        if (lerpValue >= 1) return endValue;
+        if (Float.isNaN(lerpValue)) return startValue;
 
-        List<List<Expression>> easingArgs = animationPoint.easingArgs();
+        if (easingArgs == null || easingArgs.size() < 2)
+            return MochaMath.lerp(startValue, endValue, buildTransformer(null).apply(lerpValue));
 
-        if (easingArgs.size() < 2)
-            return MochaMath.lerp(animationPoint.animationStartValue(), animationPoint.animationEndValue(), buildTransformer(easingValue).apply(lerpValue));
-
-        return getPointOnSpline(lerpValue, env.eval(easingArgs.get(0)), animationPoint.animationStartValue(), animationPoint.animationEndValue(), env.eval(easingArgs.get(1)));
+        return getPointOnSpline(lerpValue, env.eval(easingArgs.get(0)), startValue, endValue, env.eval(easingArgs.get(1)));
     }
 }

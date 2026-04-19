@@ -37,16 +37,15 @@ public class AnimationStack implements IAnimation {
     }
 
     @Override
-    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
+    public void get3DTransform(@NotNull PlayerAnimBone bone) {
         for (Pair<Integer, IAnimation> layer : layers) {
             if (layer.right().isActive() /*
             Not sure if this is necessary, hard to implement rn
             && (!FirstPersonMode.isFirstPersonPass() || layer.right().getFirstPersonMode().isEnabled())
             */) {
-                bone = layer.right().get3DTransform(bone);
+                layer.right().get3DTransform(bone);
             }
         }
-        return bone;
     }
 
     @Override

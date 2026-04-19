@@ -30,4 +30,4 @@ package com.zigythebird.playeranimcore.animation.keyframe;
  * @param keyframe The {@code Keyframe} at the tick time
  * @param startTick The animation tick time at the start of this {@code Keyframe}
  */
-public record KeyframeLocation<T extends Keyframe>(T keyframe, float startTick) { }
+public record KeyframeLocation(Keyframe keyframe, float startTick) {}

@@ -9,10 +9,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,17 +24,14 @@
 
 package com.zigythebird.playeranimcore.animation;
 
-import com.zigythebird.playeranimcore.enums.AnimationStage;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
- * A builder class for a raw/unbaked animation. These are constructed to pass to the
- * {@link AnimationController} to build into full-fledged animations for usage
- * <p>
  * Animations added to this builder are added <u>in order of insertion</u> - the animations will play in the order that you define them
  * <p>
  * RawAnimation instances should be cached statically where possible to reduce overheads and improve efficiency
@@ -43,10 +40,17 @@ import java.util.Objects;
  * <pre>{@code RawAnimation.begin().thenPlay(openBox).thenLoop(stayOpen)}</pre>
  */
 public final class RawAnimation {
-	private final List<Stage> animationList = new ObjectArrayList<>();
+	private final List<Stage> animationList;
 
 	// Private constructor to force usage of factory for logical operations
-	private RawAnimation() {}
+	private RawAnimation() {
+		this(new ObjectArrayList<>());
+	}
+
+	// Private constructor to force usage of factory for logical operations
+	private RawAnimation(List<Stage> animationList) {
+		this.animationList = animationList;
+	}
 
 	/**
 	 * Start a new RawAnimation instance. This is the start point for creating an animation chain
@@ -84,7 +88,7 @@ public final class RawAnimation {
 	 * @param ticks The number of ticks to 'wait' for
 	 */
 	public RawAnimation thenWait(int ticks) {
-		this.animationList.add(new Stage(AnimationStage.WAIT, null, Animation.LoopType.PLAY_ONCE, ticks));
+		this.animationList.add(new Stage(Animation.generateWaitAnimation(ticks), Animation.LoopType.PLAY_ONCE));
 
 		return this;
 	}
@@ -103,7 +107,7 @@ public final class RawAnimation {
 	 * Append an animation to the animation chain, playing the named animation <code>playCount</code> times,
 	 * then stopping or progressing to the next chained animation depending on the loop type set in the animation json
 	 *
-	 * @param animation The  animation to play X times
+	 * @param animation The animation to play X times
 	 * @param playCount The number of times to repeat the animation before proceeding
 	 */
 	public RawAnimation thenPlayXTimes(Animation animation, int playCount) {
@@ -147,6 +151,18 @@ public final class RawAnimation {
 	}
 
 	@Override
+	public String toString() {
+		return "RawAnimation{" + this.animationList.stream().map(Stage::toString).collect(Collectors.joining(" -> ")) + "}";
+	}
+
+	/**
+	 * Get the number of animation stages this RawAnimation contains
+	 */
+	public int getStageCount() {
+		return this.animationList.size();
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -167,15 +183,7 @@ public final class RawAnimation {
 	 * <p>
 	 * This is an entry object representing a single animation stage of the final compiled animation.
 	 */
-	public record Stage(AnimationStage stage, @Nullable Animation animation, Animation.LoopType loopType, int additionalTicks) {
-		public Stage(AnimationStage stage, Animation animation, Animation.LoopType loopType) {
-			this(stage, animation, loopType, 0);
-		}
-
-		public Stage(Animation animation, Animation.LoopType loopType) {
-			this(AnimationStage.ANIMATION, animation, loopType);
-		}
-
+	public record Stage(@Nullable Animation animation, Animation.LoopType loopType) {
 		@Override
 		public boolean equals(Object obj) {
 			if (this == obj)
@@ -188,8 +196,13 @@ public final class RawAnimation {
 		}
 
 		@Override
+		public String toString() {
+			return animation == null ? "Invalid animation stage." : this.animation.toString();
+		}
+
+		@Override
 		public int hashCode() {
-			return Objects.hash(this.stage, this.animation, this.loopType);
+			return Objects.hash(this.animation, this.loopType);
 		}
 	}
 }

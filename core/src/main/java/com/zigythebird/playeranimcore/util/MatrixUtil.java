@@ -2,8 +2,9 @@ package com.zigythebird.playeranimcore.util;
 
 import com.zigythebird.playeranimcore.bones.PivotBone;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
-import com.zigythebird.playeranimcore.math.ModMatrix4f;
 import com.zigythebird.playeranimcore.math.Vec3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.function.Function;
 
@@ -12,49 +13,59 @@ import java.util.function.Function;
  * Used for applying custom pivot bones to player bones
  */
 public class MatrixUtil {
-    public static void rotateMatrixAroundBone(ModMatrix4f matrix, PlayerAnimBone bone) {
-        if (bone.getRotZ() != 0 || bone.getRotY() != 0 || bone.getRotX() != 0)
-            matrix.rotateZ(bone.getRotZ()).rotateY(bone.getRotY()).rotateX(bone.getRotX());
+    public static void translateMatrixForBone(Matrix4f matrix, PlayerAnimBone bone) {
+        matrix.translate(-bone.position.x, bone.position.y, -bone.position.z);
     }
 
-    public static void scaleMatrixForBone(ModMatrix4f matrix, PlayerAnimBone bone) {
-        matrix.scale(bone.getScaleX(), bone.getScaleY(), bone.getScaleZ());
+    public static void rotateMatrixAroundBone(Matrix4f matrix, PlayerAnimBone bone) {
+        if (bone.rotation.z != 0 || bone.rotation.y != 0 || bone.rotation.x != 0)
+            matrix.rotateZYX(bone.rotation);
     }
 
-    public static void translateToPivotPoint(ModMatrix4f matrix, Vec3f pivot) {
+    public static void scaleMatrixForBone(Matrix4f matrix, PlayerAnimBone bone) {
+        matrix.scale(bone.scale.x, bone.scale.y, bone.scale.z);
+    }
+
+    public static void translateToPivotPoint(Matrix4f matrix, Vec3f pivot) {
         matrix.translate(pivot.x(), pivot.y(), pivot.z());
     }
 
-    public static void translateAwayFromPivotPoint(ModMatrix4f matrix, Vec3f pivot) {
+    public static void translateAwayFromPivotPoint(Matrix4f matrix, Vec3f pivot) {
         matrix.translate(-pivot.x(), -pivot.y(), -pivot.z());
     }
 
-    public static void prepMatrixForBone(ModMatrix4f matrix, PlayerAnimBone bone, Vec3f pivot) {
+    public static void prepMatrixForBone(Matrix4f matrix, PlayerAnimBone bone, Vec3f pivot) {
         translateToPivotPoint(matrix, pivot);
+        translateMatrixForBone(matrix, bone);
         rotateMatrixAroundBone(matrix, bone);
         scaleMatrixForBone(matrix, bone);
         translateAwayFromPivotPoint(matrix, pivot);
     }
 
     public static void applyParentsToChild(PlayerAnimBone child, Iterable<? extends PlayerAnimBone> parents, Function<String, Vec3f> positions) {
-        ModMatrix4f matrix = new ModMatrix4f();
+        Matrix4f matrix = new Matrix4f();
 
         for (PlayerAnimBone parent : parents) {
             Vec3f pivot = parent instanceof PivotBone pivotBone ? pivotBone.getPivot() : positions.apply(parent.getName());
             MatrixUtil.prepMatrixForBone(matrix, parent, pivot);
-            child.addPos(parent.getPosX(), parent.getPosY(), parent.getPosZ());
         }
 
-        Vec3f defaultPos = positions.apply(child.getName());
-        matrix.translate(defaultPos.x(), defaultPos.y(), defaultPos.z());
-        MatrixUtil.rotateMatrixAroundBone(matrix, child);
-        child.setPosX(-matrix.m30() + defaultPos.x() + child.getPosX());
-        child.setPosY(matrix.m31() - defaultPos.y() + child.getPosY());
-        child.setPosZ(-matrix.m32() - defaultPos.z() + child.getPosZ());
+        applyMatrixToBone(child, matrix, positions.apply(child.getName()));
+    }
 
-        Vec3f rotation = matrix.getEulerRotation();
-        child.updateRotation(rotation.x(), rotation.y(), rotation.z());
+    public static void applyMatrixToBone(PlayerAnimBone bone, Matrix4f matrix, Vec3f pivot) {
+        matrix.translate(pivot.x(), pivot.y(), pivot.z());
+        MatrixUtil.rotateMatrixAroundBone(matrix, bone);
+        bone.position.add(
+                -matrix.m30() + pivot.x(),
+                matrix.m31() - pivot.y(),
+                -matrix.m32() - pivot.z()
+        );
 
-        child.mulScale(matrix.getColumnScale(0), matrix.getColumnScale(1), matrix.getColumnScale(2));
+        Vector3f rotation = matrix.getEulerAnglesZYX(new Vector3f());
+        bone.rotation.set(rotation.x(), rotation.y(), rotation.z());
+
+        Vector3f scale = matrix.getScale(new Vector3f());
+        bone.scale.mul(scale.x(), scale.y(), scale.z());
     }
 }

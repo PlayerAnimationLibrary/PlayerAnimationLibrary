@@ -8,6 +8,7 @@ import com.zigythebird.playeranimcore.enums.AnimationFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.ByteBuffer;
 import java.util.*;
 
 public record ExtraAnimationData(Map<String, Object> data) {
@@ -41,6 +42,26 @@ public record ExtraAnimationData(Map<String, Object> data) {
 
     public boolean has(String name) {
         return data().containsKey(name);
+    }
+
+    public @Nullable ByteBuffer getBinary(String name) {
+        Object obj = getRaw(name);
+        if (obj == null) return null;
+
+        if (obj instanceof String str) {
+            try {
+                put(name, obj = Base64.getDecoder().decode(str));
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+        if (obj instanceof byte[] bytes) {
+            put(name, obj = ByteBuffer.wrap(bytes).asReadOnlyBuffer());
+        }
+        if (obj instanceof ByteBuffer buffer) {
+            return buffer.asReadOnlyBuffer();
+        }
+        return null;
     }
 
     public Object getRaw(String name) {

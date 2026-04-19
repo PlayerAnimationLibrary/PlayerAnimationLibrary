@@ -92,12 +92,12 @@ public abstract class PlayerAnimationFrame implements IAnimation {
     }
     
     @Override
-    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
+    public void get3DTransform(@NotNull PlayerAnimBone bone) {
         PlayerBone part = parts.get(bone.getName());
-        if (part != null) return part.applyToBone(bone);
-        return bone;
+        if (part != null) part.applyToBone(bone);
     }
-    
+
+    //TODO Maybe replace this with smth better
     public static class PlayerBone {
         public Float offsetPosX = null;
         public Float offsetPosY = null;
@@ -110,8 +110,6 @@ public abstract class PlayerAnimationFrame implements IAnimation {
         public Float scaleX = null;
         public Float scaleY = null;
         public Float scaleZ = null;
-
-        public Float bend = null;
         
         public PlayerBone() {
             super();
@@ -133,8 +131,6 @@ public abstract class PlayerAnimationFrame implements IAnimation {
             this.scaleX = null;
             this.scaleY = null;
             this.scaleZ = null;
-
-            this.bend = null;
         }
 
         /**
@@ -152,34 +148,29 @@ public abstract class PlayerAnimationFrame implements IAnimation {
             this.scaleX = 1F;
             this.scaleY = 1F;
             this.scaleZ = 1F;
-
-            this.bend = 0F;
         }
 
         public PlayerAnimBone applyToBone(PlayerAnimBone bone) {
             if (offsetPosX != null)
-                bone.setPosX(offsetPosX);
+                bone.position.x = offsetPosX;
             if (offsetPosY != null)
-                bone.setPosY(offsetPosY);
+                bone.position.y = offsetPosY;
             if (offsetPosZ != null)
-                bone.setPosZ(offsetPosZ);
+                bone.position.z = offsetPosZ;
 
             if (rotX != null)
-                bone.setRotX(rotX);
+                bone.rotation.x = rotX;
             if (rotY != null)
-                bone.setRotY(rotY);
+                bone.rotation.y = rotY;
             if (rotZ != null)
-                bone.setRotZ(rotZ);
+                bone.rotation.z = rotZ;
 
             if (scaleX != null)
-                bone.setScaleX(scaleX);
+                bone.scale.x = scaleX;
             if (scaleY != null)
-                bone.setScaleY(scaleY);
+                bone.scale.y = scaleY;
             if (scaleZ != null)
-                bone.setScaleZ(scaleZ);
-
-            if (bend != null)
-                bone.setBend(bend);
+                bone.scale.z = scaleZ;
 
             return bone;
         }

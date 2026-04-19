@@ -84,9 +84,10 @@ public abstract class AbstractFadeModifier extends AbstractModifier {
     }
 
     @Override
-    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
+    public void get3DTransform(@NotNull PlayerAnimBone bone) {
         if (calculateProgress(tickDelta, bone.getName()) > 1) {
-            return super.get3DTransform(bone);
+            super.get3DTransform(bone);
+            return;
         }
         PlayerAnimBone copy2 = new PlayerAnimBone(bone.getName());
         copy2.copyOtherBone(bone);
@@ -95,7 +96,7 @@ public abstract class AbstractFadeModifier extends AbstractModifier {
         if (getFadeType() == FadeType.FADE_IN) {
             if (transitionAnimation != null && transitionAnimation.isActive()) transitionAnimation.get3DTransform(bone);
         }
-        return bone.scale(1 - a).add(copy2.scale(a));
+        bone.scale(1 - a).add(copy2.scale(a));
     }
 
     protected float calculateProgress(float f, String boneName) {

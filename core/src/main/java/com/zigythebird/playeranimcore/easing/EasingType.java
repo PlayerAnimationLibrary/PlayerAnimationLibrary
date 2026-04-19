@@ -2,14 +2,15 @@ package com.zigythebird.playeranimcore.easing;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import com.zigythebird.playeranimcore.animation.keyframe.AnimationPoint;
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.math.MathHelper;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.mocha.MochaEngine;
+import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.runtime.standard.MochaMath;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -97,23 +98,13 @@ public enum EasingType implements EasingTypeTransformer {
 		return this.transformer.buildTransformer(value);
 	}
 
-	public static float lerpWithOverride(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable EasingType override) {
-		EasingType easingType = override;
-
-		if (override == null)
-			easingType = animationPoint.easingType();
-
-		return easingType.apply(env, animationPoint);
+	public float apply(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
+		return this.transformer.apply(env, startValue, endValue, transitionLength, lerpValue, easingArgs);
 	}
 
-	@Override
-	public float apply(MochaEngine<?> env, AnimationPoint animationPoint) {
-		return this.transformer.apply(env, animationPoint);
-	}
-
-	@Override
-	public float apply(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue) {
-		return this.transformer.apply(env, animationPoint, easingValue, lerpValue);
+	public static float lerpWithOverride(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs, EasingType easingType, @Nullable EasingType override) {
+		EasingType easing = override != null ? override : easingType;
+		return easing.apply(env, startValue, endValue, transitionLength, lerpValue, easingArgs);
 	}
 
 	@Override

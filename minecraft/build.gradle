@@ -1,38 +1,212 @@
+import org.apache.commons.lang3.StringUtils
+
 plugins {
-    id "architectury-plugin"
+    id "xyz.wagyourtail.unimined"
+    id "com.gradleup.shadow"
 }
 
-architectury {
-    minecraft = rootProject.minecraft_version
+sourceSets {
+    fabric
+    neoforge
 }
 
-subprojects {
-    apply plugin: "architectury-plugin"
-    apply plugin: "dev.architectury.loom"
+unimined.minecraft(sourceSets.main) {
+    version rootProject.minecraft_version
 
-    loom {
-        silentMojangMappingsLicense()
+    fabric {
+        loader rootProject.fabric_loader_version
+        accessWidener file("src/main/resources/player_animation_library.classtweaker")
     }
 
-    jar {
-        if (!rootProject.version.toString().contains("dev") && !project.gradle.startParameter.taskNames.contains("runClient"))
-            processResources.exclude('assets/player_animation_library/player_animations/*')
-    }
+    defaultRemapJar = false
+}
 
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment_version}@zip")
+unimined.minecraft(sourceSets.fabric) {
+    combineWith(sourceSets.main)
+
+    fabric {
+        loader project.fabric_loader_version
+        accessWidener file("src/main/resources/player_animation_library.classtweaker")
+    }
+    defaultRemapJar = true
+}
+
+unimined.minecraft(sourceSets.neoforge) {
+    combineWith(sourceSets.main)
+
+    neoForge {
+        loader("net.neoforged:neoforge:$rootProject.neoforge_version:universal")
+        mixinConfig("player_animation_library.mixins.json")
+
+        accessTransformer(provider {
+            def transformed = file("src/main/resources/player_animation_library.classtweaker").text
+                    .replaceFirst(/classTweaker\s+v\d+\s+(\S+)/, 'accessWidener v2 $1')
+                    .readLines()
+                    .findAll { line ->
+                        !line.trim().startsWith("transitive-inject-interface") && !line.trim().startsWith("inject-interface")
+                    }
+                    .join("\n")
+
+            def out = layout.buildDirectory.file("generated/player_animation_library.classtweaker").get().asFile
+            try {
+                out.parentFile.mkdirs()
+                out.write(transformed)
+                return aw2at(out)
+            } finally {
+                out.delete()
+            }
+        }.get())
+    }
+    defaultRemapJar = true
+}
+
+configurations {
+    shadow
+
+    fabricCompileClasspath.extendsFrom compileClasspath
+    neoforgeCompileClasspath.extendsFrom compileClasspath
+    fabricRuntimeClasspath.extendsFrom runtimeClasspath
+    neoforgeRuntimeClasspath.extendsFrom runtimeClasspath
+
+    platformInclude
+    fabricInclude.extendsFrom platformInclude
+    neoforgeInclude.extendsFrom platformInclude
+}
+
+dependencies {
+    // Core
+    api(project(":core"))
+    shadow(project(path: ":core")) { transitive = false }
+
+    // Common
+    platformInclude("org.redlance.common-utils:services:$rootProject.commonutils_version") { transitive = false }
+    platformInclude("com.zigythebird:mochafloats:$rootProject.molang_version") { transitive = false }
+
+    // Fabric
+    fabricImplementation fabricApi.fabricModule("fabric-command-api-v2", rootProject.fabric_api_version)
+    fabricImplementation fabricApi.fabricModule("fabric-resource-loader-v1", rootProject.fabric_api_version)
+
+    // Neoforge
+}
+
+jar {
+    if (!rootProject.version.toString().contains("dev") && !project.gradle.startParameter.taskNames.contains("runClient")) {
+        processResources.exclude('assets/player_animation_library/player_animations/*')
+    }
+    archiveClassifier.set "dev"
+}
+
+[tasks.processResources, tasks.processFabricResources, tasks.processNeoforgeResources].each {
+    it.inputs.property "version", project.version
+
+    it.filesMatching(["META-INF/neoforge.mods.toml", "fabric.mod.json"]) {
+        expand version: project.version
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+
+    from(tasks.named("remapFabricJar").map { zipTree(it.archiveFile) })
+    from(tasks.named("remapNeoforgeJar").map { zipTree(it.archiveFile) })
+
+    archiveBaseName.set("${rootProject.archives_base_name}Merged")
+    archiveClassifier.set null
+
+    // Services
+    filesMatching('META-INF/services/**') {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    mergeServiceFiles()
+
+    // Fix fabric jij
+    exclude 'META-INF/jarjar/*.jar'
+    filesMatching('META-INF/jarjar/metadata.json') {
+        filter { it.replace('META-INF/jarjar/', 'META-INF/jars/') }
+    }
+}
+
+shadow {
+    addShadowVariantIntoJavaComponent = false
+}
+
+[sourceSets.fabric, sourceSets.neoforge].each { ss ->
+    tasks.register("${ss.name}SourcesJar", Jar) {
+        from sourceSets.main.allSource
+        from ss.allSource
+
+        archiveBaseName.set("${rootProject.archives_base_name}${StringUtils.capitalize(ss.name)}")
+        archiveClassifier.set "sources"
+    }
+}
+
+publishing {
+    publications {
+        mavenMain(MavenPublication) {
+            artifactId = "PlayerAnimationLibCommon"
+
+            artifact(jar) {
+                classifier = null
+            }
+            artifact sourcesJar
+
+            pom.withXml {
+                def deps = asNode().appendNode("dependencies")
+
+                configurations.api.dependencies.each {
+                    def d = deps.appendNode("dependency")
+
+                    d.appendNode("groupId", it.group)
+                    d.appendNode('artifactId', it instanceof ProjectDependency ? project(it.path).base.archivesName.get() : it.name)
+                    d.appendNode("version", it.version)
+                    d.appendNode("scope", "compile")
+                }
+            }
         }
-        implementation project(":core")
-    }
+        mavenFabric(MavenPublication) {
+            artifactId = "PlayerAnimationLibFabric"
 
-    processResources {
-        inputs.property "version", project.version
+            artifact(tasks.named("remapFabricJar")) {
+                classifier = null
+            }
+            artifact fabricSourcesJar
 
-        filesMatching(["META-INF/neoforge.mods.toml", "fabric.mod.json"]) {
-            expand version: project.version
+            pom.withXml {
+                def deps = asNode().appendNode("dependencies")
+
+                // Adds fabric api to deps
+                configurations.fabricImplementation.dependencies.each {
+                    def d = deps.appendNode("dependency")
+
+                    d.appendNode("groupId", it.group)
+                    d.appendNode('artifactId', it instanceof ProjectDependency ? project(it.path).base.archivesName.get() : it.name)
+                    d.appendNode("version", it.version)
+                    d.appendNode("scope", "compile")
+                }
+
+                def d = deps.appendNode("dependency")
+                d.appendNode("groupId", project.group)
+                d.appendNode("artifactId", "PlayerAnimationLibCommon")
+                d.appendNode("version", project.version)
+                d.appendNode("scope", "compile")
+            }
+        }
+        mavenNeo(MavenPublication) {
+            artifactId = "PlayerAnimationLibNeo"
+
+            artifact(tasks.named("remapNeoforgeJar")) {
+                classifier = null
+            }
+            artifact neoforgeSourcesJar
+
+            pom.withXml {
+                def deps = asNode().appendNode("dependencies")
+                def d = deps.appendNode("dependency")
+                d.appendNode("groupId", project.group)
+                d.appendNode("artifactId", "PlayerAnimationLibCommon")
+                d.appendNode("version", project.version)
+                d.appendNode("scope", "compile")
+            }
         }
     }
 }

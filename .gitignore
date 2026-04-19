@@ -19,3 +19,4 @@ classes/
 *.launch
 *.log
 .DS_Store
+/minecraft/src/main/resources/assets/player_animation_library/player_animations/dont_include

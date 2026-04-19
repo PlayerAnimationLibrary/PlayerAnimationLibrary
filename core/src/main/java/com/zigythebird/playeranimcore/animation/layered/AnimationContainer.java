@@ -69,9 +69,8 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
     }
 
     @Override
-    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
-        if (anim != null) return anim.get3DTransform(bone);
-        return bone;
+    public void get3DTransform(@NotNull PlayerAnimBone bone) {
+        if (anim != null) anim.get3DTransform(bone);
     }
 
     @Override

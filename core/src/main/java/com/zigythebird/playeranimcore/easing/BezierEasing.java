@@ -1,9 +1,8 @@
 package com.zigythebird.playeranimcore.easing;
 
-import com.zigythebird.playeranimcore.animation.keyframe.AnimationPoint;
-import com.zigythebird.playeranimcore.math.ModVector2d;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector2f;
 import team.unnamed.mocha.MochaEngine;
 import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.runtime.standard.MochaMath;
@@ -18,10 +17,12 @@ public class BezierEasing implements EasingTypeTransformer {
     }
 
     @Override
-    public float apply(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue) {
-        List<List<Expression>> easingArgs = animationPoint.easingArgs();
-        if (easingArgs.isEmpty())
-            return MochaMath.lerp(animationPoint.animationStartValue(), animationPoint.animationEndValue(), buildTransformer(easingValue).apply(lerpValue));
+    public float apply(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
+        if (lerpValue >= 1) return endValue;
+        if (Float.isNaN(lerpValue)) return startValue;
+
+        if (easingArgs == null || easingArgs.isEmpty())
+            return MochaMath.lerp(startValue, endValue, buildTransformer(null).apply(lerpValue));
 
         float rightValue;
         float rightTime;

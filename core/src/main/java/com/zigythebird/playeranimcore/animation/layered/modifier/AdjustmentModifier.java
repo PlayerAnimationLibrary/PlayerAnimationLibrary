@@ -30,7 +30,6 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -77,54 +76,10 @@ import java.util.function.Function;
  * </pre>
  */
 public class AdjustmentModifier extends AbstractModifier {
-    public static final class PartModifier {
-        private final Vec3f rotation;
-        private final Vec3f scale;
-        private final Vec3f offset;
-
+    //TODO Maybe we can replace this with something that uses Vector3f
+    public record PartModifier(Vec3f rotation, Vec3f scale, Vec3f offset) {
         public PartModifier(Vec3f rotation, Vec3f offset) {
             this(rotation, Vec3f.ZERO, offset);
-        }
-
-        public PartModifier(Vec3f rotation, Vec3f scale, Vec3f offset) {
-            this.rotation = rotation;
-            this.scale = scale;
-            this.offset = offset;
-        }
-
-        public Vec3f rotation() {
-            return rotation;
-        }
-
-        public Vec3f scale() {
-            return scale;
-        }
-
-        public Vec3f offset() {
-            return offset;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == this) return true;
-            if (obj == null || obj.getClass() != this.getClass()) return false;
-            PartModifier that = (PartModifier) obj;
-            return Objects.equals(this.rotation, that.rotation) &&
-                    Objects.equals(this.scale, that.scale) &&
-                    Objects.equals(this.offset, that.offset);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(rotation, scale, offset);
-        }
-
-        @Override
-        public String toString() {
-            return "PartModifier[" +
-                    "rotation=" + rotation + ", " +
-                    "scale=" + scale + ", " +
-                    "offset=" + offset + ']';
         }
     }
 
@@ -207,9 +162,10 @@ public class AdjustmentModifier extends AbstractModifier {
     }
 
     @Override
-    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
+    public void get3DTransform(@NotNull PlayerAnimBone bone) {
         if (!enabled) {
-            return super.get3DTransform(bone);
+            super.get3DTransform(bone);
+            return;
         }
 
         Optional<PartModifier> partModifier = source.apply(bone.getName(), data);
@@ -218,18 +174,18 @@ public class AdjustmentModifier extends AbstractModifier {
         if (partModifier.isPresent()) {
             super.get3DTransform(bone);
             transformBone(bone, partModifier.get(), fade);
-            return bone;
+            return;
         }
-        return super.get3DTransform(bone);
+        super.get3DTransform(bone);
     }
 
     protected void transformBone(PlayerAnimBone bone, PartModifier partModifier, float fade) {
         Vec3f pos = partModifier.offset().mul(fade);
         Vec3f rot = partModifier.rotation().mul(fade);
         Vec3f scale = partModifier.scale().mul(fade);
-        bone.updatePosition(pos.x() + bone.getPosX(), pos.y() + bone.getPosY(), pos.z() + bone.getPosZ());
-        bone.updateRotation(rot.x() + bone.getRotX(), rot.y() + bone.getRotY(), rot.z() + bone.getRotZ());
-        bone.updateScale(scale.x() + bone.getScaleX(), scale.y() + bone.getScaleY(), scale.z() + bone.getScaleZ());
+        bone.position.add(pos.x(), pos.y(), pos.z());
+        bone.rotation.add(rot.x(), rot.y(), rot.z());
+        bone.scale.add(scale.x(), scale.y(), scale.z());
     }
 
     @Override

@@ -148,11 +148,12 @@ public class ModifierLayer<T extends IAnimation> implements IAnimation {
     }
 
     @Override
-    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
+    public void get3DTransform(@NotNull PlayerAnimBone bone) {
         if (!modifiers.isEmpty()) {
-            return modifiers.get(0).get3DTransform(bone);
-        } else if (animation != null) return animation.get3DTransform(bone);
-        return bone;
+            modifiers.getFirst().get3DTransform(bone);
+        } else if (animation != null) {
+            animation.get3DTransform(bone);
+        }
     }
 
     @Override

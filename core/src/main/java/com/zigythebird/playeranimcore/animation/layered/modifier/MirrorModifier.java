@@ -38,8 +38,11 @@ public class MirrorModifier extends AbstractModifier {
     public boolean enabled = true;
 
     @Override
-    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
-        if (!enabled) return super.get3DTransform(bone);
+    public void get3DTransform(@NotNull PlayerAnimBone bone) {
+        if (!enabled) {
+            super.get3DTransform(bone);
+            return;
+        }
 
         String modelName = bone.getName();
         if (mirrorMap.containsKey(modelName)) modelName = mirrorMap.get(modelName);
@@ -47,10 +50,9 @@ public class MirrorModifier extends AbstractModifier {
 
         PlayerAnimBone newBone = new PlayerAnimBone(modelName);
         newBone.copyOtherBone(bone);
-        newBone = super.get3DTransform(newBone);
+        super.get3DTransform(newBone);
         transformBone(newBone);
         bone.copyOtherBone(newBone);
-        return bone;
     }
 
     @Override
@@ -65,10 +67,10 @@ public class MirrorModifier extends AbstractModifier {
     }
 
     protected void transformBone(PlayerAnimBone bone) {
-        bone.positionX *= -1;
-        bone.rotY *= -1;
-        bone.rotZ *= -1;
-        bone.bend *= -1;
+        bone.position.x *= -1;
+        bone.rotation.y *= -1;
+        bone.rotation.z *= -1;
+        //bone.bend *= -1; Why was this a thing in the first place?
     }
 
     static {

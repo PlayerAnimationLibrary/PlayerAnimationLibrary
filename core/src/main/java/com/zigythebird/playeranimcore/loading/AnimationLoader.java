@@ -246,14 +246,15 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 		List<Expression> xPrev = null;
 		List<Expression> yPrev = null;
 		List<Expression> zPrev = null;
-		FloatObjectPair<JsonElement> prevEntry = null;
+
+		float prevTimeX = 0;
+		float prevTimeY = 0;
+		float prevTimeZ = 0;
 
 		for (FloatObjectPair<JsonElement> entry : entries) {
 			JsonElement element = entry.right();
 
-			float prevTime = prevEntry != null ? prevEntry.leftFloat() : 0;
 			float curTime = entry.leftFloat();
-			float timeDelta = curTime - prevTime;
 
 			boolean isForRotation = type == TransformType.ROTATION || type == TransformType.BEND;
 			Expression defaultValue = type == TransformType.SCALE ? FloatExpression.ONE : FloatExpression.ZERO;
@@ -267,14 +268,21 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 			EasingType easingType = getEasingForAxis(entryObj, null, EasingType.LINEAR);
 			List<List<Expression>> easingArgs = getEasingArgsForAxis(entryObj, null, new ObjectArrayList<>());
 
-			xFrames.add(new Keyframe(timeDelta * 20, prevEntry == null ? xValue : xPrev, xValue, getEasingForAxis(entryObj, Axis.X, easingType), getEasingArgsForAxis(entryObj, Axis.X, easingArgs)));
-			yFrames.add(new Keyframe(timeDelta * 20, prevEntry == null ? yValue : yPrev, yValue, getEasingForAxis(entryObj, Axis.Y, easingType), getEasingArgsForAxis(entryObj, Axis.Y, easingArgs)));
-			zFrames.add(new Keyframe(timeDelta * 20, prevEntry == null ? zValue : zPrev, zValue, getEasingForAxis(entryObj, Axis.Z, easingType), getEasingArgsForAxis(entryObj, Axis.Z, easingArgs)));
-			
-			xPrev = xValue;
-			yPrev = yValue;
-			zPrev = zValue;
-			prevEntry = entry;
+			if (isEnabled(xValue)) {
+				xFrames.add(new Keyframe((curTime - prevTimeX) * 20, xPrev == null ? xValue : xPrev, xValue, getEasingForAxis(entryObj, Axis.X, easingType), getEasingArgsForAxis(entryObj, Axis.X, easingArgs)));
+				xPrev = xValue;
+				prevTimeX = curTime;
+			}
+			if (isEnabled(yValue)) {
+				yFrames.add(new Keyframe((curTime - prevTimeY) * 20, yPrev == null ? yValue : yPrev, yValue, getEasingForAxis(entryObj, Axis.Y, easingType), getEasingArgsForAxis(entryObj, Axis.Y, easingArgs)));
+				yPrev = yValue;
+				prevTimeY = curTime;
+			}
+			if (isEnabled(zValue)) {
+				zFrames.add(new Keyframe((curTime - prevTimeZ) * 20, zPrev == null ? zValue : zPrev, zValue, getEasingForAxis(entryObj, Axis.Z, easingType), getEasingArgsForAxis(entryObj, Axis.Z, easingArgs)));
+				zPrev = zValue;
+				prevTimeZ = curTime;
+			}
 		}
 
 		return new KeyframeStack(addArgsForKeyframes(xFrames, type), addArgsForKeyframes(yFrames, type), addArgsForKeyframes(zFrames, type));
@@ -348,6 +356,19 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 		}
 
 		return frames;
+	}
+
+
+	private static boolean isEnabled(List<Expression> expressions) {
+		if (expressions.size() == 1
+				&& expressions.getFirst() instanceof AccessExpression access
+				&& access.object() instanceof IdentifierExpression id
+				&& "pal".equals(id.name())) {
+
+			return !"disabled".equals(access.property()) && !"skip".equals(access.property());
+		}
+
+		return true;
 	}
 
 	private static List<Expression> toRadiansForBezier(List<Expression> expressions) {

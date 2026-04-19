@@ -1,6 +1,6 @@
 package com.zigythebird.playeranimcore.bones;
 
-public class AdvancedPlayerAnimBone extends PlayerAnimBone implements IBoneEnabled {
+public class AdvancedPlayerAnimBone extends ToggleablePlayerAnimBone {
     public Float scaleXTransitionLength = null;
     public Float scaleYTransitionLength = null;
     public Float scaleZTransitionLength = null;
@@ -15,22 +15,12 @@ public class AdvancedPlayerAnimBone extends PlayerAnimBone implements IBoneEnabl
 
     public Float bendTransitionLength = null;
 
-    public boolean scaleXEnabled = true;
-    public boolean scaleYEnabled = true;
-    public boolean scaleZEnabled = true;
-
-    public boolean positionXEnabled = true;
-    public boolean positionYEnabled = true;
-    public boolean positionZEnabled = true;
-
-    public boolean rotXEnabled = true;
-    public boolean rotYEnabled = true;
-    public boolean rotZEnabled = true;
-
-    public boolean bendEnabled = true;
-
     public AdvancedPlayerAnimBone(String name) {
         super(name);
+    }
+
+    public AdvancedPlayerAnimBone(PlayerAnimBone bone) {
+        super(bone);
     }
 
     public void setEnabled(boolean enabled) {
@@ -87,73 +77,5 @@ public class AdvancedPlayerAnimBone extends PlayerAnimBone implements IBoneEnabl
 
     public void setScaleXTransitionLength(Float scaleXTransitionLength) {
         this.scaleXTransitionLength = scaleXTransitionLength;
-    }
-
-    public void setPositionEnabled(boolean enabled) {
-        this.positionXEnabled = enabled;
-        this.positionYEnabled = enabled;
-        this.positionZEnabled = enabled;
-    }
-
-    public void setRotEnabled(boolean enabled) {
-        this.rotXEnabled = enabled;
-        this.rotYEnabled = enabled;
-        this.rotZEnabled = enabled;
-    }
-
-    public void setScaleEnabled(boolean enabled) {
-        this.scaleXEnabled = enabled;
-        this.scaleYEnabled = enabled;
-        this.scaleZEnabled = enabled;
-    }
-
-    @Override
-    public boolean isScaleXEnabled() {
-        return scaleXEnabled;
-    }
-
-    @Override
-    public boolean isScaleYEnabled() {
-        return scaleYEnabled;
-    }
-
-    @Override
-    public boolean isScaleZEnabled() {
-        return scaleZEnabled;
-    }
-
-    @Override
-    public boolean isPositionXEnabled() {
-        return positionXEnabled;
-    }
-
-    @Override
-    public boolean isPositionYEnabled() {
-        return positionYEnabled;
-    }
-
-    @Override
-    public boolean isPositionZEnabled() {
-        return positionZEnabled;
-    }
-
-    @Override
-    public boolean isRotXEnabled() {
-        return rotXEnabled;
-    }
-
-    @Override
-    public boolean isRotYEnabled() {
-        return rotYEnabled;
-    }
-
-    @Override
-    public boolean isRotZEnabled() {
-        return rotZEnabled;
-    }
-
-    @Override
-    public boolean isBendEnabled() {
-        return bendEnabled;
     }
 }

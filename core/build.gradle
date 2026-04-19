@@ -1,23 +1,23 @@
 apply plugin: "java-library"
 
 dependencies {
-    implementation api("com.zigythebird:mochafloats:$rootProject.molang_version") {
-        transitive = false
-    }
-    implementation api("org.javassist:javassist:$rootProject.javassist_version")
-    compileOnlyApi("org.jetbrains:annotations:26.0.2")
+    api("org.redlance.common-utils:services:$rootProject.commonutils_version") { transitive = false }
+    api("com.zigythebird:mochafloats:$rootProject.molang_version") { transitive = false }
+    compileOnlyApi("org.jetbrains:annotations:26.1.0")
 
     // Minecraft libs
-    implementation api("com.google.code.gson:gson:2.13.2")
-    implementation api("org.slf4j:slf4j-api:2.0.17")
-    implementation api("it.unimi.dsi:fastutil:8.5.18")
-    implementation api("io.netty:netty-buffer:4.2.7.Final")
+    api("com.google.code.gson:gson:2.13.2")
+    api("org.slf4j:slf4j-api:2.0.17")
+    api("it.unimi.dsi:fastutil:8.5.18")
+    api("io.netty:netty-buffer:4.2.12.Final")
+    api("org.joml:joml:1.10.8")
 
     // Testing
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.0.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.1")
-    testImplementation("dev.kosmx.player-anim:anim-core:2.0.3.1+1.21.5")
+    testImplementation(platform("org.junit:junit-bom:6.0.3"))
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("dev.kosmx.player-anim:anim-core:2.0.3.2+1.21.5")
 }
 
 tasks.test {

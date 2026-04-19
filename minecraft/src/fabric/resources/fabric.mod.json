@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "player_animation_library",
+  "version": "${version}",
+  "name": "Player Animation Library",
+  "description": "A library that allows mods to animate the player, in a way that doesn't conflict with other mods. (and much more!)",
+  "authors": [
+    "Zigy",
+    "dima_dencep"
+  ],
+  "contact": {
+    "homepage": "https://docs.zigythebird.com/pal/intro",
+    "sources": "https://github.com/ZigyTheBird/PlayerAnimationLibrary",
+    "issues": "https://github.com/ZigyTheBird/PlayerAnimationLibrary/issues"
+  },
+  "license": "MIT License",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "com.zigythebird.playeranim.fabric.PlayerAnimLibModFabric"
+    ]
+  },
+  "mixins": [
+    "player_animation_library.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": ">=26.1",
+    "fabric-resource-loader-v1": "*",
+    "fabric-command-api-v2": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [ "library" ]
+    }
+  }
+}
