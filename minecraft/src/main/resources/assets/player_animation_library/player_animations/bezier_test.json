@@ -1,0 +1,53 @@
+{
+    "format_version": "1.8.0",
+    "geckolib_format_version": 2,
+    "model": {},
+    "parents": {},
+    "animations": {
+        "bezier_test": {
+            "loopTick": 0.0,
+            "loop": true,
+            "animation_length": 2.0,
+            "player_animation_library": {
+                "name": "Тест экспорта бедрока",
+                "author": "MineEmotes",
+                "description": "",
+                "bages": []
+            },
+            "bones": {
+                "leftArm": {
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "bezier",
+                            "easingArgsX": [
+                                -88.22536,
+                                -0.66596,
+                                -260.45306,
+                                0.98345
+                            ]
+                        },
+                        "2.0": {
+                            "vector": [
+                                0.0,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "bezier",
+                            "easingArgsX": [
+                                246.38388,
+                                -1.02578,
+                                80.31529,
+                                0.66608
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
