@@ -32,6 +32,7 @@ allprojects {
             name = "RedlanceMinecraft"
             url = "https://repo.redlance.org/public"
         }
+        mavenLocal()
     }
 
     tasks.withType(JavaCompile).configureEach {

@@ -38,7 +38,7 @@ public class TestAnimationController extends HumanoidAnimationController {
         if (animation.data().has(ExtraAnimationData.END_TICK_KEY)) {
             float endTick = (float) animation.data().data().remove(ExtraAnimationData.END_TICK_KEY);
             if (endTick != animation.length()) {
-                ReflectUtils.setRecordField(animation, "length", endTick);
+                ReflectUtils.setRecordFieldFloat(animation, "length", endTick);
             }
         }
 
