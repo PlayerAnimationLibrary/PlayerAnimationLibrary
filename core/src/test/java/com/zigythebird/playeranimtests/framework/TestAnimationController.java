@@ -2,6 +2,7 @@ package com.zigythebird.playeranimtests.framework;
 
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.AnimationData;
+import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.animation.HumanoidAnimationController;
 import com.zigythebird.playeranimcore.animation.RawAnimation;
 import com.zigythebird.playeranimcore.animation.layered.IAnimation;
@@ -9,6 +10,7 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.enums.TransformType;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
+import org.redlance.common.utils.ReflectUtils;
 
 import java.util.EnumSet;
 
@@ -26,8 +28,20 @@ public class TestAnimationController extends HumanoidAnimationController {
         super((_, _, _) -> PlayState.STOP, MolangLoader::createNewEngine);
     }
 
-    /** Non-looping playback of {@code animation}. */
+    /**
+     * Non-looping playback of {@code animation}.
+     * Strips the begin/end-tick lerp metadata so the controller stays in parity with {@code KeyframeAnimationPlayer} (which has no equivalent).
+     */
     public static TestAnimationController playing(Animation animation) {
+        animation.data().data().remove(ExtraAnimationData.BEGIN_TICK_KEY);
+
+        if (animation.data().has(ExtraAnimationData.END_TICK_KEY)) {
+            float endTick = (float) animation.data().data().remove(ExtraAnimationData.END_TICK_KEY);
+            if (endTick != animation.length()) {
+                ReflectUtils.setRecordField(animation, "length", endTick);
+            }
+        }
+
         TestAnimationController controller = new TestAnimationController();
         controller.triggerAnimation(RawAnimation.begin().then(animation, Animation.LoopType.PLAY_ONCE));
         return controller;

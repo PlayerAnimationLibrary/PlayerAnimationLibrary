@@ -11,6 +11,9 @@ import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
 import org.jetbrains.annotations.NotNull;
+import org.redlance.common.utils.ReflectUtils;
+
+import java.lang.invoke.VarHandle;
 
 /**
  * Exposes an older {@link KeyframeAnimationPlayer} (playeranimator pre-fork) as
@@ -24,9 +27,24 @@ public final class LegacyPlayerAdapter implements IAnimation {
     private static final Vec3f ZERO = new Vec3f(0f, 0f, 0f);
     private static final Vec3f ONE = new Vec3f(1f, 1f, 1f);
 
+    private static final VarHandle BEGIN_TICK = ReflectUtils.uncheck(() ->
+            ReflectUtils.TRUSTED_LOOKUP.findVarHandle(KeyframeAnimation.class, "beginTick", int.class));
+    private static final VarHandle END_TICK = ReflectUtils.uncheck(() ->
+            ReflectUtils.TRUSTED_LOOKUP.findVarHandle(KeyframeAnimation.class, "endTick", int.class));
+    private static final VarHandle STOP_TICK = ReflectUtils.uncheck(() ->
+            ReflectUtils.TRUSTED_LOOKUP.findVarHandle(KeyframeAnimation.class, "stopTick", int.class));
+
     private final KeyframeAnimationPlayer player;
 
+    /**
+     * Strips begin/stop-tick behavior so the player matches {@code TestAnimationController}'s tick-guard-free playback.
+     */
     public LegacyPlayerAdapter(KeyframeAnimation animation) {
+        BEGIN_TICK.set(animation, 0);
+        if (animation.stopTick != animation.endTick) {
+            STOP_TICK.set(animation, animation.endTick);
+            END_TICK.set(animation, animation.endTick);
+        }
         this.player = new KeyframeAnimationPlayer(animation);
     }
 
