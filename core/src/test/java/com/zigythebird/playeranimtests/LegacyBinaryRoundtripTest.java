@@ -24,6 +24,10 @@ public class LegacyBinaryRoundtripTest {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AnimationsProvider.class)
     public void roundtrip(Animation animation) throws IOException {
+        // Legacy binary doesn't carry {@link Animation#bones()} (pivots) or
+        // {@link Animation#parents()}, so animations that rely on them can't
+        // roundtrip through it.
+        if (!animation.bones().isEmpty() || !animation.parents().isEmpty()) return;
         float length = animation.length();
         for (int version = 1; version <= LegacyAnimationBinary.getCurrentVersion(); version++) {
             // Scale was added to LegacyAnimationBinary in v3; earlier versions drop it entirely.
