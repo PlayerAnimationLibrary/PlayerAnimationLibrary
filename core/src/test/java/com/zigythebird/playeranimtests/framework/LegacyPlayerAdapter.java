@@ -33,14 +33,18 @@ public final class LegacyPlayerAdapter implements IAnimation {
             ReflectUtils.TRUSTED_LOOKUP.findVarHandle(KeyframeAnimation.class, "endTick", int.class));
     private static final VarHandle STOP_TICK = ReflectUtils.uncheck(() ->
             ReflectUtils.TRUSTED_LOOKUP.findVarHandle(KeyframeAnimation.class, "stopTick", int.class));
+    private static final VarHandle IS_INFINITE = ReflectUtils.uncheck(() ->
+            ReflectUtils.TRUSTED_LOOKUP.findVarHandle(KeyframeAnimation.class, "isInfinite", boolean.class));
 
     private final KeyframeAnimationPlayer player;
 
     /**
-     * Strips begin/stop-tick behavior so the player matches {@code TestAnimationController}'s tick-guard-free playback.
+     * Strips begin/stop-tick and loop behavior so the player matches
+     * {@code TestAnimationController}'s tick-guard-free, non-looping playback.
      */
     public LegacyPlayerAdapter(KeyframeAnimation animation) {
         BEGIN_TICK.set(animation, 0);
+        IS_INFINITE.set(animation, false);
         if (animation.stopTick != animation.endTick) {
             STOP_TICK.set(animation, animation.endTick);
             END_TICK.set(animation, animation.endTick);
