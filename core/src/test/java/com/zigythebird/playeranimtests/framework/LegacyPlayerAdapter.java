@@ -78,8 +78,33 @@ public final class LegacyPlayerAdapter implements IAnimation {
         Vec3f rot = this.player.get3DTransform(key, TransformType.ROTATION, 0f, ZERO);
         Vec3f scale = this.player.get3DTransform(key, TransformType.SCALE, 0f, ONE);
 
-        bone.position.set(pos.getX() - posDef.x(), pos.getY() - posDef.y(), pos.getZ() - posDef.z());
-        bone.rotation.set(rot.getX(), rot.getY(), rot.getZ());
+        // Mirror {@code LegacyAnimationBinary.readKeyframes}' per-bone adjustments,
+        // which KAP's reader does not apply: body position uses block scale (×16),
+        // and item/cape/body get per-axis sign flips (plus Y↔Z swap for items).
+        String name = bone.getName();
+        boolean isBody = name.equals("body");
+        boolean isCape = name.equals("cape");
+        boolean isItem = name.equals("right_item") || name.equals("left_item");
+
+        float px = pos.getX() - posDef.x();
+        float py = pos.getY() - posDef.y();
+        float pz = pos.getZ() - posDef.z();
+        if (isBody) { px *= 16f; py *= 16f; pz *= 16f; }
+        if (isItem || isCape || isBody) px = -px;
+        if (!isBody) py = -py;
+        if (isCape) pz = -pz;
+        if (isItem) { float tmp = py; py = pz; pz = tmp; }
+
+        float rx = rot.getX();
+        float ry = rot.getY();
+        float rz = rot.getZ();
+        if (isItem || isCape || isBody) rx = -rx;
+        if (isItem || isBody) ry = -ry;
+        if (isItem || isCape) rz = -rz;
+        if (isItem) { float tmp = ry; ry = rz; rz = tmp; }
+
+        bone.position.set(px, py, pz);
+        bone.rotation.set(rx, ry, rz);
         bone.scale.set(scale.getX(), scale.getY(), scale.getZ());
     }
 }

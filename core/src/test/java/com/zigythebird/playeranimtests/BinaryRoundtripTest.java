@@ -25,7 +25,6 @@ public class BinaryRoundtripTest {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AnimationsProvider.class)
     public void roundtrip(Animation animation) {
-        float length = animation.length();
         EnumSet<TransformType> toAssert = EnumSet.of(TransformType.POSITION, TransformType.ROTATION, TransformType.SCALE);
         for (int version = 1; version <= AnimationBinary.getCurrentVersion(); version++) {
             ByteBuf buf = Unpooled.buffer();
@@ -33,7 +32,7 @@ public class BinaryRoundtripTest {
                 AnimationBinary.write(buf, version, animation);
                 Animation decoded = AnimationBinary.read(buf, version);
                 TestAnimationController.playing(animation).captureAgainst(
-                        TestAnimationController.playing(decoded), length,
+                        TestAnimationController.playing(decoded),
                         animation.getNameOrId() + " v" + version, toAssert);
             } finally {
                 buf.release();

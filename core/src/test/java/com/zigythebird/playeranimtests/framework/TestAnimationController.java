@@ -48,25 +48,23 @@ public class TestAnimationController extends HumanoidAnimationController {
     }
 
     /**
-     * Tick this controller and {@code target} in lockstep for {@code length}
-     * ticks, asserting per-tick that every bone this controller considers
-     * active matches the transform produced by the target.
+     * Tick this controller and {@code target} in lockstep until the current
+     * animation's natural end, asserting per-tick that every bone this
+     * controller considers active matches the transform produced by the target.
      */
-    public void captureAgainst(IAnimation target, float length, String label, EnumSet<TransformType> toAssert) {
+    public void captureAgainst(IAnimation target, String label, EnumSet<TransformType> toAssert) {
         AnimationData data = new AnimationData(0f, 0f, false);
         // AnimationLoader.calculateAnimationLength returns Float.MAX_VALUE for
         // animations without temporally-distributed keyframes (e.g. static bends
-        // on bend_test.json: one keyframe at t=0 → keyframe deltas sum to 0).
-        // The controller treats this as "no natural end" at play time; for a
-        // binary-roundtrip test a single tick is enough to verify the static
-        // pose is preserved.
-        float limit = length == Float.MAX_VALUE ? 1f : length;
+        // on bend_test.json: one keyframe at t=0 → keyframe deltas sum to 0);
+        // LegacyAnimationBinary narrows this to ~Integer.MAX_VALUE through its
+        // int cast on write. Treat either sentinel as "no natural end" — a
+        // single tick is enough to verify the static pose is preserved.
+        float length = this.getCurrentAnimationInstance().length();
+        float limit = length >= Integer.MAX_VALUE ? 1f : length;
         for (float tick = 0f; tick < limit; tick += 1f) {
             this.setupAnim(data);
             target.setupAnim(data);
-
-            System.out.println(length);
-            System.out.println(tick);
 
             for (String name : this.activeBones.keySet()) {
                 PlayerAnimBone expected = this.get3DTransform(name);

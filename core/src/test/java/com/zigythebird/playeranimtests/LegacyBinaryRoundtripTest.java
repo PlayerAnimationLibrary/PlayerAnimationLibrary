@@ -26,9 +26,11 @@ public class LegacyBinaryRoundtripTest {
     public void roundtrip(Animation animation) throws IOException {
         // Legacy binary doesn't carry {@link Animation#bones()} (pivots) or
         // {@link Animation#parents()}, so animations that rely on them can't
-        // roundtrip through it.
+        // roundtrip through it. Molang expressions are collapsed to their
+        // write-time eval (null controller → 0), so dynamic queries like
+        // {@code q.anim_time} also can't roundtrip.
         if (!animation.bones().isEmpty() || !animation.parents().isEmpty()) return;
-        float length = animation.length();
+        if (animation.getNameOrId().toLowerCase().startsWith("molang")) return;
         for (int version = 1; version <= LegacyAnimationBinary.getCurrentVersion(); version++) {
             // Scale was added to LegacyAnimationBinary in v3; earlier versions drop it entirely.
             EnumSet<TransformType> toAssert = version < 3
@@ -43,7 +45,7 @@ public class LegacyBinaryRoundtripTest {
                 // (v1: only the 6 hardcoded base bones; v2+: any bone named
                 // in the animation) are excluded from the per-tick comparison.
                 TestAnimationController.playing(decoded).captureAgainst(
-                        TestAnimationController.playing(animation), length,
+                        TestAnimationController.playing(animation),
                         animation.getNameOrId() + " v" + version, toAssert);
             } finally {
                 buf.release();

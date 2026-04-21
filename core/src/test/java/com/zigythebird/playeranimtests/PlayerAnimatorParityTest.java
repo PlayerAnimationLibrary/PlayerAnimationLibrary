@@ -49,12 +49,8 @@ public class PlayerAnimatorParityTest {
                 KeyframeAnimation their = AnimationBinary.read(buf.nioBuffer(0, writerIndex), version);
                 Animation our = LegacyAnimationBinary.read(buf, version);
 
-                // {@code our.length()} would return Integer.MAX_VALUE for the
-                // Float.MAX_VALUE sentinel animations (narrowing cast during
-                // {@code LegacyAnimationBinary.write}); the original length
-                // still carries the sentinel that {@code captureAgainst} handles.
                 TestAnimationController.playing(our).captureAgainst(
-                        new LegacyPlayerAdapter(their), animation.length(),
+                        new LegacyPlayerAdapter(their),
                         animation.getNameOrId() + " v" + version, toAssert);
             } finally {
                 buf.release();
