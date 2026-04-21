@@ -32,6 +32,7 @@ sourceSets {
 
 tasks.test {
     useJUnitPlatform()
+    maxHeapSize = "4G"
 }
 
 publishing {
