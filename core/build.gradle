@@ -19,7 +19,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("dev.kosmx.player-anim:anim-core:2.0.3.2+1.21.5")
-    testImplementation("org.redlance.common-utils:reflect:1.2.6") { transitive = false }
+    testImplementation("org.redlance.common-utils:reflect:$rootProject.commonutils_version") { transitive = false }
 }
 
 sourceSets {
