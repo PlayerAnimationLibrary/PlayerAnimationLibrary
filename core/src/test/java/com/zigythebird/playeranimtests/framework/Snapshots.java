@@ -44,7 +44,9 @@ public final class Snapshots {
         }
     }
 
-    /** Shortest signed distance between two angles, so e.g. -π and +π compare equal. */
+    /**
+     * Shortest signed distance between two angles, so e.g. -π and +π compare equal.
+     */
     private static float angleDelta(float expected, float actual) {
         float d = (actual - expected) % (2f * (float) Math.PI);
         if (d > Math.PI) d -= 2f * (float) Math.PI;
