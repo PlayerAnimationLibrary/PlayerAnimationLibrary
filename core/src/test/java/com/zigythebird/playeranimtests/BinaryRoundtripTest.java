@@ -1,17 +1,15 @@
 package com.zigythebird.playeranimtests;
 
 import com.zigythebird.playeranimcore.animation.Animation;
-import com.zigythebird.playeranimcore.enums.TransformType;
 import com.zigythebird.playeranimcore.network.AnimationBinary;
 import com.zigythebird.playeranimtests.framework.AnimationsProvider;
+import com.zigythebird.playeranimtests.framework.Snapshots;
 import com.zigythebird.playeranimtests.framework.TestAnimationController;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-
-import java.util.EnumSet;
 
 /**
  * For every animation × every {@link AnimationBinary} version, assert that
@@ -25,15 +23,15 @@ public class BinaryRoundtripTest {
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AnimationsProvider.class)
     public void roundtrip(Animation animation) {
-        EnumSet<TransformType> toAssert = EnumSet.of(TransformType.POSITION, TransformType.ROTATION, TransformType.SCALE);
         for (int version = 1; version <= AnimationBinary.getCurrentVersion(); version++) {
             ByteBuf buf = Unpooled.buffer();
             try {
                 AnimationBinary.write(buf, version, animation);
                 Animation decoded = AnimationBinary.read(buf, version);
+
                 TestAnimationController.playing(animation).captureAgainst(
-                        TestAnimationController.playing(decoded),
-                        animation.getNameOrId() + " v" + version, toAssert);
+                        TestAnimationController.playing(decoded), animation.getNameOrId() + " v" + version, Snapshots.ALL
+                );
             } finally {
                 buf.release();
             }

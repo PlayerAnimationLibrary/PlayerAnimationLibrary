@@ -32,6 +32,7 @@ import java.util.stream.Stream;
  * bone trajectories must match within {@link Snapshots#DEFAULT_EPSILON}.
  */
 public class PlayerAnimatorParityTest {
+
     @DisplayName("playeranimator parity over legacy binary")
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(AnimationsProvider.class)
@@ -42,17 +43,17 @@ public class PlayerAnimatorParityTest {
         // on bone positions, so parity is fundamentally unreachable for animations
         // that rely on them.
         if (!animation.bones().isEmpty() || !animation.parents().isEmpty()) return;
+
         // KAP's CATMULLROM is a degenerate `n + 2` wrapped in easeInOut (the spline
         // formula's `t` factors were hard-coded as `1`); it evaluates to 1 at f=0
         // and jumps straight to the `after` keyframe's value. Our implementation
         // is the proper centripetal spline, so parity is unreachable here.
         if (usesCatmullRom(animation)) return;
+
         for (int version = 1; version <= LegacyAnimationBinary.getCurrentVersion(); version++) {
-            EnumSet<TransformType> toAssert = version < 3
-                    ? EnumSet.of(TransformType.POSITION, TransformType.ROTATION)
-                    : EnumSet.of(TransformType.POSITION, TransformType.ROTATION, TransformType.SCALE);
-            int len = LegacyAnimationBinary.calculateSize(animation, version);
-            ByteBuf buf = Unpooled.buffer(len);
+            EnumSet<TransformType> toAssert = version < 3 ? Snapshots.NO_SCALE : Snapshots.ALL;
+
+            ByteBuf buf = Unpooled.buffer(LegacyAnimationBinary.calculateSize(animation, version));
             try {
                 LegacyAnimationBinary.write(animation, buf, version);
                 int writerIndex = buf.writerIndex();
@@ -60,8 +61,8 @@ public class PlayerAnimatorParityTest {
                 Animation our = LegacyAnimationBinary.read(buf, version);
 
                 TestAnimationController.playing(our).captureAgainst(
-                        new LegacyPlayerAdapter(their),
-                        animation.getNameOrId() + " v" + version, toAssert);
+                        new LegacyPlayerAdapter(their), animation.getNameOrId() + " v" + version, toAssert
+                );
             } finally {
                 buf.release();
             }

@@ -12,6 +12,9 @@ import java.util.EnumSet;
  * {@link TestAnimationController#captureAgainst}.
  */
 public final class Snapshots {
+    public static final EnumSet<TransformType> ALL = EnumSet.allOf(TransformType.class);
+    public static final EnumSet<TransformType> NO_SCALE = EnumSet.of(TransformType.POSITION, TransformType.ROTATION, TransformType.BEND);
+
     public static final float DEFAULT_EPSILON = 0.1f;
 
     public static void assertBonesEqual(PlayerAnimBone expected, PlayerAnimBone actual, String label, float tick, EnumSet<TransformType> toAssert) {
