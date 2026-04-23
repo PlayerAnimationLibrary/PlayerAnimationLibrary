@@ -110,11 +110,13 @@ public class HumanoidAnimationController extends AnimationController {
     @Override
     public void process(AnimationData state) {
         super.process(state);
+        /* TODO Commented out until we decide what we want to do with bends
         this.torsoBend = bones.get("torso").getBend();
         float absBend = Math.abs(this.torsoBend);
         if (absBend > 0.001 && (this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE)) {
             this.torsoBendSign = (int) Math.signum(this.torsoBend);
         } else this.torsoBendSign = 0;
+         */
     }
 
     @Override
