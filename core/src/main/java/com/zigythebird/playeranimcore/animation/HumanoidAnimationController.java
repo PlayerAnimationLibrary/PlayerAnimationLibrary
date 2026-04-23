@@ -26,29 +26,34 @@ package com.zigythebird.playeranimcore.animation;
 
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
+import com.zigythebird.playeranimcore.util.MatrixUtil;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.runtime.standard.MochaMath;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static java.util.Map.entry;
+
 public class HumanoidAnimationController extends AnimationController {
     /**
      * Bone pivot point positions used to apply custom pivot point translations.
      */
-    public static final Map<String, Vec3f> BONE_POSITIONS = Map.of(
-            "right_arm", new Vec3f(5, 22, 0),
-            "left_arm", new Vec3f(-5, 22, 0),
-            "left_leg", new Vec3f(-2f, 12, 0f),
-            "right_leg", new Vec3f(2f, 12, 0f),
-            "torso", new Vec3f(0, 24, 0),
-            "head", new Vec3f(0, 24, 0),
-            "body", new Vec3f(0, 12, 0),
-            "cape", new Vec3f(0, 24, 2),
-            "elytra", new Vec3f(0, 24, 2)
+    public static final Map<String, Vec3f> BONE_POSITIONS = Map.ofEntries(
+            entry("right_item", new Vec3f(6, 12, -2)),
+            entry("left_item", new Vec3f(-6, 12, -2)),
+            entry("right_arm", new Vec3f(5, 22, 0)),
+            entry("left_arm", new Vec3f(-5, 22, 0)),
+            entry("left_leg", new Vec3f(-2f, 12, 0f)),
+            entry("right_leg", new Vec3f(2f, 12, 0f)),
+            entry("torso", new Vec3f(0, 24, 0)),
+            entry("head", new Vec3f(0, 24, 0)),
+            entry("body", new Vec3f(0, 12, 0)),
+            entry("cape", new Vec3f(0, 24, 2)),
+            entry("elytra", new Vec3f(0, 24, 2))
     );
 
     /**
@@ -57,8 +62,6 @@ public class HumanoidAnimationController extends AnimationController {
     protected List<String> top_bones;
 
     private float torsoBend;
-    private float torsoBendYPosMultiplier;
-    private float torsoBendZPosMultiplier;
     private int torsoBendSign;
 
     /**
@@ -111,8 +114,6 @@ public class HumanoidAnimationController extends AnimationController {
         float absBend = Math.abs(this.torsoBend);
         if (absBend > 0.001 && (this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE)) {
             this.torsoBendSign = (int) Math.signum(this.torsoBend);
-            this.torsoBendYPosMultiplier = (float) -(1 - Math.cos(absBend));
-            this.torsoBendZPosMultiplier = (float) (1 - Math.sin(absBend));
         } else this.torsoBendSign = 0;
     }
 
@@ -121,10 +122,11 @@ public class HumanoidAnimationController extends AnimationController {
         bone = super.get3DTransformRaw(bone);
         String name = bone.getName();
         if (this.torsoBendSign != 0 && this.top_bones.contains(name)) {
-            float offset = getBonePosition(name).y() - 18;
-            bone.rotX += this.torsoBend;
-            bone.positionZ += (offset * this.torsoBendZPosMultiplier - offset) * this.torsoBendSign;
-            bone.positionY += offset * this.torsoBendYPosMultiplier;
+            Matrix4f matrix4f = new Matrix4f();
+            matrix4f.translate(0, 18, 0);
+            matrix4f.rotateX(this.torsoBend);
+            matrix4f.translate(0, -18, 0);
+            MatrixUtil.applyMatrixToBone(bone, matrix4f, getBonePosition(name));
         }
         return bone;
     }

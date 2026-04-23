@@ -7,7 +7,7 @@
     "AvatarMixin",
     "AvatarRendererMixin",
     "AvatarRenderStateMixin",
-    "CapeModelAccessor",
+    "CapeLayerMixin",
     "ElytraLayerMixin",
     "ItemInHandLayerMixin",
     "LivingEntityRendererMixin",

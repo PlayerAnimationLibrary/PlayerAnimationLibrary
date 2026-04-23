@@ -473,7 +473,7 @@ public abstract class AnimationController implements IAnimation {
 		}
 
 		return this.stateHandler.handle(this, state, (animation, startTick) -> {
-			this.setAnimation(animation, startTick);
+			this.setAnimation(animation, startTick - state.getPartialTick());
 			return PlayState.CONTINUE;
 		});
 	}

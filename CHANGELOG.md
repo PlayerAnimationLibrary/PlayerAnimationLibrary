@@ -1,1 +1,6 @@
-- Fix head in first-person
+- Add item pivots
+- Fix state handler 
+- Fix bend applying to other bones
+- Fix compat with the playeranimator binary format
+- Fix crash
+- Bind cape to torso

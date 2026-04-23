@@ -50,17 +50,22 @@ public class MatrixUtil {
             MatrixUtil.prepMatrixForBone(matrix, parent, pivot);
         }
 
-        Vec3f defaultPos = positions.apply(child.getName());
-        matrix.translate(defaultPos.x(), defaultPos.y(), defaultPos.z());
-        MatrixUtil.rotateMatrixAroundBone(matrix, child);
-        child.setPosX(-matrix.m30() + defaultPos.x() + child.getPosX());
-        child.setPosY(matrix.m31() - defaultPos.y() + child.getPosY());
-        child.setPosZ(-matrix.m32() - defaultPos.z() + child.getPosZ());
+        applyMatrixToBone(child, matrix, positions.apply(child.getName()));
+    }
+
+    public static void applyMatrixToBone(PlayerAnimBone bone, Matrix4f matrix, Vec3f pivot) {
+        matrix.translate(pivot.x(), pivot.y(), pivot.z());
+        MatrixUtil.rotateMatrixAroundBone(matrix, bone);
+        bone.addPos(
+                -matrix.m30() + pivot.x(),
+                matrix.m31() - pivot.y(),
+                -matrix.m32() - pivot.z()
+        );
 
         Vector3f rotation = matrix.getEulerAnglesZYX(new Vector3f());
-        child.updateRotation(rotation.x(), rotation.y(), rotation.z());
+        bone.updateRotation(rotation.x(), rotation.y(), rotation.z());
 
         Vector3f scale = matrix.getScale(new Vector3f());
-        child.mulScale(scale.x(), scale.y(), scale.z());
+        bone.mulScale(scale.x(), scale.y(), scale.z());
     }
 }
