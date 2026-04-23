@@ -60,13 +60,13 @@ allprojects {
 tasks.register("publishToDiscord", PublishDiscordTask) {
     url.set(providers.environmentVariable("DISCORD_WEBHOOK"))
     username.set("PlayerAnimationLibrary Updates")
-    avatar.set("https://raw.githubusercontent.com/ZigyTheBird/PlayerAnimationLibrary/refs/heads/main/minecraft/fabric/src/main/resources/icon.png")
+    avatar.set("https://raw.githubusercontent.com/PlayerAnimationLibrary/PlayerAnimationLibrary/refs/heads/1.21.11/minecraft/fabric/src/main/resources/icon.png")
 
     container {
         it.title = "## ✨ ${rootProject.archives_base_name}\n### v${version} is out!"
         it.description = "### Changes:\n${rootProject.file("CHANGELOG.md").getText("UTF-8")}"
 
-        it.thumbnail("https://raw.githubusercontent.com/ZigyTheBird/PlayerAnimationLibrary/refs/heads/main/minecraft/fabric/src/main/resources/icon.png")
+        it.thumbnail("https://raw.githubusercontent.com/PlayerAnimationLibrary/PlayerAnimationLibrary/refs/heads/1.21.11/minecraft/fabric/src/main/resources/icon.png")
         it.timestamp(System.currentTimeMillis())
     }
 
