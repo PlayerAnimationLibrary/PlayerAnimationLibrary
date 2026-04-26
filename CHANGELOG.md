@@ -1,3 +1,4 @@
 - Fix compat with the playeranimator binary format
 - Fix crash
 - Bind cape to torso
+- Restore and deprecate old bend system

@@ -13,6 +13,7 @@ public class AdvancedPlayerAnimBone extends ToggleablePlayerAnimBone {
     public Float rotYTransitionLength = null;
     public Float rotZTransitionLength = null;
 
+    @Deprecated(forRemoval = true)
     public Float bendTransitionLength = null;
 
     public AdvancedPlayerAnimBone(String name) {
@@ -39,6 +40,7 @@ public class AdvancedPlayerAnimBone extends ToggleablePlayerAnimBone {
         bendEnabled = enabled;
     }
 
+    @Deprecated(forRemoval = true)
     public void setBendTransitionLength(Float bendTransitionLength) {
         this.bendTransitionLength = bendTransitionLength;
     }

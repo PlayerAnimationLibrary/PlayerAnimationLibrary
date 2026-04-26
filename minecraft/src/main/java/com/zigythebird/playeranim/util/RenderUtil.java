@@ -59,6 +59,7 @@ public final class RenderUtil {
 		bone.position.set(part.x - initialPose.x(), -(part.y - initialPose.y()), part.z - initialPose.z());
 		bone.rotation.set(part.xRot, part.yRot, part.zRot);
 		bone.scale.set(part.xScale, part.yScale, part.zScale);
+		bone.bend = 0;
 
         return bone;
     }
