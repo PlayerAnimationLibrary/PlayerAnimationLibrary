@@ -30,6 +30,13 @@ sourceSets {
     }
 }
 
+jar {
+    manifest.attributes(
+            "FMLModType": "GAMELIBRARY",
+            "Automatic-Module-Name": "PlayerAnimationLibCore"
+    )
+}
+
 tasks.test {
     useJUnitPlatform()
     maxHeapSize = "4G"
