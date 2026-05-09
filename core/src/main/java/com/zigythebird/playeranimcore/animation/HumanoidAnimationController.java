@@ -29,7 +29,7 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.util.MatrixUtil;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import team.unnamed.mocha.MochaEngine;
+import team.unnamed.mocha.runtime.MolangInterpreter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +70,7 @@ public class HumanoidAnimationController extends AnimationController {
      * @param animationHandler The {@link AnimationStateHandler} animation state handler responsible for deciding which animations to play
      * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
      */
-    public HumanoidAnimationController(AnimationStateHandler animationHandler, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+    public HumanoidAnimationController(AnimationStateHandler animationHandler, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
         this(animationHandler, BONE_POSITIONS, molangRuntime);
     }
 
@@ -81,7 +81,7 @@ public class HumanoidAnimationController extends AnimationController {
      * @param bonePositions    Map of bones and their pivots
      * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
      */
-    public HumanoidAnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+    public HumanoidAnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
         super(animationHandler, bonePositions, molangRuntime);
     }
 

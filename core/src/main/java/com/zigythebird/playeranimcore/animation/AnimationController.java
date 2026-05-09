@@ -53,8 +53,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
 import team.unnamed.mocha.parser.ast.FloatExpression;
+import team.unnamed.mocha.runtime.MolangInterpreter;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -77,7 +77,7 @@ public abstract class AnimationController implements IAnimation {
 	protected final Map<String, PlayerAnimBone> activeBones = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, PivotBone> pivotBones = new Object2ObjectOpenHashMap<>();
 	protected Queue<QueuedAnimation> animationQueue = new LinkedList<>();
-	protected final MochaEngine<AnimationController> molangRuntime;
+	protected final MolangInterpreter<AnimationController> molangRuntime;
 
 	protected boolean needsAnimationReload = false;
 
@@ -112,7 +112,7 @@ public abstract class AnimationController implements IAnimation {
 	 * @param bonePositions    Map of bones and their pivots
 	 * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
 	 */
-	public AnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+	public AnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
 		this.stateHandler = animationHandler;
 		this.bonePositions = bonePositions;
 		this.molangRuntime = molangRuntime.apply(this);

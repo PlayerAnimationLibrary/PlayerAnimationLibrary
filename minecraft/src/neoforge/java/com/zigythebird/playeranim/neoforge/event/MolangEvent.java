@@ -4,7 +4,7 @@ import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
 import com.zigythebird.playeranimcore.molang.QueryBinding;
 import net.neoforged.bus.api.Event;
-import team.unnamed.mocha.MochaEngine;
+import team.unnamed.mocha.runtime.MolangInterpreter;
 
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
@@ -14,10 +14,10 @@ import java.util.function.ToDoubleFunction;
  */
 public class MolangEvent extends Event {
     private final AnimationController controller;
-    private final MochaEngine<AnimationController> engine;
+    private final MolangInterpreter<AnimationController> engine;
     private final QueryBinding<AnimationController> queryBinding;
 
-    public MolangEvent(AnimationController controller, MochaEngine<AnimationController> engine, QueryBinding<AnimationController> queryBinding) {
+    public MolangEvent(AnimationController controller, MolangInterpreter<AnimationController> engine, QueryBinding<AnimationController> queryBinding) {
         this.controller = controller;
         this.engine = engine;
         this.queryBinding = queryBinding;
@@ -27,7 +27,7 @@ public class MolangEvent extends Event {
         return this.controller;
     }
 
-    public MochaEngine<AnimationController> getRuntimeBuilder() {
+    public MolangInterpreter<AnimationController> getRuntimeBuilder() {
         return this.engine;
     }
 

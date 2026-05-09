@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
+import team.unnamed.mocha.runtime.MolangInterpreter;
 
 import java.util.function.Function;
 
@@ -39,7 +39,7 @@ public class PlayerAnimationController extends HumanoidAnimationController {
      * @param animationHandler The {@link AnimationStateHandler} animation state handler responsible for deciding which animations to play
      * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
      */
-    public PlayerAnimationController(Avatar avatar, AnimationStateHandler animationHandler, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+    public PlayerAnimationController(Avatar avatar, AnimationStateHandler animationHandler, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
         super(animationHandler, molangRuntime);
         this.avatar = avatar;
     }

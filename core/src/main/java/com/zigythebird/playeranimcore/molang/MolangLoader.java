@@ -7,12 +7,12 @@ import com.zigythebird.playeranimcore.event.MolangEvent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
 import team.unnamed.mocha.parser.MolangParser;
 import team.unnamed.mocha.parser.ParseException;
 import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.parser.ast.FloatExpression;
 import team.unnamed.mocha.runtime.IsConstantExpression;
+import team.unnamed.mocha.runtime.MolangInterpreter;
 import team.unnamed.mocha.runtime.value.NumberValue;
 import team.unnamed.mocha.runtime.value.Value;
 
@@ -30,7 +30,7 @@ public class MolangLoader {
     /**
      * Common compiler, use only for compiling constants!
      */
-    public static final MochaEngine<?> MOCHA_ENGINE = MolangLoader.createNewEngine();
+    public static final MolangInterpreter<?> MOCHA_ENGINE = MolangLoader.createNewEngine();
 
     @Contract("_, null, _ -> new; _, !null, _ -> new")
     public static List<Expression> parseJson(boolean isForRotation, @Nullable JsonElement element, @NotNull Expression defaultValue) {
@@ -57,8 +57,8 @@ public class MolangLoader {
         return expressions;
     }
 
-    public static MochaEngine<AnimationController> createNewEngine(AnimationController controller) {
-        MochaEngine<AnimationController> engine = createBaseEngine(controller);
+    public static MolangInterpreter<AnimationController> createNewEngine(AnimationController controller) {
+        MolangInterpreter<AnimationController> engine = createBaseEngine(controller);
 
         QueryBinding<AnimationController> queryBinding = new QueryBinding<>(controller);
         setDoubleQuery(queryBinding, "anim_time", AnimationController::getAnimationTime);
@@ -72,12 +72,12 @@ public class MolangLoader {
         return engine;
     }
 
-    public static MochaEngine<?> createNewEngine() {
+    public static MolangInterpreter<?> createNewEngine() {
         return createNewEngine(null);
     }
 
-    public static <T> MochaEngine<T> createBaseEngine(T entity) {
-        MochaEngine<T> engine = MochaEngine.createStandard(entity);
+    public static <T> MolangInterpreter<T> createBaseEngine(T entity) {
+        MolangInterpreter<T> engine = MolangInterpreter.standard(entity);
         engine.handleParseExceptions(MolangLoader.HANDLER);
         engine.warnOnReflectiveFunctionUsage(true);
 
