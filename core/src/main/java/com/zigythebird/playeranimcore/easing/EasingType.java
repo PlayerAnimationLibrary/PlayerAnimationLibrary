@@ -2,6 +2,7 @@ package com.zigythebird.playeranimcore.easing;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.math.MathHelper;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see <a href="https://easings.net/">Easings.net</a>
  * @see <a href="https://cubic-bezier.com">Cubic-Bezier.com</a>
  */
+@ReflectionSupport(ReflectionSupport.Level.FULL)
 public enum EasingType implements EasingTypeTransformer {
 	LINEAR(0, "linear", value -> EasingType.easeIn(EasingType::linear)),
 	CONSTANT(1, "constant", value -> (value1 -> 0)),

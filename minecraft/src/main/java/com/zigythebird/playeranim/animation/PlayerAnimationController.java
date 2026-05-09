@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.animation;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
@@ -19,6 +20,7 @@ import team.unnamed.mocha.runtime.MolangInterpreter;
 
 import java.util.function.Function;
 
+@J2ObjCIncompatible
 public class PlayerAnimationController extends HumanoidAnimationController {
     protected final Avatar avatar;
 

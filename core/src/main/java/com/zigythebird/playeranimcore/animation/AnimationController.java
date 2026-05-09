@@ -24,6 +24,7 @@
 
 package com.zigythebird.playeranimcore.animation;
 
+import com.google.j2objc.annotations.AutoreleasePool;
 import com.zigythebird.playeranimcore.PlayerAnimLib;
 import com.zigythebird.playeranimcore.animation.keyframe.*;
 import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
@@ -329,6 +330,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param startAnimFrom Where to start the animation from in ticks
 	 */
+	@AutoreleasePool
 	protected void setAnimation(RawAnimation rawAnimation, float startAnimFrom) {
 		if (rawAnimation == null || rawAnimation.getAnimationStages().isEmpty()) {
 			stop();
@@ -451,6 +453,7 @@ public abstract class AnimationController implements IAnimation {
 		return true;
 	}
 
+	@AutoreleasePool
 	protected PlayState handleAnimation(AnimationData state) {
 		if (this.triggeredAnimation != null) {
 			if (this.currentRawAnimation != this.triggeredAnimation)
@@ -477,6 +480,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param state                 The animation test state
 	 */
+	@AutoreleasePool
 	public void process(AnimationData state) {
 		float adjustedTick = state.getPartialTick() + this.startAnimFrom + tick;
 
@@ -514,6 +518,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param adjustedTick The controller-adjusted tick for animation purposes
 	 */
+	@AutoreleasePool
 	private void processCurrentAnimation(float adjustedTick, AnimationData animationData) {
 		Animation animation = this.currentAnimation.animation();
 
@@ -704,6 +709,7 @@ public abstract class AnimationController implements IAnimation {
 		return this.currentAnimation != null && this.currentAnimation.animation().data().isAnimationPlayerAnimatorFormat();
 	}
 
+	@AutoreleasePool
 	protected void setupNewAnimation() {
 		this.isLoopStarted = false;
 		if (currentAnimation == null) return;
@@ -752,6 +758,7 @@ public abstract class AnimationController implements IAnimation {
 	/**
 	 * Compute animation value for the given keyframes at the specified tick
 	 */
+	@AutoreleasePool
 	private float computeAnimValue(List<Keyframe> frames, float tick, TransformType type, @Nullable EasingType easingOverride, Consumer<Float> transitionLengthSetter) {
 		Animation animation = this.currentAnimation.animation();
 		float endTick = animation.data().<Float>get(ExtraAnimationData.END_TICK_KEY).orElse(animation.length()-1);
@@ -792,6 +799,7 @@ public abstract class AnimationController implements IAnimation {
 	 * @param ageInTicks The current tick time
 	 * @return A new {@code KeyFrameLocation} containing the current {@code KeyFrame} and the tick time used to find it
 	 */
+	@AutoreleasePool
 	private KeyframeLocation getCurrentKeyFrameLocation(List<Keyframe> frames, float ageInTicks, TransformType type, boolean isPlayerAnimatorLoop, float animTime, float returnToTick) {
 		if (frames.isEmpty()) return type == TransformType.SCALE ? EMPTY_SCALE_KEYFRAME_LOCATION : EMPTY_KEYFRAME_LOCATION;
 
@@ -827,6 +835,7 @@ public abstract class AnimationController implements IAnimation {
 		this.executedKeyFrames.clear();
 	}
 
+	@AutoreleasePool
 	public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
 		if (activeBones.containsKey(bone.getName())) {
 			PlayerAnimBone bone1 = activeBones.get(bone.getName());
@@ -891,6 +900,7 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	@Override
+	@AutoreleasePool
 	public void tick(AnimationData state) {
 		for (int i = 0; i < modifiers.size(); i++) {
 			if (modifiers.get(i).canRemove()) {

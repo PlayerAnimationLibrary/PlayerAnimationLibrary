@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.neoforge.event;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
 import com.zigythebird.playeranimcore.molang.QueryBinding;
@@ -12,6 +13,7 @@ import java.util.function.ToDoubleFunction;
 /**
  * Register you own Molang queries and variables.
  */
+@J2ObjCIncompatible
 public class MolangEvent extends Event {
     private final AnimationController controller;
     private final MolangInterpreter<AnimationController> engine;

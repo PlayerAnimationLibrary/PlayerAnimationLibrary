@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.animation;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.RawAnimation;
 import net.minecraft.resources.Identifier;
@@ -7,6 +8,7 @@ import net.minecraft.resources.Identifier;
 /**
  * Makes a RawAnimation using resource locations instead of full animations
  */
+@J2ObjCIncompatible
 public class PlayerRawAnimationBuilder {
     private final RawAnimation rawAnimation = RawAnimation.begin();
 

@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.api;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.accessors.IAnimatedAvatar;
 import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import com.zigythebird.playeranimcore.animation.AnimationController;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.Avatar;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@J2ObjCIncompatible
 public final class PlayerAnimationAccess {
     /**
      * Get the animation manager for a player entity on the client.

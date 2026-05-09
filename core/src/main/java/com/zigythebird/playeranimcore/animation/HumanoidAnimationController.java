@@ -24,6 +24,7 @@
 
 package com.zigythebird.playeranimcore.animation;
 
+import com.google.j2objc.annotations.AutoreleasePool;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.util.MatrixUtil;
@@ -108,6 +109,7 @@ public class HumanoidAnimationController extends AnimationController {
     }
 
     @Override
+    @AutoreleasePool
     public void process(AnimationData state) {
         super.process(state);
         this.torsoBend = bones.get("torso").bend;
@@ -118,6 +120,7 @@ public class HumanoidAnimationController extends AnimationController {
     }
 
     @Override
+    @AutoreleasePool
     public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
         bone = super.get3DTransformRaw(bone);
         String name = bone.getName();
