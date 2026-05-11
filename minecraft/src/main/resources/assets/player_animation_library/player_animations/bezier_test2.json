@@ -1,0 +1,2525 @@
+{
+    "format_version": "1.8.0",
+    "geckolib_format_version": 2,
+    "model": {},
+    "parents": {},
+    "animations": {
+        "bedrock_export_test": {
+            "loopTick": 0.0,
+            "loop": true,
+            "animation_length": 4.0,
+            "player_animation_library": {
+                "name": "bezier_test_2",
+                "author": "MineEmotes",
+                "description": "",
+                "bages": []
+            },
+            "bones": {
+                "leftLeg": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easingX": "bezier",
+                            "easingArgsX": [
+                                0.0,
+                                -0.02,
+                                0.0,
+                                0.02
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                8.0,
+                                -2.0,
+                                -3.15938,
+                                0.49561
+                            ],
+                            "easingZ": "bezier",
+                            "easingArgsZ": [
+                                0.0,
+                                -0.02,
+                                0.0,
+                                0.02
+                            ]
+                        },
+                        "0.96": {
+                            "vector": [
+                                "pal.disabled",
+                                -6.663,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                -9.33348,
+                                -0.74292,
+                                -1.29411,
+                                0.46567
+                            ]
+                        },
+                        "2.36": {
+                            "vector": [
+                                "pal.disabled",
+                                -9.301,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                -12.61189,
+                                -0.46805,
+                                9.08167,
+                                0.63162
+                            ]
+                        },
+                        "4.0": {
+                            "vector": [
+                                "pal.disabled",
+                                -0.0,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                -10.09544,
+                                -0.84189,
+                                7.68537,
+                                1.19754
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                -0.018,
+                                0.0,
+                                0.0
+                            ],
+                            "easingX": "linear",
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                0.0,
+                                -0.02,
+                                0.0,
+                                0.02
+                            ],
+                            "easingZ": "bezier",
+                            "easingArgsZ": [
+                                0.0,
+                                -0.02,
+                                0.0,
+                                0.02
+                            ]
+                        },
+                        "0.02": {
+                            "vector": [
+                                -8.498,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.04": {
+                            "vector": [
+                                -12.247,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.06": {
+                            "vector": [
+                                -15.293,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.08": {
+                            "vector": [
+                                -18.011,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.1": {
+                            "vector": [
+                                -20.552,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.12": {
+                            "vector": [
+                                -22.995,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.14": {
+                            "vector": [
+                                -25.39,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.16": {
+                            "vector": [
+                                -27.768,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.18": {
+                            "vector": [
+                                -30.163,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.2": {
+                            "vector": [
+                                -32.591,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.22": {
+                            "vector": [
+                                -35.08,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.24": {
+                            "vector": [
+                                -37.637,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.26": {
+                            "vector": [
+                                -40.286,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.28": {
+                            "vector": [
+                                -43.015,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.3": {
+                            "vector": [
+                                -45.817,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.32": {
+                            "vector": [
+                                -48.659,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.34": {
+                            "vector": [
+                                -51.448,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.36": {
+                            "vector": [
+                                -54.102,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.38": {
+                            "vector": [
+                                -56.503,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.4": {
+                            "vector": [
+                                -58.592,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.42": {
+                            "vector": [
+                                -60.355,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.44": {
+                            "vector": [
+                                -61.815,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.46": {
+                            "vector": [
+                                -63.022,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.48": {
+                            "vector": [
+                                -63.992,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.5": {
+                            "vector": [
+                                -64.775,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.52": {
+                            "vector": [
+                                -65.4,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.54": {
+                            "vector": [
+                                -65.895,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.56": {
+                            "vector": [
+                                -66.278,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.58": {
+                            "vector": [
+                                -66.568,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.6": {
+                            "vector": [
+                                -66.777,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.62": {
+                            "vector": [
+                                -66.917,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.64": {
+                            "vector": [
+                                -66.995,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.66": {
+                            "vector": [
+                                -67.021,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.68": {
+                            "vector": [
+                                -66.999,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.7": {
+                            "vector": [
+                                -66.934,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.72": {
+                            "vector": [
+                                -66.832,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.74": {
+                            "vector": [
+                                -66.695,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.76": {
+                            "vector": [
+                                -66.527,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.78": {
+                            "vector": [
+                                -66.331,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.8": {
+                            "vector": [
+                                -66.109,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.82": {
+                            "vector": [
+                                -65.863,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.84": {
+                            "vector": [
+                                -65.594,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.86": {
+                            "vector": [
+                                -65.305,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.88": {
+                            "vector": [
+                                -64.996,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.9": {
+                            "vector": [
+                                -64.669,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.92": {
+                            "vector": [
+                                -64.325,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.94": {
+                            "vector": [
+                                -63.964,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.96": {
+                            "vector": [
+                                -63.589,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "0.98": {
+                            "vector": [
+                                -62.408,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.0": {
+                            "vector": [
+                                -61.313,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.02": {
+                            "vector": [
+                                -60.326,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.04": {
+                            "vector": [
+                                -59.433,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.06": {
+                            "vector": [
+                                -58.634,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.08": {
+                            "vector": [
+                                -57.927,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.1": {
+                            "vector": [
+                                -57.313,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.12": {
+                            "vector": [
+                                -56.789,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.14": {
+                            "vector": [
+                                -56.354,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.16": {
+                            "vector": [
+                                -56.006,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.18": {
+                            "vector": [
+                                -55.744,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.2": {
+                            "vector": [
+                                -55.564,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.22": {
+                            "vector": [
+                                -55.464,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.24": {
+                            "vector": [
+                                -55.442,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.26": {
+                            "vector": [
+                                -55.493,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.28": {
+                            "vector": [
+                                -55.616,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.3": {
+                            "vector": [
+                                -55.805,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.32": {
+                            "vector": [
+                                -56.059,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.34": {
+                            "vector": [
+                                -56.372,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.36": {
+                            "vector": [
+                                -56.741,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.38": {
+                            "vector": [
+                                -57.162,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.4": {
+                            "vector": [
+                                -57.632,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.42": {
+                            "vector": [
+                                -58.146,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.44": {
+                            "vector": [
+                                -58.7,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.46": {
+                            "vector": [
+                                -59.292,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.48": {
+                            "vector": [
+                                -59.917,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.5": {
+                            "vector": [
+                                -60.572,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.52": {
+                            "vector": [
+                                -61.253,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.54": {
+                            "vector": [
+                                -61.969,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.56": {
+                            "vector": [
+                                -62.694,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.58": {
+                            "vector": [
+                                -63.435,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.6": {
+                            "vector": [
+                                -64.19,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.62": {
+                            "vector": [
+                                -64.955,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.64": {
+                            "vector": [
+                                -65.727,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.66": {
+                            "vector": [
+                                -66.504,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.68": {
+                            "vector": [
+                                -67.283,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.7": {
+                            "vector": [
+                                -68.061,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.72": {
+                            "vector": [
+                                -68.835,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.74": {
+                            "vector": [
+                                -69.603,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.76": {
+                            "vector": [
+                                -70.362,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.78": {
+                            "vector": [
+                                -71.11,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.8": {
+                            "vector": [
+                                -71.845,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.82": {
+                            "vector": [
+                                -72.563,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.84": {
+                            "vector": [
+                                -73.262,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.86": {
+                            "vector": [
+                                -73.94,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.88": {
+                            "vector": [
+                                -74.607,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.9": {
+                            "vector": [
+                                -75.236,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.92": {
+                            "vector": [
+                                -75.838,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.94": {
+                            "vector": [
+                                -76.409,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.96": {
+                            "vector": [
+                                -76.947,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "1.98": {
+                            "vector": [
+                                -77.45,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.0": {
+                            "vector": [
+                                -77.915,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.02": {
+                            "vector": [
+                                -78.341,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.04": {
+                            "vector": [
+                                -78.723,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.06": {
+                            "vector": [
+                                -79.061,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.08": {
+                            "vector": [
+                                -79.351,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.1": {
+                            "vector": [
+                                -79.592,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.12": {
+                            "vector": [
+                                -79.78,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.14": {
+                            "vector": [
+                                -79.913,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.16": {
+                            "vector": [
+                                -79.988,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.18": {
+                            "vector": [
+                                -80.004,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.2": {
+                            "vector": [
+                                -79.957,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.22": {
+                            "vector": [
+                                -79.845,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.24": {
+                            "vector": [
+                                -79.665,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.26": {
+                            "vector": [
+                                -79.414,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.28": {
+                            "vector": [
+                                -79.09,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.3": {
+                            "vector": [
+                                -78.689,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.32": {
+                            "vector": [
+                                -78.209,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.34": {
+                            "vector": [
+                                -77.646,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.36": {
+                            "vector": [
+                                -76.998,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.38": {
+                            "vector": [
+                                -74.171,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.4": {
+                            "vector": [
+                                -71.377,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.42": {
+                            "vector": [
+                                -68.635,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.44": {
+                            "vector": [
+                                -65.931,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.46": {
+                            "vector": [
+                                -63.266,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.48": {
+                            "vector": [
+                                -60.63,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.5": {
+                            "vector": [
+                                -58.046,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.52": {
+                            "vector": [
+                                -55.498,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.54": {
+                            "vector": [
+                                -52.99,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.56": {
+                            "vector": [
+                                -50.518,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.58": {
+                            "vector": [
+                                -48.102,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.6": {
+                            "vector": [
+                                -45.726,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.62": {
+                            "vector": [
+                                -43.412,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.64": {
+                            "vector": [
+                                -41.16,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.66": {
+                            "vector": [
+                                -38.969,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.68": {
+                            "vector": [
+                                -36.859,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.7": {
+                            "vector": [
+                                -34.838,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.72": {
+                            "vector": [
+                                -32.91,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.74": {
+                            "vector": [
+                                -31.1,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.76": {
+                            "vector": [
+                                -29.42,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.78": {
+                            "vector": [
+                                -27.883,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.8": {
+                            "vector": [
+                                -26.516,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.82": {
+                            "vector": [
+                                -25.336,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.84": {
+                            "vector": [
+                                -24.359,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.86": {
+                            "vector": [
+                                -23.605,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.88": {
+                            "vector": [
+                                -23.084,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.9": {
+                            "vector": [
+                                -22.8,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.92": {
+                            "vector": [
+                                -22.747,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.94": {
+                            "vector": [
+                                -22.915,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.96": {
+                            "vector": [
+                                -23.283,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "2.98": {
+                            "vector": [
+                                -23.828,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.0": {
+                            "vector": [
+                                -24.522,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.02": {
+                            "vector": [
+                                -25.339,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.04": {
+                            "vector": [
+                                -26.248,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.06": {
+                            "vector": [
+                                -27.227,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.08": {
+                            "vector": [
+                                -28.253,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.1": {
+                            "vector": [
+                                -29.312,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.12": {
+                            "vector": [
+                                -30.377,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.14": {
+                            "vector": [
+                                -31.44,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.16": {
+                            "vector": [
+                                -32.488,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.18": {
+                            "vector": [
+                                -33.511,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.2": {
+                            "vector": [
+                                -34.504,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.22": {
+                            "vector": [
+                                -35.451,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.24": {
+                            "vector": [
+                                -36.352,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.26": {
+                            "vector": [
+                                -37.201,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.28": {
+                            "vector": [
+                                -37.994,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.3": {
+                            "vector": [
+                                -38.728,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.32": {
+                            "vector": [
+                                -39.399,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.34": {
+                            "vector": [
+                                -40.012,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.36": {
+                            "vector": [
+                                -40.552,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.38": {
+                            "vector": [
+                                -41.024,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.4": {
+                            "vector": [
+                                -41.426,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.42": {
+                            "vector": [
+                                -41.759,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.44": {
+                            "vector": [
+                                -42.02,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.46": {
+                            "vector": [
+                                -42.209,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.48": {
+                            "vector": [
+                                -42.326,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.5": {
+                            "vector": [
+                                -42.369,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.52": {
+                            "vector": [
+                                -42.338,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.54": {
+                            "vector": [
+                                -42.233,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.56": {
+                            "vector": [
+                                -42.052,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.58": {
+                            "vector": [
+                                -41.795,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.6": {
+                            "vector": [
+                                -41.46,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.62": {
+                            "vector": [
+                                -41.047,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.64": {
+                            "vector": [
+                                -40.554,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.66": {
+                            "vector": [
+                                -39.978,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.68": {
+                            "vector": [
+                                -39.311,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.7": {
+                            "vector": [
+                                -38.562,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.72": {
+                            "vector": [
+                                -37.722,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.74": {
+                            "vector": [
+                                -36.787,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.76": {
+                            "vector": [
+                                -35.75,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.78": {
+                            "vector": [
+                                -34.604,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.8": {
+                            "vector": [
+                                -33.337,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.82": {
+                            "vector": [
+                                -31.945,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.84": {
+                            "vector": [
+                                -30.408,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.86": {
+                            "vector": [
+                                -28.704,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.88": {
+                            "vector": [
+                                -26.81,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.9": {
+                            "vector": [
+                                -24.679,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.92": {
+                            "vector": [
+                                -22.254,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.94": {
+                            "vector": [
+                                -19.422,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.96": {
+                            "vector": [
+                                -15.972,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "3.98": {
+                            "vector": [
+                                -11.376,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        },
+                        "4.0": {
+                            "vector": [
+                                -0.018,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "linear"
+                        }
+                    },
+                    "bend": {
+                        "0.0": {
+                            "value": 0.037,
+                            "easing": "linear"
+                        },
+                        "0.02": {
+                            "value": 16.996,
+                            "easing": "linear"
+                        },
+                        "0.04": {
+                            "value": 24.493,
+                            "easing": "linear"
+                        },
+                        "0.06": {
+                            "value": 30.586,
+                            "easing": "linear"
+                        },
+                        "0.08": {
+                            "value": 36.021,
+                            "easing": "linear"
+                        },
+                        "0.1": {
+                            "value": 41.104,
+                            "easing": "linear"
+                        },
+                        "0.12": {
+                            "value": 45.99,
+                            "easing": "linear"
+                        },
+                        "0.14": {
+                            "value": 50.78,
+                            "easing": "linear"
+                        },
+                        "0.16": {
+                            "value": 55.536,
+                            "easing": "linear"
+                        },
+                        "0.18": {
+                            "value": 60.326,
+                            "easing": "linear"
+                        },
+                        "0.2": {
+                            "value": 65.182,
+                            "easing": "linear"
+                        },
+                        "0.22": {
+                            "value": 70.16,
+                            "easing": "linear"
+                        },
+                        "0.24": {
+                            "value": 75.276,
+                            "easing": "linear"
+                        },
+                        "0.26": {
+                            "value": 80.573,
+                            "easing": "linear"
+                        },
+                        "0.28": {
+                            "value": 86.033,
+                            "easing": "linear"
+                        },
+                        "0.3": {
+                            "value": 91.639,
+                            "easing": "linear"
+                        },
+                        "0.32": {
+                            "value": 97.321,
+                            "easing": "linear"
+                        },
+                        "0.34": {
+                            "value": 102.902,
+                            "easing": "linear"
+                        },
+                        "0.36": {
+                            "value": 108.206,
+                            "easing": "linear"
+                        },
+                        "0.38": {
+                            "value": 113.009,
+                            "easing": "linear"
+                        },
+                        "0.4": {
+                            "value": 117.19,
+                            "easing": "linear"
+                        },
+                        "0.42": {
+                            "value": 120.721,
+                            "easing": "linear"
+                        },
+                        "0.44": {
+                            "value": 123.645,
+                            "easing": "linear"
+                        },
+                        "0.46": {
+                            "value": 126.048,
+                            "easing": "linear"
+                        },
+                        "0.48": {
+                            "value": 127.99,
+                            "easing": "linear"
+                        },
+                        "0.5": {
+                            "value": 129.555,
+                            "easing": "linear"
+                        },
+                        "0.52": {
+                            "value": 130.807,
+                            "easing": "linear"
+                        },
+                        "0.54": {
+                            "value": 131.796,
+                            "easing": "linear"
+                        },
+                        "0.56": {
+                            "value": 132.564,
+                            "easing": "linear"
+                        },
+                        "0.58": {
+                            "value": 133.144,
+                            "easing": "linear"
+                        },
+                        "0.6": {
+                            "value": 133.563,
+                            "easing": "linear"
+                        },
+                        "0.62": {
+                            "value": 133.842,
+                            "easing": "linear"
+                        },
+                        "0.64": {
+                            "value": 133.999,
+                            "easing": "linear"
+                        },
+                        "0.7": {
+                            "value": 133.876,
+                            "easing": "linear"
+                        },
+                        "0.72": {
+                            "value": 133.672,
+                            "easing": "linear"
+                        },
+                        "0.74": {
+                            "value": 133.398,
+                            "easing": "linear"
+                        },
+                        "0.76": {
+                            "value": 133.063,
+                            "easing": "linear"
+                        },
+                        "0.78": {
+                            "value": 132.67,
+                            "easing": "linear"
+                        },
+                        "0.8": {
+                            "value": 132.225,
+                            "easing": "linear"
+                        },
+                        "0.82": {
+                            "value": 131.732,
+                            "easing": "linear"
+                        },
+                        "0.84": {
+                            "value": 131.194,
+                            "easing": "linear"
+                        },
+                        "0.86": {
+                            "value": 130.615,
+                            "easing": "linear"
+                        },
+                        "0.88": {
+                            "value": 129.997,
+                            "easing": "linear"
+                        },
+                        "0.9": {
+                            "value": 129.343,
+                            "easing": "linear"
+                        },
+                        "0.92": {
+                            "value": 128.655,
+                            "easing": "linear"
+                        },
+                        "0.94": {
+                            "value": 127.934,
+                            "easing": "linear"
+                        },
+                        "0.96": {
+                            "value": 127.182,
+                            "easing": "linear"
+                        },
+                        "0.98": {
+                            "value": 124.82,
+                            "easing": "linear"
+                        },
+                        "1.0": {
+                            "value": 122.641,
+                            "easing": "linear"
+                        },
+                        "1.02": {
+                            "value": 120.663,
+                            "easing": "linear"
+                        },
+                        "1.04": {
+                            "value": 118.874,
+                            "easing": "linear"
+                        },
+                        "1.06": {
+                            "value": 117.274,
+                            "easing": "linear"
+                        },
+                        "1.08": {
+                            "value": 115.86,
+                            "easing": "linear"
+                        },
+                        "1.1": {
+                            "value": 114.63,
+                            "easing": "linear"
+                        },
+                        "1.12": {
+                            "value": 113.582,
+                            "easing": "linear"
+                        },
+                        "1.14": {
+                            "value": 112.711,
+                            "easing": "linear"
+                        },
+                        "1.16": {
+                            "value": 112.016,
+                            "easing": "linear"
+                        },
+                        "1.18": {
+                            "value": 111.49,
+                            "easing": "linear"
+                        },
+                        "1.2": {
+                            "value": 111.13,
+                            "easing": "linear"
+                        },
+                        "1.22": {
+                            "value": 110.931,
+                            "easing": "linear"
+                        },
+                        "1.26": {
+                            "value": 110.989,
+                            "easing": "linear"
+                        },
+                        "1.28": {
+                            "value": 111.234,
+                            "easing": "linear"
+                        },
+                        "1.3": {
+                            "value": 111.614,
+                            "easing": "linear"
+                        },
+                        "1.32": {
+                            "value": 112.12,
+                            "easing": "linear"
+                        },
+                        "1.34": {
+                            "value": 112.747,
+                            "easing": "linear"
+                        },
+                        "1.36": {
+                            "value": 113.486,
+                            "easing": "linear"
+                        },
+                        "1.38": {
+                            "value": 114.329,
+                            "easing": "linear"
+                        },
+                        "1.4": {
+                            "value": 115.268,
+                            "easing": "linear"
+                        },
+                        "1.42": {
+                            "value": 116.297,
+                            "easing": "linear"
+                        },
+                        "1.44": {
+                            "value": 117.408,
+                            "easing": "linear"
+                        },
+                        "1.46": {
+                            "value": 118.592,
+                            "easing": "linear"
+                        },
+                        "1.48": {
+                            "value": 119.844,
+                            "easing": "linear"
+                        },
+                        "1.5": {
+                            "value": 121.156,
+                            "easing": "linear"
+                        },
+                        "1.52": {
+                            "value": 122.52,
+                            "easing": "linear"
+                        },
+                        "1.54": {
+                            "value": 123.94,
+                            "easing": "linear"
+                        },
+                        "1.56": {
+                            "value": 125.391,
+                            "easing": "linear"
+                        },
+                        "1.58": {
+                            "value": 126.874,
+                            "easing": "linear"
+                        },
+                        "1.6": {
+                            "value": 128.385,
+                            "easing": "linear"
+                        },
+                        "1.62": {
+                            "value": 129.916,
+                            "easing": "linear"
+                        },
+                        "1.64": {
+                            "value": 131.462,
+                            "easing": "linear"
+                        },
+                        "1.66": {
+                            "value": 133.017,
+                            "easing": "linear"
+                        },
+                        "1.68": {
+                            "value": 134.575,
+                            "easing": "linear"
+                        },
+                        "1.7": {
+                            "value": 136.132,
+                            "easing": "linear"
+                        },
+                        "1.72": {
+                            "value": 137.681,
+                            "easing": "linear"
+                        },
+                        "1.74": {
+                            "value": 139.219,
+                            "easing": "linear"
+                        },
+                        "1.76": {
+                            "value": 140.738,
+                            "easing": "linear"
+                        },
+                        "1.78": {
+                            "value": 142.236,
+                            "easing": "linear"
+                        },
+                        "1.8": {
+                            "value": 143.706,
+                            "easing": "linear"
+                        },
+                        "1.82": {
+                            "value": 145.143,
+                            "easing": "linear"
+                        },
+                        "1.84": {
+                            "value": 146.544,
+                            "easing": "linear"
+                        },
+                        "1.86": {
+                            "value": 147.903,
+                            "easing": "linear"
+                        },
+                        "1.88": {
+                            "value": 149.219,
+                            "easing": "linear"
+                        },
+                        "1.9": {
+                            "value": 150.479,
+                            "easing": "linear"
+                        },
+                        "1.92": {
+                            "value": 151.684,
+                            "easing": "linear"
+                        },
+                        "1.94": {
+                            "value": 152.827,
+                            "easing": "linear"
+                        },
+                        "1.96": {
+                            "value": 153.905,
+                            "easing": "linear"
+                        },
+                        "1.98": {
+                            "value": 154.912,
+                            "easing": "linear"
+                        },
+                        "2.0": {
+                            "value": 155.844,
+                            "easing": "linear"
+                        },
+                        "2.02": {
+                            "value": 156.695,
+                            "easing": "linear"
+                        },
+                        "2.04": {
+                            "value": 157.462,
+                            "easing": "linear"
+                        },
+                        "2.06": {
+                            "value": 158.138,
+                            "easing": "linear"
+                        },
+                        "2.08": {
+                            "value": 158.72,
+                            "easing": "linear"
+                        },
+                        "2.1": {
+                            "value": 159.201,
+                            "easing": "linear"
+                        },
+                        "2.12": {
+                            "value": 159.578,
+                            "easing": "linear"
+                        },
+                        "2.14": {
+                            "value": 159.845,
+                            "easing": "linear"
+                        },
+                        "2.16": {
+                            "value": 159.997,
+                            "easing": "linear"
+                        },
+                        "2.2": {
+                            "value": 159.934,
+                            "easing": "linear"
+                        },
+                        "2.22": {
+                            "value": 159.709,
+                            "easing": "linear"
+                        },
+                        "2.24": {
+                            "value": 159.348,
+                            "easing": "linear"
+                        },
+                        "2.26": {
+                            "value": 158.845,
+                            "easing": "linear"
+                        },
+                        "2.28": {
+                            "value": 158.196,
+                            "easing": "linear"
+                        },
+                        "2.3": {
+                            "value": 157.393,
+                            "easing": "linear"
+                        },
+                        "2.32": {
+                            "value": 156.431,
+                            "easing": "linear"
+                        },
+                        "2.34": {
+                            "value": 155.304,
+                            "easing": "linear"
+                        },
+                        "2.36": {
+                            "value": 154.006,
+                            "easing": "linear"
+                        },
+                        "2.38": {
+                            "value": 148.347,
+                            "easing": "linear"
+                        },
+                        "2.4": {
+                            "value": 142.77,
+                            "easing": "linear"
+                        },
+                        "2.42": {
+                            "value": 137.28,
+                            "easing": "linear"
+                        },
+                        "2.44": {
+                            "value": 131.869,
+                            "easing": "linear"
+                        },
+                        "2.46": {
+                            "value": 126.536,
+                            "easing": "linear"
+                        },
+                        "2.48": {
+                            "value": 121.272,
+                            "easing": "linear"
+                        },
+                        "2.5": {
+                            "value": 116.097,
+                            "easing": "linear"
+                        },
+                        "2.52": {
+                            "value": 110.999,
+                            "easing": "linear"
+                        },
+                        "2.54": {
+                            "value": 105.981,
+                            "easing": "linear"
+                        },
+                        "2.56": {
+                            "value": 101.041,
+                            "easing": "linear"
+                        },
+                        "2.58": {
+                            "value": 96.205,
+                            "easing": "linear"
+                        },
+                        "2.6": {
+                            "value": 91.456,
+                            "easing": "linear"
+                        },
+                        "2.62": {
+                            "value": 86.827,
+                            "easing": "linear"
+                        },
+                        "2.64": {
+                            "value": 82.321,
+                            "easing": "linear"
+                        },
+                        "2.66": {
+                            "value": 77.94,
+                            "easing": "linear"
+                        },
+                        "2.68": {
+                            "value": 73.72,
+                            "easing": "linear"
+                        },
+                        "2.7": {
+                            "value": 69.676,
+                            "easing": "linear"
+                        },
+                        "2.72": {
+                            "value": 65.821,
+                            "easing": "linear"
+                        },
+                        "2.74": {
+                            "value": 62.2,
+                            "easing": "linear"
+                        },
+                        "2.76": {
+                            "value": 58.839,
+                            "easing": "linear"
+                        },
+                        "2.78": {
+                            "value": 55.766,
+                            "easing": "linear"
+                        },
+                        "2.8": {
+                            "value": 53.033,
+                            "easing": "linear"
+                        },
+                        "2.82": {
+                            "value": 50.673,
+                            "easing": "linear"
+                        },
+                        "2.84": {
+                            "value": 48.718,
+                            "easing": "linear"
+                        },
+                        "2.86": {
+                            "value": 47.211,
+                            "easing": "linear"
+                        },
+                        "2.88": {
+                            "value": 46.169,
+                            "easing": "linear"
+                        },
+                        "2.9": {
+                            "value": 45.599,
+                            "easing": "linear"
+                        },
+                        "2.92": {
+                            "value": 45.495,
+                            "easing": "linear"
+                        },
+                        "2.94": {
+                            "value": 45.83,
+                            "easing": "linear"
+                        },
+                        "2.96": {
+                            "value": 46.567,
+                            "easing": "linear"
+                        },
+                        "2.98": {
+                            "value": 47.656,
+                            "easing": "linear"
+                        },
+                        "3.0": {
+                            "value": 49.044,
+                            "easing": "linear"
+                        },
+                        "3.02": {
+                            "value": 50.679,
+                            "easing": "linear"
+                        },
+                        "3.04": {
+                            "value": 52.497,
+                            "easing": "linear"
+                        },
+                        "3.06": {
+                            "value": 54.454,
+                            "easing": "linear"
+                        },
+                        "3.08": {
+                            "value": 56.507,
+                            "easing": "linear"
+                        },
+                        "3.1": {
+                            "value": 58.623,
+                            "easing": "linear"
+                        },
+                        "3.12": {
+                            "value": 60.754,
+                            "easing": "linear"
+                        },
+                        "3.14": {
+                            "value": 62.88,
+                            "easing": "linear"
+                        },
+                        "3.16": {
+                            "value": 64.976,
+                            "easing": "linear"
+                        },
+                        "3.18": {
+                            "value": 67.022,
+                            "easing": "linear"
+                        },
+                        "3.2": {
+                            "value": 69.008,
+                            "easing": "linear"
+                        },
+                        "3.22": {
+                            "value": 70.904,
+                            "easing": "linear"
+                        },
+                        "3.24": {
+                            "value": 72.706,
+                            "easing": "linear"
+                        },
+                        "3.26": {
+                            "value": 74.404,
+                            "easing": "linear"
+                        },
+                        "3.28": {
+                            "value": 75.99,
+                            "easing": "linear"
+                        },
+                        "3.3": {
+                            "value": 77.458,
+                            "easing": "linear"
+                        },
+                        "3.32": {
+                            "value": 78.801,
+                            "easing": "linear"
+                        },
+                        "3.34": {
+                            "value": 80.024,
+                            "easing": "linear"
+                        },
+                        "3.36": {
+                            "value": 81.104,
+                            "easing": "linear"
+                        },
+                        "3.38": {
+                            "value": 82.048,
+                            "easing": "linear"
+                        },
+                        "3.4": {
+                            "value": 82.854,
+                            "easing": "linear"
+                        },
+                        "3.42": {
+                            "value": 83.519,
+                            "easing": "linear"
+                        },
+                        "3.44": {
+                            "value": 84.041,
+                            "easing": "linear"
+                        },
+                        "3.46": {
+                            "value": 84.42,
+                            "easing": "linear"
+                        },
+                        "3.48": {
+                            "value": 84.653,
+                            "easing": "linear"
+                        },
+                        "3.5": {
+                            "value": 84.74,
+                            "easing": "linear"
+                        },
+                        "3.52": {
+                            "value": 84.678,
+                            "easing": "linear"
+                        },
+                        "3.54": {
+                            "value": 84.468,
+                            "easing": "linear"
+                        },
+                        "3.56": {
+                            "value": 84.106,
+                            "easing": "linear"
+                        },
+                        "3.58": {
+                            "value": 83.592,
+                            "easing": "linear"
+                        },
+                        "3.6": {
+                            "value": 82.922,
+                            "easing": "linear"
+                        },
+                        "3.62": {
+                            "value": 82.095,
+                            "easing": "linear"
+                        },
+                        "3.64": {
+                            "value": 81.108,
+                            "easing": "linear"
+                        },
+                        "3.66": {
+                            "value": 79.956,
+                            "easing": "linear"
+                        },
+                        "3.68": {
+                            "value": 78.624,
+                            "easing": "linear"
+                        },
+                        "3.7": {
+                            "value": 77.126,
+                            "easing": "linear"
+                        },
+                        "3.72": {
+                            "value": 75.446,
+                            "easing": "linear"
+                        },
+                        "3.74": {
+                            "value": 73.575,
+                            "easing": "linear"
+                        },
+                        "3.76": {
+                            "value": 71.5,
+                            "easing": "linear"
+                        },
+                        "3.78": {
+                            "value": 69.209,
+                            "easing": "linear"
+                        },
+                        "3.8": {
+                            "value": 66.675,
+                            "easing": "linear"
+                        },
+                        "3.82": {
+                            "value": 63.89,
+                            "easing": "linear"
+                        },
+                        "3.84": {
+                            "value": 60.817,
+                            "easing": "linear"
+                        },
+                        "3.86": {
+                            "value": 57.409,
+                            "easing": "linear"
+                        },
+                        "3.88": {
+                            "value": 53.621,
+                            "easing": "linear"
+                        },
+                        "3.9": {
+                            "value": 49.359,
+                            "easing": "linear"
+                        },
+                        "3.92": {
+                            "value": 44.508,
+                            "easing": "linear"
+                        },
+                        "3.94": {
+                            "value": 38.843,
+                            "easing": "linear"
+                        },
+                        "3.96": {
+                            "value": 31.945,
+                            "easing": "linear"
+                        },
+                        "3.98": {
+                            "value": 22.751,
+                            "easing": "linear"
+                        },
+                        "4.0": {
+                            "value": 0.037,
+                            "easing": "linear"
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                1.0,
+                                -0.02,
+                                1.0,
+                                0.02
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
