@@ -7,9 +7,9 @@ import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.math.MathHelper;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.runtime.MolangInterpreter;
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 import java.util.List;
 import java.util.Locale;

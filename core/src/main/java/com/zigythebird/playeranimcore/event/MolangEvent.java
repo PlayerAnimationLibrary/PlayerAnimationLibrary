@@ -2,7 +2,7 @@ package com.zigythebird.playeranimcore.event;
 
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.molang.QueryBinding;
-import team.unnamed.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.MolangInterpreter;
 
 /**
  * Register you own Molang queries and variables.

@@ -7,14 +7,14 @@ import com.zigythebird.playeranimcore.event.MolangEvent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.parser.MolangParser;
-import team.unnamed.mocha.parser.ParseException;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.parser.ast.FloatExpression;
-import team.unnamed.mocha.runtime.IsConstantExpression;
-import team.unnamed.mocha.runtime.MolangInterpreter;
-import team.unnamed.mocha.runtime.value.NumberValue;
-import team.unnamed.mocha.runtime.value.Value;
+import org.redlance.mocha.parser.MolangParser;
+import org.redlance.mocha.parser.ParseException;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.runtime.IsConstantExpression;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.value.NumberValue;
+import org.redlance.mocha.runtime.value.Value;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -97,8 +97,8 @@ public class MolangLoader {
      * some shit code
      */
     public static <T> boolean setControllerQuery(QueryBinding<T> binding, String name, Function<T, Value> value) {
-        return binding.set(name, (team.unnamed.mocha.runtime.value.Function<T>)
-                (ctx, args) -> value.apply(ctx.entity())
+        return binding.set(name, (org.redlance.mocha.runtime.value.Function<T>)
+                (ctx, _) -> value.apply(ctx.entity())
         );
     }
 

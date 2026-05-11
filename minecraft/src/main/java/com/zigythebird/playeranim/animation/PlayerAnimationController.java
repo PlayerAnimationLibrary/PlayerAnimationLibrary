@@ -16,7 +16,7 @@ import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.MolangInterpreter;
 
 import java.util.function.Function;
 
