@@ -453,7 +453,6 @@ public abstract class AnimationController implements IAnimation {
 		return true;
 	}
 
-	@AutoreleasePool
 	protected PlayState handleAnimation(AnimationData state) {
 		if (this.triggeredAnimation != null) {
 			if (this.currentRawAnimation != this.triggeredAnimation)
@@ -758,7 +757,6 @@ public abstract class AnimationController implements IAnimation {
 	/**
 	 * Compute animation value for the given keyframes at the specified tick
 	 */
-	@AutoreleasePool
 	private float computeAnimValue(List<Keyframe> frames, float tick, TransformType type, @Nullable EasingType easingOverride, Consumer<Float> transitionLengthSetter) {
 		Animation animation = this.currentAnimation.animation();
 		float endTick = animation.data().<Float>get(ExtraAnimationData.END_TICK_KEY).orElse(animation.length()-1);
@@ -799,7 +797,6 @@ public abstract class AnimationController implements IAnimation {
 	 * @param ageInTicks The current tick time
 	 * @return A new {@code KeyFrameLocation} containing the current {@code KeyFrame} and the tick time used to find it
 	 */
-	@AutoreleasePool
 	private KeyframeLocation getCurrentKeyFrameLocation(List<Keyframe> frames, float ageInTicks, TransformType type, boolean isPlayerAnimatorLoop, float animTime, float returnToTick) {
 		if (frames.isEmpty()) return type == TransformType.SCALE ? EMPTY_SCALE_KEYFRAME_LOCATION : EMPTY_KEYFRAME_LOCATION;
 
@@ -835,7 +832,6 @@ public abstract class AnimationController implements IAnimation {
 		this.executedKeyFrames.clear();
 	}
 
-	@AutoreleasePool
 	public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
 		if (activeBones.containsKey(bone.getName())) {
 			PlayerAnimBone bone1 = activeBones.get(bone.getName());

@@ -120,7 +120,6 @@ public class HumanoidAnimationController extends AnimationController {
     }
 
     @Override
-    @AutoreleasePool
     public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
         bone = super.get3DTransformRaw(bone);
         String name = bone.getName();
