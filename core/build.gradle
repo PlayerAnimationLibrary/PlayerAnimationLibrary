@@ -6,7 +6,7 @@ dependencies {
 
     // Minecraft libs
     api("com.google.code.gson:gson:2.14.0")
-    api("org.slf4j:slf4j-api:2.0.17")
+    api("org.slf4j:slf4j-api:2.0.18")
     api("it.unimi.dsi:fastutil:8.5.18")
     api("io.netty:netty-buffer:4.2.13.Final")
     api("org.joml:joml:1.10.8")
