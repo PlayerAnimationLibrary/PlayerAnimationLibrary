@@ -9,9 +9,9 @@
     "dima_dencep"
   ],
   "contact": {
-    "homepage": "https://docs.zigythebird.com/pal/intro",
-    "sources": "https://github.com/ZigyTheBird/PlayerAnimationLibrary",
-    "issues": "https://github.com/ZigyTheBird/PlayerAnimationLibrary/issues"
+    "homepage": "https://docs.zigythebird.com/pal",
+    "sources": "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary",
+    "issues": "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary/issues"
   },
   "license": "MIT License",
   "icon": "icon.png",

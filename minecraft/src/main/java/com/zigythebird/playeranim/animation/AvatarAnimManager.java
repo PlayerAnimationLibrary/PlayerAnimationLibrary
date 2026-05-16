@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.animation;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.accessors.IAnimatedAvatar;
 import com.zigythebird.playeranim.util.RenderUtil;
 import com.zigythebird.playeranimcore.animation.AnimationData;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * Generally speaking, a single working-instance of a player will have a single instance of {@code PlayerAnimManager} associated with it
  */
+@J2ObjCIncompatible
 public class AvatarAnimManager extends AnimationStack {
 	private final Avatar avatar;
 
