@@ -77,3 +77,35 @@ tasks.register("publishToDiscord", PublishDiscordTask) {
 
     footer = "||<@&1411332060051669062>||"
 }
+
+static def configurePom(pom, name) {
+    pom.name = name
+    pom.description = "A library that allows mods to animate the player, in a way that doesn't conflict with other mods"
+    pom.url = "https://docs.zigythebird.com/pal"
+
+    pom.developers {
+        developer {
+            id = "dima_dencep"
+            name = "dima_dencep"
+            email = "dima_dencep@redlance.org"
+        }
+        developer {
+            id = "zigythebird"
+            name = "ZigyTheBird"
+            email = "imanyarandi222@gmail.com"
+        }
+    }
+
+    pom.licenses {
+        license {
+            name = "MIT"
+            url = "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary/blob/HEAD/LICENSE"
+        }
+    }
+
+    pom.scm {
+        connection = "scm:git:github.com/PlayerAnimationLibrary/PlayerAnimationLibrary.git"
+        developerConnection = "scm:git:github.com/PlayerAnimationLibrary/PlayerAnimationLibrary.git"
+        url = "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary.git"
+    }
+}

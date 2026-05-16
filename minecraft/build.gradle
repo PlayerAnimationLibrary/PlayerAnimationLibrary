@@ -80,9 +80,9 @@ dependencies {
 
     // Common
     platformInclude("org.redlance.common-utils:services:$rootProject.commonutils_version") { transitive = false }
-    platformInclude("com.zigythebird.mochafloats:parser:$rootProject.molang_version") { transitive = false }
-    platformInclude("com.zigythebird.mochafloats:lexer:$rootProject.molang_version") { transitive = false }
-    platformInclude("com.zigythebird.mochafloats:runtime:$rootProject.molang_version") { transitive = false }
+    platformInclude("org.redlance.mochafloats:parser:$rootProject.molang_version") { transitive = false }
+    platformInclude("org.redlance.mochafloats:lexer:$rootProject.molang_version") { transitive = false }
+    platformInclude("org.redlance.mochafloats:runtime:$rootProject.molang_version") { transitive = false }
 
     // Fabric
     fabricImplementation fabricApi.fabricModule("fabric-command-api-v2", rootProject.fabric_api_version)
@@ -147,6 +147,10 @@ publishing {
         mavenMain(MavenPublication) {
             artifactId = "PlayerAnimationLibCommon"
 
+            pom {
+                configurePom(it, artifactId)
+            }
+
             artifact(jar) {
                 classifier = null
             }
@@ -160,6 +164,10 @@ publishing {
         }
         mavenFabric(MavenPublication) {
             artifactId = "PlayerAnimationLibFabric"
+
+            pom {
+                configurePom(it, artifactId)
+            }
 
             artifact(tasks.named("remapFabricJar")) {
                 classifier = null
@@ -177,6 +185,10 @@ publishing {
         }
         mavenNeo(MavenPublication) {
             artifactId = "PlayerAnimationLibNeo"
+
+            pom {
+                configurePom(it, artifactId)
+            }
 
             artifact(tasks.named("remapNeoforgeJar")) {
                 classifier = null
