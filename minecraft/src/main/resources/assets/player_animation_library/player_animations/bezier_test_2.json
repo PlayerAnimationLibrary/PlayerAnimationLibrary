@@ -4,7 +4,7 @@
     "model": {},
     "parents": {},
     "animations": {
-        "bedrock_export_test": {
+        "bezier_test_2": {
             "loopTick": 0.0,
             "loop": true,
             "animation_length": 4.0,
