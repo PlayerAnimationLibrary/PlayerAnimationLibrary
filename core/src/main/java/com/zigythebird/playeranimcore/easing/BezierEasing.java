@@ -67,7 +67,7 @@ public class BezierEasing implements EasingTypeTransformer {
 
         final List<Vector2f> points = new ArrayList<>();
 
-        final int divisions = (int) (transitionLength * 60); //60 FPS
+        final int divisions = 200;
         for (int d = 0; d <= divisions; d++) {
             float t = (float) d /divisions;
             points.add(new Vector2f(
