@@ -70,8 +70,8 @@ public enum EasingType implements EasingTypeTransformer {
 
 	CATMULLROM(36, "catmullrom", new CatmullRomEasing()),
 	// 37 - STEP
-
 	BEZIER(38, "bezier", new BezierEasing());
+	// 39 - Broken bezier easing on older versions
 
 	public final byte id;
 	public final String name;
