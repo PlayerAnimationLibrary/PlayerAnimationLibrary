@@ -53,6 +53,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import team.unnamed.mocha.MochaEngine;
 import team.unnamed.mocha.parser.ast.FloatExpression;
 
@@ -542,9 +543,7 @@ public abstract class AnimationController implements IAnimation {
 					for (AdvancedPlayerAnimBone bone : this.bones.values()) {
 						bone.setToInitialPose();
 					}
-					for (PlayerAnimBone bone : this.pivotBones.values()) {
-						bone.setToInitialPose();
-					}
+					this.pivotBones.clear();
 
 					return;
 				} else {
@@ -619,47 +618,58 @@ public abstract class AnimationController implements IAnimation {
 
 	protected void applyCustomPivotPoints() {
 		if (this.currentAnimation == null) return;
-		Map<String, String> parentsMap = this.currentAnimation.animation().parents();
-		if (parentsMap.isEmpty()) return;
-
-		Set<String> processedBones = new HashSet<>();
-		for (PlayerAnimBone bone : this.bones.values()) {
-			processBoneHierarchy(bone, parentsMap, processedBones);
+		Map<String, String> parents = this.currentAnimation.animation().parents();
+		Map<String, List<String>> hierarchy = new HashMap<>();
+		for (Map.Entry<String, String> entry : parents.entrySet()) {
+			hierarchy.computeIfAbsent(entry.getValue(), (_) -> new ArrayList<>())
+					.add(entry.getKey());
 		}
-		for (PlayerAnimBone bone : this.pivotBones.values()) {
-			processBoneHierarchy(bone, parentsMap, processedBones);
+		if (hierarchy.isEmpty()) return;
+
+		List<String> rootBones = new ArrayList<>();
+
+		for (String entry : parents.values()) {
+			if (!parents.containsKey(entry) && !rootBones.contains(entry))
+				rootBones.add(entry);
+		}
+
+		List<Matrix4f> matrixStack = new ArrayList<>();
+		matrixStack.add(new Matrix4f());
+
+		for (String root : rootBones) {
+			processBoneHierarchy(matrixStack, hierarchy, root);
 		}
 	}
 
-	private void processBoneHierarchy(PlayerAnimBone bone, Map<String, String> parentsMap, Set<String> processedBones) {
-		String boneName = bone.getName();
-		if (processedBones.contains(boneName)) return;
+	protected void processBoneHierarchy(List<Matrix4f> matrixStack, Map<String, List<String>> hierarchy, String boneName) {
+		PlayerAnimBone bone;
+		Vec3f pivot;
+		boolean isBaseBone = false;
 
-		String parentName = parentsMap.get(boneName);
-		if (parentName == null) {
-			processedBones.add(boneName);
+		if (this.bones.containsKey(boneName)) {
+			bone = this.bones.get(boneName);
+			pivot = getBonePosition(boneName);
+			isBaseBone = true;
+		}
+		else if (this.pivotBones.containsKey(boneName)) {
+			bone = this.pivotBones.get(boneName);
+			pivot = ((CustomBone)bone).getPivot();
+		}
+		else {
+			PlayerAnimLib.LOGGER.error("Could not find bone {} for custom pivot point processing.", boneName);
 			return;
 		}
 
-		PlayerAnimBone parent = this.pivotBones.get(parentName);
-		if (parent == null) parent = this.bones.get(parentName);
-		if (parent == null) {
-			PlayerAnimLib.LOGGER.error("Parent {} not found for {}", parentName, boneName);
-			return;
+		matrixStack.add(new Matrix4f(matrixStack.getLast()));
+		MatrixUtil.prepMatrixForBone(matrixStack.getLast(), bone, pivot);
+		if (isBaseBone)
+			MatrixUtil.applyMatrixToBone(bone, matrixStack.getLast(), pivot);
+		if (hierarchy.containsKey(boneName)) {
+			for (String entry : hierarchy.get(boneName)) {
+				processBoneHierarchy(matrixStack, hierarchy, entry);
+			}
 		}
-
-		processBoneHierarchy(parent, parentsMap, processedBones);
-
-		PlayerAnimBone effectiveParent = parent;
-		if (bone instanceof CustomBone) {
-			PlayerAnimBone hostParent = getHostBoneStates().get(parentName);
-			if (hostParent != null) effectiveParent = hostParent;
-		}
-
-		this.activeBones.put(boneName, bone);
-		MatrixUtil.applyParentsToChild(bone, Collections.singletonList(effectiveParent), this::getBonePosition);
-
-		processedBones.add(boneName);
+		matrixStack.removeLast();
 	}
 
 	/**
@@ -763,8 +773,18 @@ public abstract class AnimationController implements IAnimation {
 				this.activeBones.put(entry.getKey(), this.pivotBones.get(entry.getKey()));
 		}
 
-		for (String entry : currentAnimation.animation().parents().keySet()) {
-			if (this.bones.containsKey(entry)) this.bones.get(entry).setEnabled(true);
+        Map<String, String> parents = currentAnimation.animation().parents();
+
+		for (String entry : parents.values()) {
+			if (this.bones.containsKey(entry)) {
+				this.bones.get(entry).setEnabled(true);
+			}
+		}
+
+		for (String entry : parents.keySet()) {
+			if (this.bones.containsKey(entry)) {
+				this.activeBones.put(entry, this.bones.get(entry));
+			}
 		}
 
 		this.postAnimationSetupConsumer.accept(this.bones::get);
