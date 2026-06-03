@@ -432,7 +432,7 @@ public class PlayerAnimBone {
 					if (!keyFrames.isEmpty()) easingType = keyFrames.getLast().easingType();
 				}
 			}
-			if (easingType == EasingType.BEZIER || easingType == EasingType.BEZIER_AFTER || easingType == EasingType.CATMULLROM)
+			if (easingType == EasingType.BEZIER || easingType == EasingType.CATMULLROM)
 				easingType = EasingType.EASE_IN_OUT_SINE;
 		}
 		if (transitionLength == null) return endValue;

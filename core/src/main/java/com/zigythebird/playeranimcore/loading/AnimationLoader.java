@@ -43,12 +43,15 @@ import team.unnamed.mocha.parser.ast.AccessExpression;
 import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.parser.ast.FloatExpression;
 import team.unnamed.mocha.parser.ast.IdentifierExpression;
+import team.unnamed.mocha.runtime.IsConstantExpression;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.zigythebird.playeranimcore.molang.MolangLoader.MOCHA_ENGINE;
 
 public class AnimationLoader implements JsonDeserializer<Animation> {
 	@Override
@@ -243,14 +246,15 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 		List<Expression> xPrev = null;
 		List<Expression> yPrev = null;
 		List<Expression> zPrev = null;
-		FloatObjectPair<JsonElement> prevEntry = null;
+
+		float prevTimeX = 0;
+		float prevTimeY = 0;
+		float prevTimeZ = 0;
 
 		for (FloatObjectPair<JsonElement> entry : entries) {
 			JsonElement element = entry.right();
 
-			float prevTime = prevEntry != null ? prevEntry.leftFloat() : 0;
 			float curTime = entry.leftFloat();
-			float timeDelta = curTime - prevTime;
 
 			boolean isForRotation = type == TransformType.ROTATION || type == TransformType.BEND;
 			Expression defaultValue = type == TransformType.SCALE ? FloatExpression.ONE : FloatExpression.ZERO;
@@ -264,17 +268,24 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 			EasingType easingType = getEasingForAxis(entryObj, null, EasingType.LINEAR);
 			List<List<Expression>> easingArgs = getEasingArgsForAxis(entryObj, null, new ObjectArrayList<>());
 
-			xFrames.add(new Keyframe(timeDelta * 20, prevEntry == null ? xValue : xPrev, xValue, getEasingForAxis(entryObj, Axis.X, easingType), getEasingArgsForAxis(entryObj, Axis.X, easingArgs)));
-			yFrames.add(new Keyframe(timeDelta * 20, prevEntry == null ? yValue : yPrev, yValue, getEasingForAxis(entryObj, Axis.Y, easingType), getEasingArgsForAxis(entryObj, Axis.Y, easingArgs)));
-			zFrames.add(new Keyframe(timeDelta * 20, prevEntry == null ? zValue : zPrev, zValue, getEasingForAxis(entryObj, Axis.Z, easingType), getEasingArgsForAxis(entryObj, Axis.Z, easingArgs)));
-			
-			xPrev = xValue;
-			yPrev = yValue;
-			zPrev = zValue;
-			prevEntry = entry;
+			if (isEnabled(xValue)) {
+				xFrames.add(new Keyframe((curTime - prevTimeX) * 20, xPrev == null ? xValue : xPrev, xValue, getEasingForAxis(entryObj, Axis.X, easingType), getEasingArgsForAxis(entryObj, Axis.X, easingArgs)));
+				xPrev = xValue;
+				prevTimeX = curTime;
+			}
+			if (isEnabled(yValue)) {
+				yFrames.add(new Keyframe((curTime - prevTimeY) * 20, yPrev == null ? yValue : yPrev, yValue, getEasingForAxis(entryObj, Axis.Y, easingType), getEasingArgsForAxis(entryObj, Axis.Y, easingArgs)));
+				yPrev = yValue;
+				prevTimeY = curTime;
+			}
+			if (isEnabled(zValue)) {
+				zFrames.add(new Keyframe((curTime - prevTimeZ) * 20, zPrev == null ? zValue : zPrev, zValue, getEasingForAxis(entryObj, Axis.Z, easingType), getEasingArgsForAxis(entryObj, Axis.Z, easingArgs)));
+				zPrev = zValue;
+				prevTimeZ = curTime;
+			}
 		}
 
-		return new KeyframeStack(addArgsForKeyframes(xFrames), addArgsForKeyframes(yFrames), addArgsForKeyframes(zFrames));
+		return new KeyframeStack(addArgsForKeyframes(xFrames, type), addArgsForKeyframes(yFrames, type), addArgsForKeyframes(zFrames, type));
 	}
 
 	private static EasingType getEasingForAxis(JsonObject entryObj, Axis axis, EasingType easingType) {
@@ -292,11 +303,6 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 	}
 
 	private static List<Keyframe> addArgsForKeyframes(List<Keyframe> frames) {
-		if (frames.getFirst().startValue().getFirst() instanceof AccessExpression accessExpression
-				&& "disabled".equals(accessExpression.property()) && accessExpression.object() instanceof IdentifierExpression identifierExpression
-				&& "pal".equals(identifierExpression.name()))
-			return Collections.emptyList();
-
 		if (frames.size() == 1) {
 			Keyframe frame = frames.getFirst();
 
@@ -317,22 +323,55 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 				)));
 			}
 			else if (frame.easingType() == EasingType.BEZIER) {
+				List<Expression> leftValue = frame.easingArgs().getFirst();
 				List<Expression> rightValue = frame.easingArgs().get(2);
 				List<Expression> rightTime = frame.easingArgs().get(3);
-				frame.easingArgs().remove(2);
-				frame.easingArgs().remove(2);
+				if (type == TransformType.ROTATION) {
+					rightValue = toRadiansForBezier(rightValue);
+					leftValue = toRadiansForBezier(leftValue);
+				}
+				frames.set(i, new Keyframe(frame.length(), frame.startValue(), frame.endValue(), frame.easingType(),
+						ObjectArrayList.of(leftValue, frame.easingArgs().get(1))));
+				if (frame.easingArgs().size() > 4) {
+					frames.get(i).easingArgs().add(frame.easingArgs().get(4));
+					frames.get(i).easingArgs().add(frame.easingArgs().get(5));
+				}
 				if (frames.size() > i + 1) {
 					Keyframe nextKeyframe = frames.get(i + 1);
-					if (nextKeyframe.easingType() == EasingType.BEZIER) {
+					if (nextKeyframe.easingType() != EasingType.BEZIER) {
+						frames.set(i + 1, new Keyframe(nextKeyframe.length(), nextKeyframe.startValue(), nextKeyframe.endValue(),
+								EasingType.BEZIER, ObjectArrayList.of(PlayerAnimatorLoader.ZERO, PlayerAnimatorLoader.ZERO, rightValue, rightTime))); //TODO Maybe move the ZERO field to UniversalAnimLoader
+					}
+					else {
 						nextKeyframe.easingArgs().add(rightValue);
 						nextKeyframe.easingArgs().add(rightTime);
 					}
-					else frames.set(i + 1, new Keyframe(nextKeyframe.length(), nextKeyframe.startValue(), nextKeyframe.endValue(), EasingType.BEZIER_AFTER, ObjectArrayList.of(rightValue, rightTime)));
 				}
 			}
 		}
 
 		return frames;
+	}
+
+
+	private static boolean isEnabled(List<Expression> expressions) {
+		if (expressions.size() == 1
+				&& expressions.getFirst() instanceof AccessExpression access
+				&& access.object() instanceof IdentifierExpression id
+				&& "pal".equals(id.name())) {
+
+			return !"disabled".equals(access.property()) && !"skip".equals(access.property());
+		}
+
+		return true;
+	}
+
+	private static List<Expression> toRadiansForBezier(List<Expression> expressions) {
+		if (expressions.size() == 1 && IsConstantExpression.test(expressions.getFirst())) {
+			return Collections.singletonList(FloatExpression.of(Math.toRadians(MOCHA_ENGINE.eval(expressions))));
+		}
+		PlayerAnimLib.LOGGER.warn("Invalid easing arguments for bezier: {}\nFor rotations bezier args can only be floats.", expressions);
+		return expressions;
 	}
 
 	public static float calculateAnimationLength(Map<String, BoneAnimation> boneAnimations) {
@@ -342,6 +381,7 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 			length = Math.max(length, animation.rotationKeyFrames().getLastKeyframeTime());
 			length = Math.max(length, animation.positionKeyFrames().getLastKeyframeTime());
 			length = Math.max(length, animation.scaleKeyFrames().getLastKeyframeTime());
+			length = Math.max(length, Keyframe.getLastKeyframeTime(animation.bendKeyFrames()));
 		}
 
 		return length == 0 ? Float.MAX_VALUE : length;
