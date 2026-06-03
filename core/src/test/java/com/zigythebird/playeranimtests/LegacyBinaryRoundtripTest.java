@@ -42,6 +42,7 @@ public class LegacyBinaryRoundtripTest {
         // {@code q.anim_time} also can't roundtrip.
         if (!animation.bones().isEmpty() || !animation.parents().isEmpty()) return;
         if (animation.getNameOrId().toLowerCase().startsWith("molang")) return;
+        if (PlayerAnimatorParityTest.usesUnsupportedEasing(animation)) return;
         // TODO drop once the bend roundtrip is fixed (see class Javadoc).
         BoneAnimation torso = animation.boneAnimations().get("torso");
         if (torso != null && !torso.bendKeyFrames().isEmpty()) return;
