@@ -13,6 +13,7 @@ public class ToggleablePlayerAnimBone extends PlayerAnimBone {
     public boolean rotYEnabled = true;
     public boolean rotZEnabled = true;
 
+    @Deprecated(forRemoval = true)
     public boolean bendEnabled = true;
 
     public ToggleablePlayerAnimBone(String name) {
@@ -93,6 +94,7 @@ public class ToggleablePlayerAnimBone extends PlayerAnimBone {
         return rotZEnabled;
     }
 
+    @Deprecated(forRemoval = true)
     public boolean isBendEnabled() {
         return bendEnabled;
     }

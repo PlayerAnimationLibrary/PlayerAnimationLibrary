@@ -383,6 +383,7 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 			length = Math.max(length, animation.rotationKeyFrames().getLastKeyframeTime());
 			length = Math.max(length, animation.positionKeyFrames().getLastKeyframeTime());
 			length = Math.max(length, animation.scaleKeyFrames().getLastKeyframeTime());
+			length = Math.max(length, Keyframe.getLastKeyframeTime(animation.bendKeyFrames()));
 		}
 
 		return length == 0 ? Float.MAX_VALUE : length;

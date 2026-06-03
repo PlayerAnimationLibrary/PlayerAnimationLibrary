@@ -577,6 +577,7 @@ public abstract class AnimationController implements IAnimation {
 			KeyframeStack rotationKeyFrames = boneAnimation.rotationKeyFrames();
 			KeyframeStack positionKeyFrames = boneAnimation.positionKeyFrames();
 			KeyframeStack scaleKeyFrames = boneAnimation.scaleKeyFrames();
+			List<Keyframe> bendKeyFrames = boneAnimation.bendKeyFrames();
 			EasingType easingOverride = this.overrideEasingTypeFunction.apply(this);
 
 			bone.rotation.x = computeAnimValue(rotationKeyFrames.xKeyframes(), adjustedTick, TransformType.ROTATION, easingOverride, isAdvancedBone ? advancedBone::setRotXTransitionLength : null);
@@ -590,6 +591,8 @@ public abstract class AnimationController implements IAnimation {
 			bone.scale.x = computeAnimValue(scaleKeyFrames.xKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleXTransitionLength : null);
 			bone.scale.y = computeAnimValue(scaleKeyFrames.yKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleYTransitionLength : null);
 			bone.scale.z = computeAnimValue(scaleKeyFrames.zKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleZTransitionLength : null);
+
+			bone.bend = computeAnimValue(bendKeyFrames, adjustedTick, TransformType.BEND, easingOverride, isAdvancedBone ? advancedBone::setBendTransitionLength : null);
         }
 
 		applyCustomPivotPoints();
