@@ -619,6 +619,7 @@ public abstract class AnimationController implements IAnimation {
 	protected void applyCustomPivotPoints() {
 		if (this.currentAnimation == null) return;
 		Map<String, String> parents = this.currentAnimation.animation().parents();
+		//TODO Remove hierarchy routes that don't lead to a AdvancedPlayerAnimBone
 		Map<String, List<String>> hierarchy = new HashMap<>();
 		for (Map.Entry<String, String> entry : parents.entrySet()) {
 			hierarchy.computeIfAbsent(entry.getValue(), (_) -> new ArrayList<>())
@@ -798,11 +799,47 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	@Override
-	public void collectModels(Consumer<CustomBone> consumer) {
+	public void collectModels(Consumer<CustomBone> pushBone, Consumer<String> pushExternalBone, Runnable popBone) {
+		if (this.currentAnimation == null) return;
+		Map<String, String> parents = this.currentAnimation.animation().parents();
 		for (CustomBone customBone : this.pivotBones.values()) {
-			if (!customBone.hasModelData()) continue;
-			consumer.accept(customBone);
+			if (parents.containsKey(customBone.getName()) || !customBone.hasModelData()) continue;
+			pushBone.accept(customBone);
+			popBone.run();
 		}
+
+		//TODO Remove hierarchy routes that don't lead to a custom model from the list
+		Map<String, List<String>> hierarchy = new HashMap<>();
+		for (Map.Entry<String, String> entry : parents.entrySet()) {
+			hierarchy.computeIfAbsent(entry.getValue(), (_) -> new ArrayList<>())
+					.add(entry.getKey());
+		}
+		if (hierarchy.isEmpty()) return;
+
+		List<String> rootBones = new ArrayList<>();
+
+		for (String entry : parents.values()) {
+			if (!parents.containsKey(entry) && !rootBones.contains(entry))
+				rootBones.add(entry);
+		}
+
+		for (String root : rootBones)
+			pushModels(root, hierarchy, pushBone, pushExternalBone, popBone);
+	}
+
+	private void pushModels(String boneName, Map<String, List<String>> hierarchy,
+							Consumer<CustomBone> pushBone, Consumer<String> pushExternalBone, Runnable popBone) {
+		if (this.pivotBones.containsKey(boneName))
+			pushBone.accept(this.pivotBones.get(boneName));
+		else pushExternalBone.accept(boneName);
+
+		if (hierarchy.containsKey(boneName)) {
+			for (String entry : hierarchy.get(boneName)) {
+				pushModels(entry, hierarchy, pushBone, pushExternalBone, popBone);
+			}
+		}
+
+		popBone.run();
 	}
 
 	/**
