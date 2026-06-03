@@ -190,8 +190,8 @@ public class ModifierLayer<T extends IAnimation> implements IAnimation {
     }
 
     @Override
-    public void collectModels(Consumer<CustomBone> consumer) {
+    public void collectModels(Consumer<CustomBone> pushBone, Consumer<String> pushExternalBone, Runnable popBone) {
         IAnimation top = getTopAnimation();
-        if (top != null) top.collectModels(consumer);
+        if (top != null) top.collectModels(pushBone, pushExternalBone, popBone);
     }
 }

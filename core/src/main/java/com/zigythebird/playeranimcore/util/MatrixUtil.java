@@ -42,17 +42,6 @@ public class MatrixUtil {
         translateAwayFromPivotPoint(matrix, pivot);
     }
 
-    public static void applyParentsToChild(PlayerAnimBone child, Iterable<? extends PlayerAnimBone> parents, Function<String, Vec3f> positions) {
-        Matrix4f matrix = new Matrix4f();
-
-        for (PlayerAnimBone parent : parents) {
-            Vec3f pivot = parent instanceof CustomBone pivotBone ? pivotBone.getPivot() : positions.apply(parent.getName());
-            MatrixUtil.prepMatrixForBone(matrix, parent, pivot);
-        }
-
-        applyMatrixToBone(child, matrix, positions.apply(child.getName()));
-    }
-
     public static void applyMatrixToBone(PlayerAnimBone bone, Matrix4f matrix, Vec3f pivot) {
         matrix.translate(pivot.x(), pivot.y(), pivot.z());
         MatrixUtil.rotateMatrixAroundBone(matrix, bone);

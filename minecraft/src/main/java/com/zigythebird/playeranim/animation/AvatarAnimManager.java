@@ -7,12 +7,15 @@ import com.zigythebird.playeranimcore.animation.layered.AnimationStack;
 import com.zigythebird.playeranimcore.animation.layered.IAnimation;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Map;
 
 /**
  * The animation data collection for a given player instance
@@ -21,6 +24,12 @@ import org.jetbrains.annotations.ApiStatus;
  */
 public class AvatarAnimManager extends AnimationStack {
 	private final Avatar avatar;
+	/**
+	 * Latest post-vanilla bone states for the host player model parts (head, torso, arms, legs, cape, ...).
+	 * Populated by the model mixins after they've combined vanilla MC transforms with the active animation.
+	 * Used by the controller to compute model bone parents that need to inherit vanilla animations.
+	 */
+	private final Map<String, PlayerAnimBone> hostBones = new Object2ObjectOpenHashMap<>();
 
 	private float lastUpdateTime;
 	private boolean isFirstTick = true;
@@ -28,6 +37,14 @@ public class AvatarAnimManager extends AnimationStack {
 
 	public AvatarAnimManager(Avatar avatar) {
 		this.avatar = avatar;
+	}
+
+	public Map<String, PlayerAnimBone> pal$getHostBones() {
+		return this.hostBones;
+	}
+
+	public void pal$putHostBone(PlayerAnimBone bone) {
+		this.hostBones.put(bone.getName(), bone);
 	}
 
     /**
@@ -78,6 +95,7 @@ public class AvatarAnimManager extends AnimationStack {
 	public void updatePart(ModelPart part, PlayerAnimBone bone) {
 		PartPose initialPose = part.getInitialPose();
 		this.get3DTransform(bone);
+		this.pal$putHostBone(bone);
 		RenderUtil.translatePartToBone(part, bone, initialPose);
 	}
 
