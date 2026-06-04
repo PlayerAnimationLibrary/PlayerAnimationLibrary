@@ -482,7 +482,7 @@ public abstract class AnimationController implements IAnimation {
 	 * @param state                 The animation test state
 	 */
 	public void process(AnimationData state) {
-		float adjustedTick = state.getPartialTick() + this.startAnimFrom + tick;
+		float adjustedTick = Math.max(0.0F, state.getPartialTick() + this.startAnimFrom + tick);
 
 		PlayState playState = handleAnimation(state);
 
