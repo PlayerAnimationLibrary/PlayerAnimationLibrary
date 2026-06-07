@@ -10,7 +10,7 @@ dependencies {
     api("org.slf4j:slf4j-api:2.0.18")
     api("it.unimi.dsi:fastutil:8.5.18")
     api("io.netty:netty-buffer:4.2.15.Final")
-    api("org.joml:joml:1.10.8")
+    api("org.joml:joml:1.10.9")
 
     // Testing
     testImplementation(platform("org.junit:junit-bom:6.1.0"))
