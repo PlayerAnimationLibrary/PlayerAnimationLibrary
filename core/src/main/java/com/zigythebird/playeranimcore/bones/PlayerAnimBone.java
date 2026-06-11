@@ -128,7 +128,7 @@ public class PlayerAnimBone {
 			this.position.z = beginOrEndTickLerp(position.z, bone.position.z, bone.positionZTransitionLength, animTime, animation, TransformType.POSITION, Axis.Z);
 
 		if (bone.rotXEnabled)
-			this.rotation.z = beginOrEndTickLerp(rotation.x, bone.rotation.x, bone.rotXTransitionLength, animTime, animation, TransformType.ROTATION, Axis.X);
+			this.rotation.x = beginOrEndTickLerp(rotation.x, bone.rotation.x, bone.rotXTransitionLength, animTime, animation, TransformType.ROTATION, Axis.X);
 		if (bone.rotYEnabled)
 			this.rotation.y = beginOrEndTickLerp(rotation.y, bone.rotation.y, bone.rotYTransitionLength, animTime, animation, TransformType.ROTATION, Axis.Y);
 		if (bone.rotZEnabled)
