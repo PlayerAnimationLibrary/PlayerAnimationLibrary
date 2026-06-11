@@ -1,8 +1,10 @@
 package com.zigythebird.playeranim.fabric;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.PlayerAnimLibService;
 import net.fabricmc.loader.api.FabricLoader;
 
+@J2ObjCIncompatible
 public final class PlayerAnimLibServiceImpl implements PlayerAnimLibService {
     @Override
     public boolean isServiceActive() {

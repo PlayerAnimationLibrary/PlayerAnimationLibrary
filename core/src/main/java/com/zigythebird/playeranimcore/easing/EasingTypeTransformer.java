@@ -2,10 +2,10 @@ package com.zigythebird.playeranimcore.easing;
 
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.runtime.standard.MochaMath;
-import team.unnamed.mocha.runtime.value.ObjectValue;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.runtime.value.ObjectValue;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 public interface EasingTypeTransformer extends ObjectValue.FloatFunction3 {
     Float2FloatFunction buildTransformer(@Nullable Float value);
 
-    default float apply(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
+    default float apply(MolangInterpreter<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
         if (lerpValue >= 1) return endValue;
         if (Float.isNaN(lerpValue)) return startValue;
 

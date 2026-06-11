@@ -24,6 +24,7 @@
 
 package com.zigythebird.playeranim.animation.keyframe.event.builtin;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranim.util.ClientUtil;
 import com.zigythebird.playeranimcore.animation.AnimationController;
@@ -49,6 +50,7 @@ import java.util.Optional;
  * namespace:soundid|volume|pitch
  * }</pre>
  */
+@J2ObjCIncompatible
 public class AutoPlayingSoundKeyframeHandler implements CustomKeyFrameEvents.CustomKeyFrameHandler<SoundKeyframeData> {
     @Override
     public EventResult handle(float animationTick, AnimationController controller, SoundKeyframeData keyFrameData, AnimationData animationData) {

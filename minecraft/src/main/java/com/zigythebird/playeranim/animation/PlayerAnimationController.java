@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.animation;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
@@ -15,10 +16,11 @@ import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
+import org.redlance.mocha.runtime.MolangInterpreter;
 
 import java.util.function.Function;
 
+@J2ObjCIncompatible
 public class PlayerAnimationController extends HumanoidAnimationController {
     protected final Avatar avatar;
 
@@ -39,7 +41,7 @@ public class PlayerAnimationController extends HumanoidAnimationController {
      * @param animationHandler The {@link AnimationStateHandler} animation state handler responsible for deciding which animations to play
      * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
      */
-    public PlayerAnimationController(Avatar avatar, AnimationStateHandler animationHandler, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+    public PlayerAnimationController(Avatar avatar, AnimationStateHandler animationHandler, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
         super(animationHandler, molangRuntime);
         this.avatar = avatar;
     }
