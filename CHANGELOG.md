@@ -1,4 +1,4 @@
-- Fix compat with the playeranimator binary format
-- Fix crash
-- Bind cape to torso
-- Restore and deprecate old bend system
+- Fix #128
+- Bezier fixes
+- Fix lerp
+- Fix model disappearing for one frame during looping animations

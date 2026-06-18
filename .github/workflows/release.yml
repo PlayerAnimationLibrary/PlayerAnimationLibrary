@@ -57,13 +57,15 @@ jobs:
 
           files: |
             ./minecraft/build/libs/PlayerAnimationLibMerged-*.jar
-          version-type: alpha
+          version-type: release
 
           loaders: |
             fabric
             neoforge
           game-versions: |
             ${{ steps.gradle_properties.outputs.minecraft_version }}
+            26.1.1
+            26.1.2
 
           changelog-file: CHANGELOG.md
 
