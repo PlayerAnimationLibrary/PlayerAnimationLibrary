@@ -1,4 +1,1 @@
-- Fix #128
-- Bezier fixes
-- Fix lerp
-- Fix model disappearing for one frame during looping animations
+- Port to 26.2
