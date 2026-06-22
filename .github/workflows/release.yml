@@ -64,8 +64,6 @@ jobs:
             neoforge
           game-versions: |
             ${{ steps.gradle_properties.outputs.minecraft_version }}
-            26.1.1
-            26.1.2
 
           changelog-file: CHANGELOG.md
 
