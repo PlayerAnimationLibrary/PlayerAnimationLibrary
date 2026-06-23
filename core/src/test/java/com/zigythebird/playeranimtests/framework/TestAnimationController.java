@@ -66,7 +66,7 @@ public class TestAnimationController extends HumanoidAnimationController {
             this.setupAnim(data);
             target.setupAnim(data);
 
-            for (String name : this.activeBones.keySet()) {
+            for (String name : this.bones.keySet()) {
                 PlayerAnimBone expected = this.get3DTransform(name);
                 PlayerAnimBone actual = target.get3DTransform(name);
                 Snapshots.assertBonesEqual(expected, actual, label, tick, toAssert);

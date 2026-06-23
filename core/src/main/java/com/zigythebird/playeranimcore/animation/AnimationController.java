@@ -74,7 +74,6 @@ public abstract class AnimationController implements IAnimation {
 	protected final AnimationStateHandler stateHandler;
 	protected final Map<String, Vec3f> bonePositions;
 	protected final Map<String, AdvancedPlayerAnimBone> bones = new Object2ObjectOpenHashMap<>();
-	protected final Map<String, PlayerAnimBone> activeBones = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, PivotBone> pivotBones = new Object2ObjectOpenHashMap<>();
 	protected Queue<QueuedAnimation> animationQueue = new LinkedList<>();
 	protected final MochaEngine<AnimationController> molangRuntime;
@@ -116,11 +115,7 @@ public abstract class AnimationController implements IAnimation {
 		this.stateHandler = animationHandler;
 		this.bonePositions = bonePositions;
 		this.molangRuntime = molangRuntime.apply(this);
-
-		registerBones();
 	}
-
-	public abstract void registerBones();
 
 	/**
 	 * Applies the given {@link CustomKeyFrameEvents.CustomKeyFrameHandler} to this controller, for handling {@link SoundKeyframeData sound keyframe instructions}
@@ -409,7 +404,7 @@ public abstract class AnimationController implements IAnimation {
 		if (fadeFromNothing || this.isActive()) {
 			if (this.isActive()) {
 				Map<String, ToggleablePlayerAnimBone> snapshots = new HashMap<>();
-				for (PlayerAnimBone bone : activeBones.values()) {
+				for (PlayerAnimBone bone : this.bones.values()) {
 					snapshots.put(bone.getName(), new ToggleablePlayerAnimBone(bone));
 				}
 				fadeModifier.setTransitionAnimation(new AnimationSnapshot(snapshots));
@@ -535,12 +530,8 @@ public abstract class AnimationController implements IAnimation {
 				if (nextAnimation == null) {
 					this.animationState = State.STOPPED;
 					this.currentAnimation = null;
-					for (AdvancedPlayerAnimBone bone : this.bones.values()) {
-						bone.setToInitialPose();
-					}
-					for (PlayerAnimBone bone : this.pivotBones.values()) {
-						bone.setToInitialPose();
-					}
+					this.bones.clear();
+					this.pivotBones.clear();
 
 					return;
 				} else {
@@ -555,12 +546,6 @@ public abstract class AnimationController implements IAnimation {
 		}
 
 		if (this.currentAnimation == null) return;
-		for (PlayerAnimBone bone : this.bones.values()) {
-			bone.setToInitialPose();
-		}
-		for (PlayerAnimBone bone : this.pivotBones.values()) {
-			bone.setToInitialPose();
-		}
 
 		for (Map.Entry<String, BoneAnimation> entry : animation.boneAnimations().entrySet()) {
 			PlayerAnimBone bone = this.bones.getOrDefault(entry.getKey(), null);
@@ -649,7 +634,6 @@ public abstract class AnimationController implements IAnimation {
 
 		processBoneHierarchy(parent, parentsMap, processedBones);
 
-		this.activeBones.put(boneName, bone);
 		MatrixUtil.applyParentsToChild(bone, Collections.singletonList(parent), this::getBonePosition);
 
 		processedBones.add(boneName);
@@ -707,43 +691,39 @@ public abstract class AnimationController implements IAnimation {
 	protected void setupNewAnimation() {
 		this.isLoopStarted = false;
 		if (currentAnimation == null) return;
-		this.activeBones.clear();
 		resetEventKeyFrames();
-		for (AdvancedPlayerAnimBone bone : bones.values()) {
-			bone.setEnabled(currentAnimation.animation().getBone(bone.getName()) != null);
+		this.pivotBones.clear();
+		for (Map.Entry<String, Vec3f> entry : currentAnimation.animation().bones().entrySet()) {
+			this.pivotBones.put(entry.getKey(), new PivotBone(entry.getKey(), entry.getValue()));
 		}
 		for (Map.Entry<String, BoneAnimation> entry : currentAnimation.animation().boneAnimations().entrySet()) {
-			if (bones.containsKey(entry.getKey())) {
-				AdvancedPlayerAnimBone bone = bones.get(entry.getKey());
-				this.activeBones.put(entry.getKey(), bone);
-				if (isDisableAxisIfNotModified()) {
-					BoneAnimation boneAnimation = entry.getValue();
-					bone.positionXEnabled = !boneAnimation.positionKeyFrames().xKeyframes().isEmpty();
-					bone.positionYEnabled = !boneAnimation.positionKeyFrames().yKeyframes().isEmpty();
-					bone.positionZEnabled = !boneAnimation.positionKeyFrames().zKeyframes().isEmpty();
+			if (currentAnimation.animation().bones().containsKey(entry.getKey())) continue;
+			AdvancedPlayerAnimBone bone = new AdvancedPlayerAnimBone(entry.getKey());
+			this.bones.put(entry.getKey(), bone);
+			if (isDisableAxisIfNotModified()) {
+				BoneAnimation boneAnimation = entry.getValue();
+				bone.positionXEnabled = !boneAnimation.positionKeyFrames().xKeyframes().isEmpty();
+				bone.positionYEnabled = !boneAnimation.positionKeyFrames().yKeyframes().isEmpty();
+				bone.positionZEnabled = !boneAnimation.positionKeyFrames().zKeyframes().isEmpty();
 
-					bone.rotXEnabled = !boneAnimation.rotationKeyFrames().xKeyframes().isEmpty();
-					bone.rotYEnabled = !boneAnimation.rotationKeyFrames().yKeyframes().isEmpty();
-					bone.rotZEnabled = !boneAnimation.rotationKeyFrames().zKeyframes().isEmpty();
+				bone.rotXEnabled = !boneAnimation.rotationKeyFrames().xKeyframes().isEmpty();
+				bone.rotYEnabled = !boneAnimation.rotationKeyFrames().yKeyframes().isEmpty();
+				bone.rotZEnabled = !boneAnimation.rotationKeyFrames().zKeyframes().isEmpty();
 
-					bone.scaleXEnabled = !boneAnimation.scaleKeyFrames().xKeyframes().isEmpty();
-					bone.scaleYEnabled = !boneAnimation.scaleKeyFrames().yKeyframes().isEmpty();
-					bone.scaleZEnabled = !boneAnimation.scaleKeyFrames().zKeyframes().isEmpty();
+				bone.scaleXEnabled = !boneAnimation.scaleKeyFrames().xKeyframes().isEmpty();
+				bone.scaleYEnabled = !boneAnimation.scaleKeyFrames().yKeyframes().isEmpty();
+				bone.scaleZEnabled = !boneAnimation.scaleKeyFrames().zKeyframes().isEmpty();
 
-					bone.bendEnabled = !boneAnimation.bendKeyFrames().isEmpty();
-				} else bone.setEnabled(true);
-			}
-			else if (pivotBones.containsKey(entry.getKey()))
-				this.activeBones.put(entry.getKey(), this.pivotBones.get(entry.getKey()));
+				bone.bendEnabled = !boneAnimation.bendKeyFrames().isEmpty();
+			} else bone.setEnabled(true);
 		}
 
 		for (String entry : currentAnimation.animation().parents().keySet()) {
 			if (this.bones.containsKey(entry)) this.bones.get(entry).setEnabled(true);
 		}
-
-		this.pivotBones.clear();
-		for (Map.Entry<String, Vec3f> entry : currentAnimation.animation().bones().entrySet()) {
-			this.pivotBones.put(entry.getKey(), new PivotBone(entry.getKey(), entry.getValue()));
+		for (String entry : currentAnimation.animation().parents().values()) {
+			if (!this.bones.containsKey(entry) && !this.pivotBones.containsKey(entry))
+				this.bones.put(entry, new AdvancedPlayerAnimBone(entry));
 		}
 
 		this.postAnimationSetupConsumer.accept(this.bones::get);
@@ -828,8 +808,8 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
-		if (activeBones.containsKey(bone.getName())) {
-			PlayerAnimBone bone1 = activeBones.get(bone.getName());
+		if (this.bones.containsKey(bone.getName())) {
+			PlayerAnimBone bone1 = this.bones.get(bone.getName());
 			if (this.currentAnimation != null && bone1 instanceof AdvancedPlayerAnimBone advancedBone) {
 				ExtraAnimationData extraData = this.currentAnimation.animation().data();
 				if (hasBeginTick() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > this.getAnimationTicks()) {
@@ -987,20 +967,6 @@ public abstract class AnimationController implements IAnimation {
 			}
 			tmp.setAnim(internalAnimationAccessor);
 		}
-	}
-
-	public AdvancedPlayerAnimBone registerPlayerAnimBone(String name) {
-		return registerPlayerAnimBone(new AdvancedPlayerAnimBone(name));
-	}
-
-	/**
-	 * Adds the given bone to the bones list for this controller
-	 * <p>
-	 * This is normally handled automatically by the mod
-	 */
-	public AdvancedPlayerAnimBone registerPlayerAnimBone(AdvancedPlayerAnimBone bone) {
-		this.bones.put(bone.getName(), bone);
-		return bone;
 	}
 
 	/**

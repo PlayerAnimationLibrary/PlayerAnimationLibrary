@@ -59,7 +59,8 @@ public class HumanoidAnimationController extends AnimationController {
     /**
      * Used for applying torso bend to bones like the head.
      */
-    protected List<String> top_bones;
+    // TODO Add a way to register top bones from the animation file
+    protected List<String> top_bones = List.of("right_arm", "left_arm", "head", "cape");
 
     private float torsoBend;
     private int torsoBendSign;
@@ -86,34 +87,14 @@ public class HumanoidAnimationController extends AnimationController {
     }
 
     @Override
-    public void registerBones() {
-        this.top_bones = new ArrayList<>();
-
-        this.registerPlayerAnimBone("body");
-        this.registerTopPlayerAnimBone("right_arm");
-        this.registerTopPlayerAnimBone("left_arm");
-        this.registerPlayerAnimBone("right_leg");
-        this.registerPlayerAnimBone("left_leg");
-        this.registerTopPlayerAnimBone("head");
-        this.registerPlayerAnimBone("torso");
-        this.registerPlayerAnimBone("right_item");
-        this.registerPlayerAnimBone("left_item");
-        this.registerTopPlayerAnimBone("cape");
-        this.registerPlayerAnimBone("elytra");
-    }
-
-    public void registerTopPlayerAnimBone(String name) {
-        this.top_bones.add(name);
-        this.registerPlayerAnimBone(name);
-    }
-
-    @Override
     public void process(AnimationData state) {
         super.process(state);
-        this.torsoBend = bones.get("torso").bend;
-        float absBend = Math.abs(this.torsoBend);
-        if (absBend > 0.001 && (this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE)) {
-            this.torsoBendSign = (int) Math.signum(this.torsoBend);
+        if (this.bones.containsKey("torso")) {
+            this.torsoBend = this.bones.get("torso").bend;
+            float absBend = Math.abs(this.torsoBend);
+            if (absBend > 0.001 && (this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE)) {
+                this.torsoBendSign = (int) Math.signum(this.torsoBend);
+            } else this.torsoBendSign = 0;
         } else this.torsoBendSign = 0;
     }
 
