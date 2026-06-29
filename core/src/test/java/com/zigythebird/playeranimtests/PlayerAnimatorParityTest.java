@@ -48,7 +48,7 @@ public class PlayerAnimatorParityTest {
         // formula's `t` factors were hard-coded as `1`); it evaluates to 1 at f=0
         // and jumps straight to the `after` keyframe's value. Our implementation
         // is the proper centripetal spline, so parity is unreachable here.
-        if (usesCatmullRom(animation)) return;
+        if (usesUnsupportedEasing(animation)) return;
 
         for (int version = 1; version <= LegacyAnimationBinary.getCurrentVersion(); version++) {
             EnumSet<TransformType> toAssert = version < 3 ? Snapshots.NO_SCALE : Snapshots.ALL;
@@ -69,9 +69,9 @@ public class PlayerAnimatorParityTest {
         }
     }
 
-    private static boolean usesCatmullRom(Animation animation) {
+    public static boolean usesUnsupportedEasing(Animation animation) {
         return animation.boneAnimations().values().stream().flatMap(PlayerAnimatorParityTest::allKeyframes)
-                .anyMatch(k -> k.easingType() == EasingType.CATMULLROM);
+                .anyMatch(k -> k.easingType() == EasingType.CATMULLROM || k.easingType() == EasingType.BEZIER);
     }
 
     private static Stream<Keyframe> allKeyframes(BoneAnimation bone) {

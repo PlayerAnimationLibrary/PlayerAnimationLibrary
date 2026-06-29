@@ -128,7 +128,7 @@ public class PlayerAnimBone {
 			this.position.z = beginOrEndTickLerp(position.z, bone.position.z, bone.positionZTransitionLength, animTime, animation, TransformType.POSITION, Axis.Z);
 
 		if (bone.rotXEnabled)
-			this.rotation.z = beginOrEndTickLerp(rotation.x, bone.rotation.x, bone.rotXTransitionLength, animTime, animation, TransformType.ROTATION, Axis.X);
+			this.rotation.x = beginOrEndTickLerp(rotation.x, bone.rotation.x, bone.rotXTransitionLength, animTime, animation, TransformType.ROTATION, Axis.X);
 		if (bone.rotYEnabled)
 			this.rotation.y = beginOrEndTickLerp(rotation.y, bone.rotation.y, bone.rotYTransitionLength, animTime, animation, TransformType.ROTATION, Axis.Y);
 		if (bone.rotZEnabled)
@@ -171,7 +171,7 @@ public class PlayerAnimBone {
 					if (!keyFrames.isEmpty()) easingType = keyFrames.getLast().easingType();
 				}
 			}
-			if (easingType == EasingType.BEZIER || easingType == EasingType.BEZIER_AFTER || easingType == EasingType.CATMULLROM)
+			if (easingType == EasingType.BEZIER || easingType == EasingType.CATMULLROM)
 				easingType = EasingType.EASE_IN_OUT_SINE;
 		}
 		if (transitionLength == null) return endValue;

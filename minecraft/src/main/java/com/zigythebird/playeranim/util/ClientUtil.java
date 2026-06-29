@@ -29,7 +29,7 @@ public final class ClientUtil {
 
 	@ApiStatus.Internal
 	public static boolean shouldBeFirstPersonPass() {
-		return shouldBeFirstPersonPass(Minecraft.getInstance().gameRenderer.getMainCamera());
+		return shouldBeFirstPersonPass(Minecraft.getInstance().gameRenderer.mainCamera());
 	}
 
 	@ApiStatus.Internal
