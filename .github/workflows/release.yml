@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -57,7 +57,7 @@ jobs:
 
           files: |
             ./minecraft/build/libs/PlayerAnimationLibMerged-*.jar
-          version-type: alpha
+          version-type: release
 
           loaders: |
             fabric

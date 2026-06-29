@@ -154,14 +154,7 @@ publishing {
             pom.withXml {
                 def deps = asNode().appendNode("dependencies")
 
-                configurations.api.dependencies.each {
-                    def d = deps.appendNode("dependency")
-
-                    d.appendNode("groupId", it.group)
-                    d.appendNode('artifactId', it instanceof ProjectDependency ? project(it.path).base.archivesName.get() : it.name)
-                    d.appendNode("version", it.version)
-                    d.appendNode("scope", "compile")
-                }
+                appendDependenciesFromConfig(deps, configurations.api)
             }
         }
         mavenFabric(MavenPublication) {
@@ -176,20 +169,9 @@ publishing {
                 def deps = asNode().appendNode("dependencies")
 
                 // Adds fabric api to deps
-                configurations.fabricImplementation.dependencies.each {
-                    def d = deps.appendNode("dependency")
+                appendDependenciesFromConfig(deps, configurations.fabricImplementation)
 
-                    d.appendNode("groupId", it.group)
-                    d.appendNode('artifactId', it instanceof ProjectDependency ? project(it.path).base.archivesName.get() : it.name)
-                    d.appendNode("version", it.version)
-                    d.appendNode("scope", "compile")
-                }
-
-                def d = deps.appendNode("dependency")
-                d.appendNode("groupId", project.group)
-                d.appendNode("artifactId", "PlayerAnimationLibCommon")
-                d.appendNode("version", project.version)
-                d.appendNode("scope", "compile")
+                appendDependenciesFromConfig(deps, configurations.api)
             }
         }
         mavenNeo(MavenPublication) {
@@ -202,12 +184,24 @@ publishing {
 
             pom.withXml {
                 def deps = asNode().appendNode("dependencies")
-                def d = deps.appendNode("dependency")
-                d.appendNode("groupId", project.group)
-                d.appendNode("artifactId", "PlayerAnimationLibCommon")
-                d.appendNode("version", project.version)
-                d.appendNode("scope", "compile")
+
+                appendDependenciesFromConfig(deps, configurations.api)
             }
         }
     }
+}
+
+def appendDependenciesFromConfig(deps, config) {
+    config.dependencies.each {
+        def artifactId = it instanceof ProjectDependency ? project(it.path).base.archivesName.get() : it.name
+        appendDependency(deps, it.group, artifactId, it.version)
+    }
+}
+
+static def appendDependency(deps, groupId, artifactId, version) {
+    def d = deps.appendNode("dependency")
+    d.appendNode("groupId", groupId)
+    d.appendNode("artifactId", artifactId)
+    d.appendNode("version", version)
+    d.appendNode("scope", "compile")
 }

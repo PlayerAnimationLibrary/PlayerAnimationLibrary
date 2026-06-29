@@ -1,4 +1,1 @@
-- Fix cape
-- Add item pivots
-- Fix state handler
-- Fix bend applying to other bones
+- Port to 26.2

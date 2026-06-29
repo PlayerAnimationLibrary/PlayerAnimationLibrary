@@ -1,5 +1,6 @@
 package com.zigythebird.playeranimcore.molang;
 
+import com.zigythebird.playeranimcore.PlayerAnimLib;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.mocha.parser.ast.Expression;
@@ -25,7 +26,11 @@ public class QueryBinding<T> extends MutableObjectBinding implements ExecutionCo
         if (property == null) return null;
 
         if (property.value() instanceof Function function && !property.constant()) {
-            return ObjectProperty.property(Objects.requireNonNull(function.evaluate(this)), false);
+            try {
+                return ObjectProperty.property(Objects.requireNonNull(function.evaluate(this)), false);
+            } catch (Throwable th) {
+                PlayerAnimLib.LOGGER.warn("Failed to evaluate function property '{}'", name, th);
+            }
         }
 
         return property;

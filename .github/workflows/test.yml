@@ -1,0 +1,24 @@
+name: Run tests.
+
+on:
+  pull_request
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Branch
+              uses: actions/checkout@v7
+
+            - name: Setup Java
+              uses: actions/setup-java@v5
+              with:
+                  distribution: 'adopt'
+                  java-version: 25
+
+            - name: Grant Execute Permission
+              run: chmod +x gradlew
+
+            - name: Test
+              run: |
+                  ./gradlew test

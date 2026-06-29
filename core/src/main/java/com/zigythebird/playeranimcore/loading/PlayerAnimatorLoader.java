@@ -136,7 +136,7 @@ public class PlayerAnimatorLoader implements JsonDeserializer<Animation> {
     }
 
     public static void correctEasings(List<Keyframe> list) {
-        EasingType previousEasing = EasingType.EASE_IN_SINE;
+        EasingType previousEasing = EasingType.EASE_IN_OUT_SINE;
         List<List<Expression>> previousEasingArgs = new ObjectArrayList<>();
         Keyframe keyframe = null;
         for (int i=0;i<list.size();i++) {

@@ -22,6 +22,9 @@ public class PlayerAnimBone {
 	public final Vector3f rotation;
 	public final Vector3f scale;
 
+	@Deprecated(forRemoval = true)
+	public float bend;
+
 	public PlayerAnimBone(String name) {
 		this.name = name;
 		this.position = new Vector3f();
@@ -34,6 +37,7 @@ public class PlayerAnimBone {
 		this.position = new Vector3f(bone.position);
 		this.rotation = new Vector3f(bone.rotation);
 		this.scale = new Vector3f(bone.scale);
+		this.bend = bone.bend;
 	}
 
 	public String getName() {
@@ -44,12 +48,14 @@ public class PlayerAnimBone {
 		this.position.set(0, 0, 0);
 		this.rotation.set(0, 0, 0);
 		this.scale.set(1, 1, 1);
+		this.bend = 0F;
 	}
 
 	public PlayerAnimBone scale(float value) {
 		this.position.mul(value);
 		this.rotation.mul(value);
 		this.scale.mul(value);
+		this.bend *= value;
 
 		return this;
 	}
@@ -58,6 +64,7 @@ public class PlayerAnimBone {
 		this.position.add(bone.position);
 		this.rotation.add(bone.rotation);
 		this.scale.add(bone.scale);
+		this.bend += bone.bend;
 
 		return this;
 	}
@@ -66,6 +73,7 @@ public class PlayerAnimBone {
 		this.position.add(bone.position);
 		this.rotation.add(bone.rotation);
 		this.scale.mul(bone.scale);
+		this.bend += bone.bend;
 
 		return this;
 	}
@@ -74,6 +82,7 @@ public class PlayerAnimBone {
 		this.position.set(bone.position);
 		this.rotation.set(bone.rotation);
 		this.scale.set(bone.scale);
+		this.bend = bone.bend;
 
 		return this;
 	}
@@ -101,6 +110,9 @@ public class PlayerAnimBone {
 			if (toggleableBone.isScaleZEnabled())
 				this.scale.z = bone.scale.z;
 
+			if (toggleableBone.isBendEnabled())
+				this.bend = bone.bend;
+
 			return this;
 		}
 		return copyOtherBone(bone);
@@ -116,7 +128,7 @@ public class PlayerAnimBone {
 			this.position.z = beginOrEndTickLerp(position.z, bone.position.z, bone.positionZTransitionLength, animTime, animation, TransformType.POSITION, Axis.Z);
 
 		if (bone.rotXEnabled)
-			this.rotation.z = beginOrEndTickLerp(rotation.x, bone.rotation.x, bone.rotXTransitionLength, animTime, animation, TransformType.ROTATION, Axis.X);
+			this.rotation.x = beginOrEndTickLerp(rotation.x, bone.rotation.x, bone.rotXTransitionLength, animTime, animation, TransformType.ROTATION, Axis.X);
 		if (bone.rotYEnabled)
 			this.rotation.y = beginOrEndTickLerp(rotation.y, bone.rotation.y, bone.rotYTransitionLength, animTime, animation, TransformType.ROTATION, Axis.Y);
 		if (bone.rotZEnabled)
@@ -128,6 +140,9 @@ public class PlayerAnimBone {
 			this.scale.y = beginOrEndTickLerp(scale.y, bone.scale.y, bone.scaleYTransitionLength, animTime, animation, TransformType.SCALE, Axis.Y);
 		if (bone.scaleZEnabled)
 			this.scale.z = beginOrEndTickLerp(scale.z, bone.scale.z, bone.scaleZTransitionLength, animTime, animation, TransformType.SCALE, Axis.Z);
+
+		if (bone.bendEnabled)
+			this.bend = beginOrEndTickLerp(bend, bone.bend, bone.bendTransitionLength, animTime, animation, TransformType.BEND, Axis.Y);
 	}
 
 	private float beginOrEndTickLerp(float startValue, float endValue, Float transitionLength, float animTime, Animation animation, TransformType type, Axis axis) {
@@ -156,7 +171,7 @@ public class PlayerAnimBone {
 					if (!keyFrames.isEmpty()) easingType = keyFrames.getLast().easingType();
 				}
 			}
-			if (easingType == EasingType.BEZIER || easingType == EasingType.BEZIER_AFTER || easingType == EasingType.CATMULLROM)
+			if (easingType == EasingType.BEZIER || easingType == EasingType.CATMULLROM)
 				easingType = EasingType.EASE_IN_OUT_SINE;
 		}
 		if (transitionLength == null) return endValue;
