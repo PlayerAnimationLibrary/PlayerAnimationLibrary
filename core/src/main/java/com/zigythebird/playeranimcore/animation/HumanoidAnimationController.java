@@ -59,8 +59,7 @@ public class HumanoidAnimationController extends AnimationController {
     /**
      * Used for applying torso bend to bones like the head.
      */
-    // TODO Add a way to register top bones from the animation file
-    protected List<String> top_bones = List.of("right_arm", "left_arm", "head", "cape");
+    protected final List<String> top_bones = List.of("right_arm", "left_arm", "head", "cape");
 
     private float torsoBend;
     private int torsoBendSign;
