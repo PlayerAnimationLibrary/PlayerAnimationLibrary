@@ -711,23 +711,6 @@ public abstract class AnimationController implements IAnimation {
 		return this.tick + this.startAnimFrom + this.animationData.getPartialTick();
 	}
 
-	public boolean hasBeginTick() {
-		return this.currentAnimation.animation().data().has(ExtraAnimationData.BEGIN_TICK_KEY);
-	}
-
-	public boolean hasEndTick() {
-		Animation animation = this.currentAnimation.animation();
-		return !animation.loopType().shouldPlayAgain(null, animation) && animation.data().has(ExtraAnimationData.END_TICK_KEY);
-	}
-
-	public boolean isDisableAxisIfNotModified() {
-		return this.currentAnimation != null && this.currentAnimation.animation().data().isDisableAxisIfNotModified();
-	}
-
-	public boolean isAnimationPlayerAnimatorFormat() {
-		return this.currentAnimation != null && this.currentAnimation.animation().data().isAnimationPlayerAnimatorFormat();
-	}
-
 	protected void setupNewAnimation() {
 		this.isLoopStarted = false;
 		if (currentAnimation == null) return;
@@ -740,7 +723,7 @@ public abstract class AnimationController implements IAnimation {
 			if (bones.containsKey(entry.getKey())) {
 				AdvancedPlayerAnimBone bone = bones.get(entry.getKey());
 				this.activeBones.put(entry.getKey(), bone);
-				if (isDisableAxisIfNotModified()) {
+				if (this.currentAnimation.isDisableAxisIfNotModified()) {
 					BoneAnimation boneAnimation = entry.getValue();
 					bone.positionXEnabled = !boneAnimation.positionKeyFrames().xKeyframes().isEmpty();
 					bone.positionYEnabled = !boneAnimation.positionKeyFrames().yKeyframes().isEmpty();
@@ -797,12 +780,10 @@ public abstract class AnimationController implements IAnimation {
 		}
 
 		if (transitionLengthSetter != null) {
-			boolean hasBeginTick = extraData.has(ExtraAnimationData.BEGIN_TICK_KEY);
-			boolean hasEndTick = !animation.loopType().shouldPlayAgain(null, animation) && extraData.has(ExtraAnimationData.END_TICK_KEY);
-			if (hasBeginTick && !frames.isEmpty() && currentFrame == frames.getFirst() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > tick) {
+			if (queued.hasBeginTick() && !frames.isEmpty() && currentFrame == frames.getFirst() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > tick) {
 				startValue = endValue;
 				transitionLengthSetter.accept(currentFrame.length());
-			} else if (hasEndTick && !frames.isEmpty() && currentFrame == frames.getLast() && endTick <= tick) {
+			} else if (queued.hasEndTick() && !frames.isEmpty() && currentFrame == frames.getLast() && endTick <= tick) {
 				transitionLengthSetter.accept(animation.length() - endTick);
 			} else transitionLengthSetter.accept(null);
 		}
@@ -857,10 +838,10 @@ public abstract class AnimationController implements IAnimation {
 			PlayerAnimBone bone1 = activeBones.get(bone.getName());
 			if (this.currentAnimation != null && bone1 instanceof AdvancedPlayerAnimBone advancedBone) {
 				ExtraAnimationData extraData = this.currentAnimation.animation().data();
-				if (hasBeginTick() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > this.getAnimationTicks()) {
+				if (this.currentAnimation.hasBeginTick() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > this.getAnimationTicks()) {
 					bone.beginOrEndTickLerp(advancedBone, this.getAnimationTicks(), null);
 				}
-				else if (hasEndTick() && extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get() <= this.getAnimationTicks()) {
+				else if (this.currentAnimation.hasEndTick() && extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get() <= this.getAnimationTicks()) {
 					bone.beginOrEndTickLerp(advancedBone, this.getAnimationTicks() - extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get(), this.currentAnimation.animation());
 				}
 				else bone.copyOtherBoneIfNotDisabled(bone1);
