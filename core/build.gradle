@@ -1,6 +1,7 @@
 apply plugin: "java-library"
 
 dependencies {
+    api("org.redlance.platformtools:webp:$platformtools_version:bundled") { transitive = false }
     api("org.redlance.common-utils:services:$rootProject.commonutils_version") { transitive = false }
     api("com.zigythebird:mochafloats:$rootProject.molang_version") { transitive = false }
     compileOnlyApi("org.jetbrains:annotations:26.1.0")

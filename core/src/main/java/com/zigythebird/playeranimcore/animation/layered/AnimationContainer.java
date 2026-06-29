@@ -27,9 +27,12 @@ package com.zigythebird.playeranimcore.animation.layered;
 import com.zigythebird.playeranimcore.animation.AnimationData;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonConfiguration;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
+import com.zigythebird.playeranimcore.bones.CustomBone;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 /**
  * A container to make swapping animation object easier
@@ -93,5 +96,10 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
         return "AnimationContainer{" +
                 "anim=" + anim +
                 '}';
+    }
+
+    @Override
+    public void collectModels(Consumer<CustomBone> consumer) {
+        if (this.anim != null) this.anim.collectModels(consumer);
     }
 }

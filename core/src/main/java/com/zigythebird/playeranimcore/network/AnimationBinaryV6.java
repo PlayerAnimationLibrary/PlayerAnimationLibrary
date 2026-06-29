@@ -1,6 +1,7 @@
 package com.zigythebird.playeranimcore.network;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.animation.keyframe.BoneAnimation;
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
@@ -8,7 +9,6 @@ import com.zigythebird.playeranimcore.animation.keyframe.KeyframeStack;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
 import com.zigythebird.playeranimcore.loading.PlayerAnimatorLoader;
-import com.zigythebird.playeranimcore.math.Vec3f;
 import io.netty.buffer.ByteBuf;
 import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.parser.ast.FloatExpression;
@@ -37,7 +37,7 @@ final class AnimationBinaryV6 {
         }
 
         AnimationBinary.writeEventKeyframes(buf, animation.keyFrames());
-        NetworkUtils.writeMap(buf, animation.bones(), ProtocolUtils::writeString, NetworkUtils::writeVec3f);
+        NetworkUtils.writeMap(buf, animation.bones(), ProtocolUtils::writeString, (byteBuf, bone) -> NetworkUtils.writeCustomBone(byteBuf, bone, version));
         NetworkUtils.writeMap(buf, animation.parents(), ProtocolUtils::writeString, ProtocolUtils::writeString);
     }
 
@@ -76,7 +76,7 @@ final class AnimationBinaryV6 {
                 buf1 -> readBoneAnimation(buf1, isPlayerAnimator, version));
 
         Animation.Keyframes keyFrames = AnimationBinary.readEventKeyframes(buf);
-        Map<String, Vec3f> pivotBones = NetworkUtils.readMap(buf, ProtocolUtils::readString, NetworkUtils::readVec3f);
+        Map<String, CustomModelBone> pivotBones = NetworkUtils.readMap(buf, ProtocolUtils::readString, byteBuf -> NetworkUtils.readCustomBone(byteBuf, version));
         Map<String, String> parents = NetworkUtils.readMap(buf, ProtocolUtils::readString, ProtocolUtils::readString);
 
         return new Animation(data, length, loopType, boneAnimations, keyFrames, pivotBones, parents);

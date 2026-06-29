@@ -75,7 +75,7 @@ public abstract class AnimationController implements IAnimation {
 	protected final Map<String, Vec3f> bonePositions;
 	protected final Map<String, AdvancedPlayerAnimBone> bones = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, PlayerAnimBone> activeBones = new Object2ObjectOpenHashMap<>();
-	protected final Map<String, PivotBone> pivotBones = new Object2ObjectOpenHashMap<>();
+	protected final Map<String, CustomBone> pivotBones = new Object2ObjectOpenHashMap<>();
 	protected Queue<QueuedAnimation> animationQueue = new LinkedList<>();
 	protected final MochaEngine<AnimationController> molangRuntime;
 
@@ -491,6 +491,10 @@ public abstract class AnimationController implements IAnimation {
 		if (getAnimationState() == State.RUNNING) {
 			processCurrentAnimation(adjustedTick, state);
 		}
+
+		if (this.animationState == State.STOPPED && !this.pivotBones.isEmpty()) {
+			for (CustomBone bone : this.pivotBones.values()) bone.close();
+		}
 	}
 
 	/**
@@ -698,6 +702,15 @@ public abstract class AnimationController implements IAnimation {
 		if (currentAnimation == null) return;
 		this.activeBones.clear();
 		resetEventKeyFrames();
+
+		for (CustomBone bone : this.pivotBones.values()) {
+			bone.close();
+		}
+		this.pivotBones.clear();
+		for (Map.Entry<String, CustomModelBone> entry : currentAnimation.animation().bones().entrySet()) {
+			this.pivotBones.put(entry.getKey(), createCustomBone(entry.getKey(), entry.getValue()));
+		}
+
 		for (AdvancedPlayerAnimBone bone : bones.values()) {
 			bone.setEnabled(currentAnimation.animation().getBone(bone.getName()) != null);
 		}
@@ -730,12 +743,22 @@ public abstract class AnimationController implements IAnimation {
 			if (this.bones.containsKey(entry)) this.bones.get(entry).setEnabled(true);
 		}
 
-		this.pivotBones.clear();
-		for (Map.Entry<String, Vec3f> entry : currentAnimation.animation().bones().entrySet()) {
-			this.pivotBones.put(entry.getKey(), new PivotBone(entry.getKey(), entry.getValue()));
-		}
-
 		this.postAnimationSetupConsumer.accept(this.bones::get);
+	}
+
+	protected CustomBone createCustomBone(String name, CustomModelBone data) {
+		return new CustomBone(name, data) {
+			@Override
+			public void close() {}
+		};
+	}
+
+	@Override
+	public void collectModels(Consumer<CustomBone> consumer) {
+		for (CustomBone customBone : this.pivotBones.values()) {
+			if (!customBone.hasModelData()) continue;
+			consumer.accept(customBone);
+		}
 	}
 
 	/**

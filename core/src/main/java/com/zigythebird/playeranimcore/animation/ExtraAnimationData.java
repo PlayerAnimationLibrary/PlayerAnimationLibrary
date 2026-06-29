@@ -7,8 +7,9 @@ import com.google.gson.JsonPrimitive;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.redlance.platformtools.webp.decoder.DecodedImage;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 import java.util.*;
 
 public record ExtraAnimationData(Map<String, Object> data) {
@@ -44,10 +45,20 @@ public record ExtraAnimationData(Map<String, Object> data) {
         return data().containsKey(name);
     }
 
-    public @Nullable ByteBuffer getBinary(String name) {
+    public byte @Nullable [] getBinary(String name) {
         Object obj = getRaw(name);
         if (obj == null) return null;
+        return convertToBytes(name, obj);
+    }
 
+    private byte @Nullable [] convertToBytes(String name, Object obj) {
+        if (obj instanceof DecodedImage image) {
+            try {
+                return image.toPng();
+            } catch (IOException e) {
+                return null;
+            }
+        }
         if (obj instanceof String str) {
             try {
                 put(name, obj = Base64.getDecoder().decode(str));
@@ -56,12 +67,24 @@ public record ExtraAnimationData(Map<String, Object> data) {
             }
         }
         if (obj instanceof byte[] bytes) {
-            put(name, obj = ByteBuffer.wrap(bytes).asReadOnlyBuffer());
-        }
-        if (obj instanceof ByteBuffer buffer) {
-            return buffer.asReadOnlyBuffer();
+            return bytes;
         }
         return null;
+    }
+
+    public @Nullable DecodedImage getImage(String name) throws IOException {
+        Object obj = getRaw(name);
+        if (obj == null) return null;
+
+        if (obj instanceof DecodedImage image) {
+            return image;
+        } else {
+            byte[] data = convertToBytes(name, obj);
+            if (data == null) return null;
+            DecodedImage image = DecodedImage.fromPng(data);
+            put(name, image);
+            return image;
+        }
     }
 
     public Object getRaw(String name) {

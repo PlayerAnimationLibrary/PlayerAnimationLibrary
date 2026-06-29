@@ -1,0 +1,32 @@
+{
+  "format_version": "1.8.0",
+  "model": {
+    "cmm": {
+      "pivot": [ 0, 12, 0 ],
+
+      "texture": "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAfUlEQVR4Xo1QiRHAIAhzUAZgC7foAg5KjSkq1OsVr1qS8Jby18TE1PivBi/R1a4JwmtRIp1uHUYOHeIlnxEOQoyz5ZBB40MOxNNPAsL6vKEIBIxBHx5/ECzqIHBwFQg9+BT7XeOguUTYw56DL5p9LZvrxpggE00DzJOZD7sBRaHjpRD91mQAAAAASUVORK5CYII=",
+      "elements": [
+        {
+          "from": [  0, 0.25,  0 ],
+          "to":   [ 16, 0.25, 16 ],
+          "faces": {
+            "down":  { "uv": [  0, 16, 16,  0 ], "texture": "#texture", "tintindex": 0 },
+            "up":  { "uv": [  0,  0, 16, 16 ], "texture": "#texture", "tintindex": 0 }
+          }
+        }
+      ]
+    }
+  },
+  "animations": {
+    "cbm_test1": {
+      "loop": true,
+      "bones": {
+        "cmm": {
+          "rotation": {
+            "vector": [0, "q.anim_time * 20", 0]
+          }
+        }
+      }
+    }
+  }
+}
