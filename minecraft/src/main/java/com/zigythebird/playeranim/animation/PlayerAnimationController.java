@@ -3,6 +3,7 @@ package com.zigythebird.playeranim.animation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
+import com.zigythebird.playeranim.accessors.IAnimatedAvatar;
 import com.zigythebird.playeranim.util.RenderUtil;
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
@@ -20,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import team.unnamed.mocha.MochaEngine;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public class PlayerAnimationController extends HumanoidAnimationController {
@@ -97,5 +99,10 @@ public class PlayerAnimationController extends HumanoidAnimationController {
     @Override
     protected CustomBone createCustomBone(String name, CustomModelBone data) {
         return new MinecraftCustomBone(name, data);
+    }
+
+    @Override
+    protected Map<String, PlayerAnimBone> getHostBoneStates() {
+        return ((IAnimatedAvatar) this.avatar).playerAnimLib$getAnimManager().pal$getHostBones();
     }
 }

@@ -99,7 +99,7 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
     }
 
     @Override
-    public void collectModels(Consumer<CustomBone> consumer) {
-        if (this.anim != null) this.anim.collectModels(consumer);
+    public void collectModels(Consumer<CustomBone> pushBone, Consumer<String> pushExternalBone, Runnable popBone) {
+        if (this.anim != null) this.anim.collectModels(pushBone, pushExternalBone, popBone);
     }
 }

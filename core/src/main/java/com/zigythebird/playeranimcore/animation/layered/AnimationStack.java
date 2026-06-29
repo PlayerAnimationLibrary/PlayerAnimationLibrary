@@ -135,10 +135,10 @@ public class AnimationStack implements IAnimation {
     }
 
     @Override
-    public void collectModels(Consumer<CustomBone> consumer) {
+    public void collectModels(Consumer<CustomBone> pushBone, Consumer<String> pushExternalBone, Runnable popBone) {
         for (Pair<Integer, IAnimation> layer : this.layers) {
             if (layer.right().isActive()) {
-                layer.right().collectModels(consumer);
+                layer.right().collectModels(pushBone, pushExternalBone, popBone);
             }
         }
     }

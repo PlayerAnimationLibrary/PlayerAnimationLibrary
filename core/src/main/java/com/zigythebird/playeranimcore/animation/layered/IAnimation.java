@@ -90,5 +90,5 @@ public interface IAnimation {
         return false;
     }
 
-    default void collectModels(Consumer<CustomBone> consumer) {}
+    default void collectModels(Consumer<CustomBone> pushBone, Consumer<String> pushExternalBone, Runnable popBone) {}
 }

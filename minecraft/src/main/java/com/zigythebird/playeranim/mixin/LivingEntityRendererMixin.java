@@ -30,9 +30,14 @@ import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
 import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import com.zigythebird.playeranim.animation.MinecraftCustomBone;
 import com.zigythebird.playeranim.util.RenderUtil;
+import com.zigythebird.playeranimcore.PlayerAnimLib;
+import com.zigythebird.playeranimcore.animation.HumanoidAnimationController;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -46,12 +51,18 @@ import net.minecraft.client.resources.model.geometry.QuadCollection;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends EntityRenderer<T, S> {
+    @Shadow
+    public abstract M getModel();
+
     protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -101,16 +112,19 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         poseStack.translate(0, 1.501F, 0);
         poseStack.scale(-1, -1, -1);
 
+        AtomicInteger numberOfPushes = new AtomicInteger();
+
         animationPlayer.collectModels(bone -> {
-            if (!(bone instanceof MinecraftCustomBone mcBone) || !mcBone.hasModel()) return;
-
-            QuadCollection bakedPart = mcBone.getGeometry();
-
             poseStack.pushPose();
+            numberOfPushes.addAndGet(1);
             Vec3f pivot = bone.getPivot().div(16);
             poseStack.translate(pivot.x() - bone.position.x() / 16f, pivot.y() + bone.position.y() / 16f, pivot.z() - bone.position.z() / 16f);
             RenderUtil.applyBoneRotationScale(poseStack, bone);
             poseStack.translate(-pivot.x() - 0.5f, -pivot.y(), -pivot.z() - 0.5f);
+
+            if (!(bone instanceof MinecraftCustomBone mcBone) || !mcBone.hasModel()) return;
+
+            QuadCollection bakedPart = mcBone.getGeometry();
 
             submitNodeCollector.submitCustomGeometry(
                     poseStack, mcBone.getRenderType(),
@@ -130,9 +144,51 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
                         }
                     }
             );
+        }, (modelPartName) -> {
+            poseStack.pushPose();
+            numberOfPushes.addAndGet(1);
 
-            poseStack.popPose();
+            ModelPart modelPart = null;
+            Vec3f pivot = null;
+            
+            if (this.getModel() instanceof PlayerModel playerModel) {
+                //TODO Add cape
+                //TODO Maybe add a way to register custom bones
+                pivot = HumanoidAnimationController.BONE_POSITIONS.getOrDefault(modelPartName, null);
+                switch (modelPartName) {
+                    case "head" -> modelPart = playerModel.head;
+                    case "torso" -> modelPart = playerModel.body;
+                    case "right_arm" -> modelPart = playerModel.rightArm;
+                    case "left_arm" -> modelPart = playerModel.leftArm;
+                    case "right_leg" -> modelPart = playerModel.rightLeg;
+                    case "left_leg" -> modelPart = playerModel.leftLeg;
+                }
+            }
+            
+            if (modelPart != null && pivot != null) {
+                pivot = pivot.div(16);
+                PartPose initialPose = modelPart.getInitialPose();
+                poseStack.translate(pivot.x() - (modelPart.x - initialPose.x()) / 16f,
+                        pivot.y() - (modelPart.y - initialPose.y()) / 16f,
+                        pivot.z() - (modelPart.z - initialPose.z()) / 16f);
+                RenderUtil.rotateZYX(poseStack.last(), modelPart.xRot, modelPart.yRot - initialPose.yRot(), modelPart.zRot);
+                if (modelPart.xScale != 1 || modelPart.yScale != 1 || modelPart.zScale != 1)
+                    poseStack.scale(modelPart.xScale, modelPart.yScale, modelPart.zScale);
+                poseStack.translate(-pivot.x() - 0.5f, -pivot.y(), -pivot.z() - 0.5f);
+            }
+        }, () -> {
+            if (numberOfPushes.get() > 0) {
+                numberOfPushes.getAndDecrement();
+                poseStack.popPose();
+            }
+            else {
+                PlayerAnimLib.LOGGER.error("During model collection an animation popped a bone when all bones had already been popped.");
+            }
         });
+
+        for (int i = numberOfPushes.get(); i > 0; i--) {
+            poseStack.popPose();
+        }
 
         poseStack.popPose();
     }
