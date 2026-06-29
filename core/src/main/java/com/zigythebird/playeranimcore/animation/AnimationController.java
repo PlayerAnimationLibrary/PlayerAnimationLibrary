@@ -836,12 +836,12 @@ public abstract class AnimationController implements IAnimation {
 	public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
 		if (activeBones.containsKey(bone.getName())) {
 			PlayerAnimBone bone1 = activeBones.get(bone.getName());
-			if (this.currentAnimation != null && bone1 instanceof AdvancedPlayerAnimBone advancedBone) {
-				ExtraAnimationData extraData = this.currentAnimation.animation().data();
-				if (this.currentAnimation.hasBeginTick() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > this.getAnimationTicks()) {
+			QueuedAnimation queued = this.currentAnimation;
+			if (queued != null && bone1 instanceof AdvancedPlayerAnimBone advancedBone) {
+				ExtraAnimationData extraData = queued.animation().data();
+				if (queued.hasBeginTick() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > this.getAnimationTicks()) {
 					bone.beginOrEndTickLerp(advancedBone, this.getAnimationTicks(), null);
-				}
-				else if (this.currentAnimation.hasEndTick() && extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get() <= this.getAnimationTicks()) {
+				} else if (queued.hasEndTick() && extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get() <= this.getAnimationTicks()) {
 					bone.beginOrEndTickLerp(advancedBone, this.getAnimationTicks() - extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get(), this.currentAnimation.animation());
 				}
 				else bone.copyOtherBoneIfNotDisabled(bone1);
