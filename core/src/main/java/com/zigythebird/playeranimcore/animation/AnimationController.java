@@ -552,6 +552,8 @@ public abstract class AnimationController implements IAnimation {
 		}
 
 		if (queued == null) return;
+		for (PlayerAnimBone bone : this.bones.values())
+			bone.setToInitialPose();
 
 		for (Map.Entry<String, BoneAnimation> entry : animation.boneAnimations().entrySet()) {
 			PlayerAnimBone bone = this.bones.getOrDefault(entry.getKey(), null);
@@ -708,7 +710,8 @@ public abstract class AnimationController implements IAnimation {
 		}
 
 		for (String entry : currentAnimation.animation().parents().keySet()) {
-			if (this.bones.containsKey(entry)) this.bones.get(entry).setEnabled(true);
+			if (!this.bones.containsKey(entry))
+				this.bones.put(entry, new AdvancedPlayerAnimBone(entry));
 		}
 		for (String entry : currentAnimation.animation().parents().values()) {
 			if (!this.bones.containsKey(entry) && !this.pivotBones.containsKey(entry))
