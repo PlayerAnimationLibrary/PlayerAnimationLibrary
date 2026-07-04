@@ -18,6 +18,11 @@ unimined.minecraft(sourceSets.main) {
         accessWidener file("src/main/resources/player_animation_library.classtweaker")
     }
 
+    source {
+        sourceGenerator.javaVersion = JavaVersion.VERSION_25
+        sourceGenerator.generator("1.12.0")
+    }
+
     defaultRemapJar = false
 }
 
