@@ -16,6 +16,7 @@ import java.util.List;
  */
 public class AnimationStack implements IAnimation {
     protected final List<Pair<Integer, IAnimation>> layers = new ArrayList<>();
+    private float transitionProgress = 0;
 
     public List<Pair<Integer, IAnimation>> getLayers() {
         return this.layers;
@@ -29,11 +30,19 @@ public class AnimationStack implements IAnimation {
         return false;
     }
 
+    public float getFirstPersonTransitionProgress() {
+        return transitionProgress;
+    }
+
     @Override
     public void tick(AnimationData state) {
-        for (Pair<Integer, IAnimation> layer : layers) {
-            layer.right().tick(state);
-        }
+        for (Pair<Integer, IAnimation> layer : layers) layer.right().tick(state);
+
+        boolean shouldHide = (getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL && isActive() && isSmoothFirstPersonTransition());
+        float target = shouldHide ? 1.0f : 0.0f;
+        float speed = getFirstPersonTransitionSpeed();
+        transitionProgress += (target - transitionProgress) * speed;
+        if (Math.abs(transitionProgress - target) < 0.001f) transitionProgress = target;
     }
 
     @Override
@@ -111,6 +120,30 @@ public class AnimationStack implements IAnimation {
         return IAnimation.super.getFirstPersonConfiguration();
     }
 
+    public boolean isSmoothFirstPersonTransition() {
+        for (int i = layers.size() - 1; i >= 0; i--) {
+            IAnimation layer = layers.get(i).right();
+            if (layer.isActive()) return layer.isSmoothFirstPersonTransition();
+        }
+        return IAnimation.super.isSmoothFirstPersonTransition();
+    }
+
+    public float getFirstPersonTransitionSpeed() {
+        for (int i = layers.size() - 1; i >= 0; i--) {
+            IAnimation layer = layers.get(i).right();
+            if (layer.isActive()) return layer.getFirstPersonTransitionSpeed();
+        }
+        return IAnimation.super.getFirstPersonTransitionSpeed();
+    }
+
+    public boolean isFirstPersonFollowPitch() {
+        for (int i = layers.size() - 1; i >= 0; i--) {
+            IAnimation layer = layers.get(i).right();
+            if (layer.isActive()) return layer.isFirstPersonFollowPitch();
+        }
+        return IAnimation.super.isFirstPersonFollowPitch();
+    }
+
     public int getPriority() {
         int priority = 0;
         for (int i=layers.size()-1; i>=0; i--) {
@@ -129,4 +162,5 @@ public class AnimationStack implements IAnimation {
                 "layers=" + layers +
                 '}';
     }
+
 }

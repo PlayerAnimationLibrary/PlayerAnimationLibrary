@@ -101,6 +101,9 @@ public abstract class AnimationController implements IAnimation {
 
 	protected Function<AnimationController, FirstPersonMode> firstPersonMode = null;
 	protected Function<AnimationController, FirstPersonConfiguration> firstPersonConfiguration = null;
+	private boolean firstPersonFollowPitch = false;
+	private boolean smoothFirstPersonTransition = false;
+	private float smoothFirstPersonTransSpeed = 0.2f;
 	private final List<AbstractModifier> modifiers = new ArrayList<>();
 
 	private final InternalAnimationAccessor internalAnimationAccessor = new InternalAnimationAccessor(this);
@@ -119,6 +122,44 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	public abstract void registerBones();
+
+	/**
+	 * Sets whether the first‑person animation should follow the camera’s pitch.
+	 * Otherwise, the legacy behavior is retained where only yaw follows the camera
+	 */
+	public void setFirstPersonFollowPitch(boolean followPitch) {
+		this.firstPersonFollowPitch = followPitch;
+	}
+
+	@Override
+	public boolean isFirstPersonFollowPitch() {
+		return this.firstPersonFollowPitch;
+	}
+
+	/**
+	 * If enabled, the vanilla first-person hand will slide down off-screen during animations
+	 * and slide back up once it has finished; as opposed to instantly flickering in and out
+	 */
+	public void setSmoothFirstPersonTransition(boolean smooth) {
+		this.smoothFirstPersonTransition = smooth;
+	}
+
+	@Override
+	public boolean isSmoothFirstPersonTransition() {
+		return this.smoothFirstPersonTransition;
+	}
+
+	/**
+	 * Allows you to set the speed of smooth first‑person transitions. Value needs to be between 0.01 and 1.0; default is 0.2
+	 */
+	public void setFirstPersonTransitionSpeed(float speed) {
+		this.smoothFirstPersonTransSpeed = Math.max(0.01f, Math.min(1.0f, speed));
+	}
+
+	@Override
+	public float getFirstPersonTransitionSpeed() {
+		return this.smoothFirstPersonTransSpeed;
+	}
 
 	/**
 	 * Applies the given {@link CustomKeyFrameEvents.CustomKeyFrameHandler} to this controller, for handling {@link SoundKeyframeData sound keyframe instructions}

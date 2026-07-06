@@ -79,6 +79,27 @@ public interface IAnimation {
     }
 
     /**
+     * Weather the first-person hand smoothly slides in/out
+     */
+    default boolean isSmoothFirstPersonTransition() {
+        return false;
+    }
+
+    /**
+     * Whether the first-person body transform should follow the camera's pitch.
+     */
+    default boolean isFirstPersonFollowPitch() {
+        return false;
+    }
+
+    /**
+     * Gets the speed of the first-person transition
+     */
+    default float getFirstPersonTransitionSpeed() {
+        return 0.2f;
+    }
+
+    /**
      * Return true if the animation should be removed.
      */
     default boolean canRemove() {
