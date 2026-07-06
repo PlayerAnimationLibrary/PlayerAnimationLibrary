@@ -25,10 +25,13 @@
 package com.zigythebird.playeranim.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
 import com.zigythebird.playeranim.animation.PlayerAnimManager;
 import com.zigythebird.playeranim.util.RenderUtil;
+import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -50,6 +53,15 @@ public abstract class PlayerRendererMixin {
         var animationPlayer = ((IAnimatedPlayer)player).playerAnimLib$getAnimManager();
         if (animationPlayer != null && animationPlayer.isActive()) {
             ((IAnimatedPlayer)player).playerAnimLib$getAnimProcessor().handleAnimations(animationPlayer.getTickDelta(), false);
+
+            if (FirstPersonMode.isFirstPersonPass() && player == Minecraft.getInstance().cameraEntity) {
+                float pitch = player.getViewXRot(tickDelta);
+                float headYaw = player.getViewYRot(tickDelta);
+                poseStack.translate(0.0F, player.getEyeHeight(), 0.0F);
+                poseStack.mulPose(Axis.YP.rotationDegrees(bodyYaw - headYaw));
+                poseStack.mulPose(Axis.XP.rotationDegrees(-pitch));
+                poseStack.translate(0.0F, -player.getEyeHeight(), 0.0F);
+            }
 
             //These are additive properties
             PlayerAnimBone body = animationPlayer.get3DTransform(new PlayerAnimBone("body"));
