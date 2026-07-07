@@ -38,11 +38,23 @@ public class AnimationStack implements IAnimation {
     public void tick(AnimationData state) {
         for (Pair<Integer, IAnimation> layer : layers) layer.right().tick(state);
 
-        boolean shouldHide = (getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL && isActive() && isSmoothFirstPersonTransition());
+        boolean shouldHide = (getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL
+                && isActive()
+                && isSmoothFirstPersonTransition());
         float target = shouldHide ? 1.0f : 0.0f;
-        float speed = getFirstPersonTransitionSpeed();
-        transitionProgress += (target - transitionProgress) * speed;
-        if (Math.abs(transitionProgress - target) < 0.001f) transitionProgress = target;
+
+        int speedTicks = getFirstPersonTransitionSpeed();
+        if (speedTicks <= 0) transitionProgress = target;
+        else {
+            float step = 1.0f / speedTicks;
+            if (transitionProgress < target) {
+                transitionProgress += step;
+                if (transitionProgress > target) transitionProgress = target;
+            } else if (transitionProgress > target) {
+                transitionProgress -= step;
+                if (transitionProgress < target) transitionProgress = target;
+            }
+        }
     }
 
     @Override
@@ -128,7 +140,7 @@ public class AnimationStack implements IAnimation {
         return IAnimation.super.isSmoothFirstPersonTransition();
     }
 
-    public float getFirstPersonTransitionSpeed() {
+    public int getFirstPersonTransitionSpeed() {
         for (int i = layers.size() - 1; i >= 0; i--) {
             IAnimation layer = layers.get(i).right();
             if (layer.isActive()) return layer.getFirstPersonTransitionSpeed();

@@ -54,13 +54,12 @@ public class ItemInHandRendererMixin {
             var manager = player.playerAnimLib$getAnimManager();
             if (manager.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL) {
                 if (manager.isSmoothFirstPersonTransition()) {
-                    float progress = manager.getFirstPersonTransitionProgress();
-                    float factor = 1 - progress;
+                    float progress = 1 - manager.getFirstPersonTransitionProgress();
 
-                    this.mainHandHeight *= factor;
-                    this.offHandHeight *= factor;
-                    this.oMainHandHeight *= factor;
-                    this.oOffHandHeight *= factor;
+                    this.mainHandHeight *= progress;
+                    this.offHandHeight *= progress;
+                    this.oMainHandHeight *= progress;
+                    this.oOffHandHeight *= progress;
 
                 } else ci.cancel();
             }

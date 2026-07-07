@@ -93,12 +93,11 @@ public interface IAnimation {
     }
 
     /**
-     * Gets the speed of the first-person transition
+     * Gets the duration in ticks for the first‑person hand to slide up or down the screen during animations
      */
-    default float getFirstPersonTransitionSpeed() {
-        return 0.2f;
+    default int getFirstPersonTransitionSpeed() {
+        return 0;
     }
-
     /**
      * Return true if the animation should be removed.
      */

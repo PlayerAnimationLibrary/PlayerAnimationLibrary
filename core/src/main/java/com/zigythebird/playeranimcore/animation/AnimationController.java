@@ -71,7 +71,7 @@ import java.util.function.Predicate;
 public abstract class AnimationController implements IAnimation {
 	public static KeyframeLocation<Keyframe> EMPTY_KEYFRAME_LOCATION = new KeyframeLocation<>(new Keyframe(0), 0);
 	public static KeyframeLocation<Keyframe> EMPTY_SCALE_KEYFRAME_LOCATION = new KeyframeLocation<>(new Keyframe(0, Collections.singletonList(FloatExpression.ONE), Collections.singletonList(FloatExpression.ONE)), 0);
-	
+
 	protected final AnimationStateHandler stateHandler;
 	protected final Map<String, AdvancedPlayerAnimBone> bones = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, PlayerAnimBone> activeBones = new Object2ObjectOpenHashMap<>();
@@ -102,8 +102,7 @@ public abstract class AnimationController implements IAnimation {
 	protected Function<AnimationController, FirstPersonMode> firstPersonMode = null;
 	protected Function<AnimationController, FirstPersonConfiguration> firstPersonConfiguration = null;
 	private boolean firstPersonFollowPitch = false;
-	private boolean smoothFirstPersonTransition = false;
-	private float smoothFirstPersonTransSpeed = 0.2f;
+	private int smoothFirstPersonTransition = 0;
 	private final List<AbstractModifier> modifiers = new ArrayList<>();
 
 	private final InternalAnimationAccessor internalAnimationAccessor = new InternalAnimationAccessor(this);
@@ -136,29 +135,21 @@ public abstract class AnimationController implements IAnimation {
 		return this.firstPersonFollowPitch;
 	}
 
-	/**
-	 * If enabled, the vanilla first-person hand will slide down off-screen during animations
-	 * and slide back up once it has finished; as opposed to instantly flickering in and out
-	 */
-	public void setSmoothFirstPersonTransition(boolean smooth) {
-		this.smoothFirstPersonTransition = smooth;
-	}
-
 	@Override
 	public boolean isSmoothFirstPersonTransition() {
-		return this.smoothFirstPersonTransition;
+		return this.smoothFirstPersonTransition > 0;
 	}
 
 	/**
-	 * Allows you to set the speed of smooth first‑person transitions. Value needs to be between 0.01 and 1.0; default is 0.2
+	 * Sets duration in ticks for how long it takes for the vanilla hand to fully slide down/up the screen when first person animations are playing
 	 */
-	public void setFirstPersonTransitionSpeed(float speed) {
-		this.smoothFirstPersonTransSpeed = Math.max(0.01f, Math.min(1.0f, speed));
+	public void setFirstPersonTransitionDuration(int ticks) {
+		this.smoothFirstPersonTransition = Math.max(0, ticks);
 	}
 
 	@Override
-	public float getFirstPersonTransitionSpeed() {
-		return this.smoothFirstPersonTransSpeed;
+	public int getFirstPersonTransitionSpeed() {
+		return this.smoothFirstPersonTransition;
 	}
 
 	/**
