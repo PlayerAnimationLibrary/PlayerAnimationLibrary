@@ -3,12 +3,14 @@ package com.zigythebird.playeranimcore.animation.layered;
 import com.zigythebird.playeranimcore.animation.AnimationData;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonConfiguration;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
+import com.zigythebird.playeranimcore.bones.CustomBone;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import it.unimi.dsi.fastutil.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Player animation stack, can contain multiple active or passive layers, will always be evaluated from the lowest index.
@@ -130,5 +132,14 @@ public class AnimationStack implements IAnimation {
         return "AnimationStack{" +
                 "layers=" + layers +
                 '}';
+    }
+
+    @Override
+    public void collectModels(Consumer<CustomBone> consumer) {
+        for (Pair<Integer, IAnimation> layer : this.layers) {
+            if (layer.right().isActive()) {
+                layer.right().collectModels(consumer);
+            }
+        }
     }
 }
