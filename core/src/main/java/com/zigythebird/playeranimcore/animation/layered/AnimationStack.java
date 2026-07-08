@@ -16,7 +16,6 @@ import java.util.List;
  */
 public class AnimationStack implements IAnimation {
     protected final List<Pair<Integer, IAnimation>> layers = new ArrayList<>();
-    private float transitionProgress = 0;
 
     public List<Pair<Integer, IAnimation>> getLayers() {
         return this.layers;
@@ -30,31 +29,10 @@ public class AnimationStack implements IAnimation {
         return false;
     }
 
-    public float getFirstPersonTransitionProgress() {
-        return transitionProgress;
-    }
-
     @Override
     public void tick(AnimationData state) {
-        for (Pair<Integer, IAnimation> layer : layers) layer.right().tick(state);
-
-        boolean shouldHide = (getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL
-                && isActive()
-                && isSmoothFirstPersonTransition());
-        float target = shouldHide ? 1.0f : 0.0f;
-
-        int speedTicks = getFirstPersonTransitionSpeed();
-        if (speedTicks <= 0) transitionProgress = target;
-        else {
-            float step = 1.0f / speedTicks;
-            if (transitionProgress < target) {
-                transitionProgress += step;
-                if (transitionProgress > target) transitionProgress = target;
-            } else if (transitionProgress > target) {
-                transitionProgress -= step;
-                if (transitionProgress < target) transitionProgress = target;
-            }
-        }
+        for (Pair<Integer, IAnimation> layer : layers)
+            layer.right().tick(state);
     }
 
     @Override
@@ -132,20 +110,15 @@ public class AnimationStack implements IAnimation {
         return IAnimation.super.getFirstPersonConfiguration();
     }
 
-    public boolean isSmoothFirstPersonTransition() {
+    public int getFirstPersonTransitionLength() {
         for (int i = layers.size() - 1; i >= 0; i--) {
             IAnimation layer = layers.get(i).right();
-            if (layer.isActive()) return layer.isSmoothFirstPersonTransition();
+            if (layer.isActive() && layer.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL) {
+                int transitionLength = layer.getFirstPersonTransitionLength();
+                if (transitionLength > 0) return transitionLength;
+            }
         }
-        return IAnimation.super.isSmoothFirstPersonTransition();
-    }
-
-    public int getFirstPersonTransitionSpeed() {
-        for (int i = layers.size() - 1; i >= 0; i--) {
-            IAnimation layer = layers.get(i).right();
-            if (layer.isActive()) return layer.getFirstPersonTransitionSpeed();
-        }
-        return IAnimation.super.getFirstPersonTransitionSpeed();
+        return 0;
     }
 
     public boolean isFirstPersonFollowPitch() {

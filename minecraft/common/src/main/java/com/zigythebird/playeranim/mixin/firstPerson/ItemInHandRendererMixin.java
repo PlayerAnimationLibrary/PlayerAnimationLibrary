@@ -34,6 +34,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,24 +45,33 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ItemInHandRendererMixin {
 
     @Shadow private float mainHandHeight;
-    @Shadow private float oMainHandHeight;
     @Shadow private float offHandHeight;
-    @Shadow private float oOffHandHeight;
+
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     @Inject(method = "renderHandsWithItems", at = @At("HEAD"), cancellable = true)
     private void disableDefaultItemIfNeeded(float partialTicks, PoseStack poseStack, MultiBufferSource.BufferSource buffer, LocalPlayer localPlayer, int combinedLight, CallbackInfo ci) {
+        if (localPlayer instanceof IAnimatedPlayer player && player.playerAnimLib$getAnimManager().getFirstPersonTransitionProgress() == 1) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void disableDefaultItemIfNeeded(CallbackInfo ci) {
+        LocalPlayer localPlayer = this.minecraft.player;
         if (localPlayer instanceof IAnimatedPlayer player) {
             var manager = player.playerAnimLib$getAnimManager();
             if (manager.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL) {
-                if (manager.isSmoothFirstPersonTransition()) {
-                    float progress = 1 - manager.getFirstPersonTransitionProgress();
+                float progress = 1 - manager.getFirstPersonTransitionProgress();
 
-                    this.mainHandHeight *= progress;
-                    this.offHandHeight *= progress;
-                    this.oMainHandHeight *= progress;
-                    this.oOffHandHeight *= progress;
+                //Hand height doesn't have to be 0 for it to be off-screen
+                //The hands are off-screen at around progress 0.85
+                progress = 0.4f + (0.6f * progress);
 
-                } else ci.cancel();
+                this.mainHandHeight *= progress;
+                this.offHandHeight *= progress;
             }
         }
     }

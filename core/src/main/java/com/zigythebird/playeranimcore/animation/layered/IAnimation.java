@@ -79,13 +79,6 @@ public interface IAnimation {
     }
 
     /**
-     * Weather the first-person hand smoothly slides in/out
-     */
-    default boolean isSmoothFirstPersonTransition() {
-        return false;
-    }
-
-    /**
      * Whether the first-person body transform should follow the camera's pitch.
      */
     default boolean isFirstPersonFollowPitch() {
@@ -93,11 +86,13 @@ public interface IAnimation {
     }
 
     /**
-     * Gets the duration in ticks for the first‑person hand to slide up or down the screen during animations
+     * The duration in ticks that it takes for the vanilla first person hand to smoothly move out of the frame,
+     * and for the PAL one to start rendering.
      */
-    default int getFirstPersonTransitionSpeed() {
+    default int getFirstPersonTransitionLength() {
         return 0;
     }
+
     /**
      * Return true if the animation should be removed.
      */

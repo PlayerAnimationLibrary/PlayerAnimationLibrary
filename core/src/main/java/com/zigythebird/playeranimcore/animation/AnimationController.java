@@ -135,11 +135,6 @@ public abstract class AnimationController implements IAnimation {
 		return this.firstPersonFollowPitch;
 	}
 
-	@Override
-	public boolean isSmoothFirstPersonTransition() {
-		return this.smoothFirstPersonTransition > 0;
-	}
-
 	/**
 	 * Sets duration in ticks for how long it takes for the vanilla hand to fully slide down/up the screen when first person animations are playing
 	 */
@@ -148,7 +143,7 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	@Override
-	public int getFirstPersonTransitionSpeed() {
+	public int getFirstPersonTransitionLength() {
 		return this.smoothFirstPersonTransition;
 	}
 

@@ -53,7 +53,9 @@ public class LevelRendererMixin {
     private void fakeThirdPersonMode(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
         // mods may need to redirect that method, I want to avoid compatibility issues as long as possible
         defaultCameraState = camera.isDetached();
-        if (camera.getEntity() instanceof IAnimatedPlayer player && (player.playerAnimLib$getAnimManager().getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL)) {
+        if (camera.getEntity() instanceof IAnimatedPlayer player
+                && (player.playerAnimLib$getAnimManager().getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL)
+                && player.playerAnimLib$getAnimManager().getFirstPersonTransitionProgress() == 1) {
             FirstPersonMode.setFirstPersonPass(!camera.isDetached() && (!(camera.getEntity() instanceof LivingEntity) || !((LivingEntity) camera.getEntity()).isSleeping())); // this will cause a lot of pain
             ((CameraAccessor) camera).setDetached(true);
         }

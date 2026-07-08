@@ -1,7 +1,9 @@
 package com.zigythebird.playeranim.animation;
 
 import com.zigythebird.playeranim.util.RenderUtil;
+import com.zigythebird.playeranimcore.animation.AnimationData;
 import com.zigythebird.playeranimcore.animation.layered.AnimationStack;
+import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -19,6 +21,8 @@ public class PlayerAnimManager extends AnimationStack {
 	private float lastUpdateTime;
 	private boolean isFirstTick = true;
 	private float tickDelta;
+	private float firstPersonTransitionProgress = 0;
+	private boolean firstPersonTransitioningToPAL;
 
 	public PlayerAnimManager(AbstractClientPlayer player) {
 		this.player = player;
@@ -56,10 +60,39 @@ public class PlayerAnimManager extends AnimationStack {
 		return player;
 	}
 
+	public float getFirstPersonTransitionProgress() {
+		return firstPersonTransitionProgress;
+	}
+
+	public boolean isFirstPersonTransitioningToPAL() {
+		return firstPersonTransitioningToPAL;
+	}
+
 	public void updatePart(ModelPart part, ModelPart secondLayer, PlayerAnimBone bone) {
 		PartPose initialPose = part.getInitialPose();
 		bone = this.get3DTransform(bone);
 		RenderUtil.translatePartToBone(part, bone, initialPose);
 		RenderUtil.translatePartToBone(secondLayer, bone, initialPose);
+	}
+
+	@Override
+	public void tick(AnimationData state) {
+		super.tick(state);
+
+		int firstPersonTransitionLength = getFirstPersonTransitionLength();
+		float target = getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL ? 1.0f : 0.0f;
+		if (firstPersonTransitionLength <= 0) firstPersonTransitionProgress = target;
+		else {
+			float step = 1.0f / firstPersonTransitionLength;
+			if (firstPersonTransitionProgress < target) {
+				firstPersonTransitionProgress += step;
+				firstPersonTransitioningToPAL = true;
+				if (firstPersonTransitionProgress > target) firstPersonTransitionProgress = target;
+			} else if (firstPersonTransitionProgress > target) {
+				firstPersonTransitionProgress -= step;
+				firstPersonTransitioningToPAL = false;
+				if (firstPersonTransitionProgress < target) firstPersonTransitionProgress = target;
+			}
+		}
 	}
 }
