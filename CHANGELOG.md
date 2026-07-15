@@ -1,4 +1,3 @@
-- Fix #128
-- Bezier fixes
-- Fix lerp
-- Fix model disappearing for one frame during looping animations
+- Fix issue with custom pivots
+- Fix armor disappearing after first person animation is played
+- Fix NPE when currentAnimation is cleared during processing
