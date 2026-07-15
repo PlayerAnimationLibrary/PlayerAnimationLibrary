@@ -1,1 +1,3 @@
-- Port to 26.2
+- Fix issue with custom pivots
+- Fix armor disappearing after first person animation is played
+- Fix NPE when currentAnimation is cleared during processing
