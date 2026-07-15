@@ -27,11 +27,11 @@ public class MatrixUtil {
     }
 
     public static void translateToPivotPoint(Matrix4f matrix, Vec3f pivot) {
-        matrix.translate(pivot.x(), pivot.y(), pivot.z());
+        matrix.translate(pivot.x(), pivot.y(), -pivot.z());
     }
 
     public static void translateAwayFromPivotPoint(Matrix4f matrix, Vec3f pivot) {
-        matrix.translate(-pivot.x(), -pivot.y(), -pivot.z());
+        matrix.translate(-pivot.x(), -pivot.y(), pivot.z());
     }
 
     public static void prepMatrixForBone(Matrix4f matrix, PlayerAnimBone bone, Vec3f pivot) {
@@ -54,13 +54,12 @@ public class MatrixUtil {
     }
 
     public static void applyMatrixToBone(PlayerAnimBone bone, Matrix4f matrix, Vec3f pivot) {
-        matrix.translate(pivot.x(), pivot.y(), pivot.z());
+        translateToPivotPoint(matrix, pivot);
+        translateMatrixForBone(matrix, bone);
         MatrixUtil.rotateMatrixAroundBone(matrix, bone);
-        bone.addPos(
-                -matrix.m30() + pivot.x(),
-                matrix.m31() - pivot.y(),
-                -matrix.m32() - pivot.z()
-        );
+        bone.setPosX(-matrix.m30() + pivot.x());
+        bone.setPosY(matrix.m31() - pivot.y());
+        bone.setPosZ(-matrix.m32() + pivot.z());
 
         Vector3f rotation = matrix.getEulerAnglesZYX(new Vector3f());
         bone.updateRotation(rotation.x(), rotation.y(), rotation.z());
