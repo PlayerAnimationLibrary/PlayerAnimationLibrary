@@ -44,15 +44,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerRendererMixin {
     @Inject(method = "render(Lnet/minecraft/client/player/AbstractClientPlayer;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("HEAD"))
     private void modifyRenderState(AbstractClientPlayer entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
-        PlayerAnimManager animation = entity.playerAnimLib$getAnimManager();
+        PlayerAnimManager animation = ((IAnimatedPlayer)entity).playerAnimLib$getAnimManager();
         animation.setTickDelta(partialTicks);
     }
 
     @Inject(method = "setupRotations(Lnet/minecraft/client/player/AbstractClientPlayer;Lcom/mojang/blaze3d/vertex/PoseStack;FFFF)V", at = @At("RETURN"))
     private void applyBodyTransforms(AbstractClientPlayer player, PoseStack poseStack, float f, float bodyYaw, float tickDelta, float scale, CallbackInfo ci){
-        var animationPlayer = player.playerAnimLib$getAnimManager();
+        var animationPlayer = ((IAnimatedPlayer)player).playerAnimLib$getAnimManager();
         if (animationPlayer != null && animationPlayer.isActive()) {
-            player.playerAnimLib$getAnimProcessor().handleAnimations(animationPlayer.getTickDelta(), false);
+            ((IAnimatedPlayer)player).playerAnimLib$getAnimProcessor().handleAnimations(animationPlayer.getTickDelta(), false);
 
             if (FirstPersonMode.isFirstPersonPass() && player == Minecraft.getInstance().cameraEntity) {
                 float pitch = player.getViewXRot(tickDelta);

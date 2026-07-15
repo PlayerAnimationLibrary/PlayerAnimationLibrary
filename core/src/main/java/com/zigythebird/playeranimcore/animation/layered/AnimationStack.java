@@ -31,8 +31,9 @@ public class AnimationStack implements IAnimation {
 
     @Override
     public void tick(AnimationData state) {
-        for (Pair<Integer, IAnimation> layer : layers)
+        for (Pair<Integer, IAnimation> layer : layers) {
             layer.right().tick(state);
+        }
     }
 
     @Override
@@ -147,5 +148,4 @@ public class AnimationStack implements IAnimation {
                 "layers=" + layers +
                 '}';
     }
-
 }
