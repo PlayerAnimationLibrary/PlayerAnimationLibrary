@@ -1,6 +1,3 @@
-- Add item pivots
-- Fix state handler 
-- Fix bend applying to other bones
-- Fix compat with the playeranimator binary format
-- Fix crash
-- Bind cape to torso
+- Fix issue with custom pivots
+- Fix armor disappearing after first person animation is played
+- Fix NPE when currentAnimation is cleared during processing
