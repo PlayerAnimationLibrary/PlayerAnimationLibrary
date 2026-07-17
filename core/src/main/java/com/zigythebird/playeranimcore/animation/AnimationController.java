@@ -677,15 +677,15 @@ public abstract class AnimationController implements IAnimation {
 
 				for (PivotBone pivotBone : parents) {
 					MatrixUtil.prepMatrixForBone(matrix, pivotBone, pivotBone.getPivot());
-					bone.addPos(pivotBone.getPosX(), pivotBone.getPosY(), pivotBone.getPosZ());
 				}
 
 				Vec3f defaultPos = getBonePosition(bone.getName());
-				matrix.translate(defaultPos.x(), defaultPos.y(), defaultPos.z());
+				matrix.translate(defaultPos.x(), defaultPos.y(), -defaultPos.z());
+				MatrixUtil.translateMatrixForBone(matrix, bone);
 				MatrixUtil.rotateMatrixAroundBone(matrix, bone);
-				bone.setPosX(-matrix.m30() + defaultPos.x() + bone.getPosX());
-				bone.setPosY(matrix.m31() - defaultPos.y() + bone.getPosY());
-				bone.setPosZ(-matrix.m32() - defaultPos.z() + bone.getPosZ());
+				bone.setPosX(-matrix.m30() + defaultPos.x());
+				bone.setPosY(matrix.m31() - defaultPos.y());
+				bone.setPosZ(-matrix.m32() + defaultPos.z());
 
 				Vec3f rotation = matrix.getEulerRotation();
 				bone.updateRotation(rotation.x(), rotation.y(), rotation.z());
