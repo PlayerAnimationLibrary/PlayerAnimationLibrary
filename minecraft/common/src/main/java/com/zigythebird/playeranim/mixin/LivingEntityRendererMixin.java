@@ -25,6 +25,7 @@
 package com.zigythebird.playeranim.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
 import com.zigythebird.playeranim.util.RenderUtil;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
@@ -46,6 +47,15 @@ public class LivingEntityRendererMixin<S extends LivingEntityRenderState> {
             if (animationPlayer != null && animationPlayer.isActive()) {
                 avatarRenderState.playerAnimLib$getAnimManager().handleAnimations(animationPlayer.getTickDelta(), false, avatarRenderState.playerAnimLib$isFirstPersonPass());
                 poseStack.scale(-1.0F, -1.0F, 1.0F);
+
+                if (avatarRenderState.playerAnimLib$isFirstPersonPass()) {
+                    poseStack.translate(0.0F, state.eyeHeight, 0.0F);
+                    if (animationPlayer.isFirstPersonFollowsCamera()) {
+                        poseStack.mulPose(Axis.YP.rotationDegrees(-state.yRot));
+                        poseStack.mulPose(Axis.XP.rotationDegrees(-state.xRot));
+                    }
+                    poseStack.translate(0.0F, -state.eyeHeight, 0.0F);
+                }
 
                 //These are additive properties
                 PlayerAnimBone body = animationPlayer.get3DTransform(new PlayerAnimBone("body"));

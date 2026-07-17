@@ -102,6 +102,8 @@ public abstract class AnimationController implements IAnimation {
 
 	protected Function<AnimationController, FirstPersonMode> firstPersonMode = null;
 	protected Function<AnimationController, FirstPersonConfiguration> firstPersonConfiguration = null;
+	private boolean firstPersonFollowsCamera = false;
+	private int firstPersonTransitionLength = 0;
 	private final List<AbstractModifier> modifiers = new ArrayList<>();
 
 	private final InternalAnimationAccessor internalAnimationAccessor = new InternalAnimationAccessor(this);
@@ -122,6 +124,30 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	public abstract void registerBones();
+
+	/**
+	 * Sets whether the first‑person animation should follow the camera.
+	 */
+	public void setFirstPersonFollowsCamera(boolean followsCamera) {
+		this.firstPersonFollowsCamera = followsCamera;
+	}
+
+	@Override
+	public boolean isFirstPersonFollowsCamera() {
+		return this.firstPersonFollowsCamera;
+	}
+
+	/**
+	 * Sets duration in ticks for how long it takes for the vanilla hand to fully slide down/up the screen when first person animations are playing
+	 */
+	public void setFirstPersonTransitionLength(int ticks) {
+		this.firstPersonTransitionLength = Math.max(0, ticks);
+	}
+
+	@Override
+	public int getFirstPersonTransitionLength() {
+		return this.firstPersonTransitionLength;
+	}
 
 	/**
 	 * Applies the given {@link CustomKeyFrameEvents.CustomKeyFrameHandler} to this controller, for handling {@link SoundKeyframeData sound keyframe instructions}

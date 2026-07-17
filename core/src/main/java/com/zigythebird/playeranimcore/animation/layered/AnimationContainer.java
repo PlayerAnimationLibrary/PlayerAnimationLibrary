@@ -90,6 +90,16 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
     }
 
     @Override
+    public boolean isFirstPersonFollowsCamera() {
+        return anim != null ? anim.isFirstPersonFollowsCamera() : IAnimation.super.isFirstPersonFollowsCamera();
+    }
+
+    @Override
+    public int getFirstPersonTransitionLength() {
+        return anim != null ? anim.getFirstPersonTransitionLength() : IAnimation.super.getFirstPersonTransitionLength();
+    }
+
+    @Override
     public String toString() {
         return "AnimationContainer{" +
                 "anim=" + anim +
