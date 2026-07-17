@@ -61,7 +61,7 @@ public class ItemInHandRendererMixin {
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
-    private void disableDefaultItemIfNeeded(CallbackInfo ci) {
+    private void firstPersonTransitionLogic(CallbackInfo ci) {
         LocalPlayer localPlayer = this.minecraft.player;
         if (localPlayer instanceof IAnimatedAvatar player) {
             var manager = player.playerAnimLib$getAnimManager();
