@@ -23,9 +23,10 @@ public class FirstPersonOffsetModifier extends AbstractModifier {
     }
 
     @Override
-    public void get3DTransform(@NotNull PlayerAnimBone bone) {
-        super.get3DTransform(bone);
+    public PlayerAnimBone get3DTransform(@NotNull PlayerAnimBone bone) {
+        bone = super.get3DTransform(bone);
         if (this.isFirstPersonPass && "body".equals(bone.getName()))
-            bone.position.y += this.offset;
+            bone.positionY += this.offset;
+        return bone;
     }
 }

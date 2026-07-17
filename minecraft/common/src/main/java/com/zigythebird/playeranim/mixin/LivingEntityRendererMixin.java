@@ -49,12 +49,12 @@ public class LivingEntityRendererMixin<S extends LivingEntityRenderState> {
                 poseStack.scale(-1.0F, -1.0F, 1.0F);
 
                 if (avatarRenderState.playerAnimLib$isFirstPersonPass()) {
-                    poseStack.translate(0.0F, state.eyeHeight, 0.0F);
+                    poseStack.translate(0.0F, livingEntityRenderState.eyeHeight, 0.0F);
                     if (animationPlayer.isFirstPersonFollowsCamera()) {
-                        poseStack.mulPose(Axis.YP.rotationDegrees(-state.yRot));
-                        poseStack.mulPose(Axis.XP.rotationDegrees(-state.xRot));
+                        poseStack.mulPose(Axis.YP.rotationDegrees(-livingEntityRenderState.yRot));
+                        poseStack.mulPose(Axis.XP.rotationDegrees(-livingEntityRenderState.xRot));
                     }
-                    poseStack.translate(0.0F, -state.eyeHeight, 0.0F);
+                    poseStack.translate(0.0F, -livingEntityRenderState.eyeHeight, 0.0F);
                 }
 
                 //These are additive properties
