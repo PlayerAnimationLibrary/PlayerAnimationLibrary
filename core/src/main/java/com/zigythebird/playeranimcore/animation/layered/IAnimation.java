@@ -81,6 +81,21 @@ public interface IAnimation {
     }
 
     /**
+     * Whether the first-person body transform should follow the camera.
+     */
+    default boolean isFirstPersonFollowsCamera() {
+        return false;
+    }
+
+    /**
+     * The duration in ticks that it takes for the vanilla first person hand to smoothly move out of the frame,
+     * and for the PAL one to start rendering.
+     */
+    default int getFirstPersonTransitionLength() {
+        return 0;
+    }
+
+    /**
      * Return true if the animation should be removed.
      */
     default boolean canRemove() {
