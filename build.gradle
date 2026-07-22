@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils
 plugins {
     id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.8"
     id "xyz.wagyourtail.unimined" version "1.4.2-SNAPSHOT" apply false
-    id "com.gradleup.shadow" version "9.6.0" apply false
+    id "com.gradleup.shadow" version "9.6.1" apply false
 }
 
 allprojects {
