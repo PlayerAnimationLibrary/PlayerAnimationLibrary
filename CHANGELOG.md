@@ -1,4 +1,1 @@
-- Added first person APIs `setFirstPersonFollowsCamera` and `setFirstPersonTransitionLength`.
-- Fix issue with custom pivots
-- Fix armor disappearing after first person animation is played
-- Fix NPE when currentAnimation is cleared during processing
+- Backport Bezier functionality from 26.1+
