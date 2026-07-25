@@ -1,5 +1,6 @@
 package com.zigythebird.playeranimcore.easing;
 
+import com.zigythebird.playeranimcore.animation.keyframe.AnimationPoint;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
@@ -10,19 +11,21 @@ import team.unnamed.mocha.runtime.standard.MochaMath;
 import java.util.ArrayList;
 import java.util.List;
 
-abstract class BezierEasing implements EasingTypeTransformer {
+public class BezierEasing implements EasingTypeTransformer {
     @Override
     public Float2FloatFunction buildTransformer(@Nullable Float value) {
         return EasingType.easeIn(EasingType::linear);
     }
 
     @Override
-    public float apply(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
-        if (lerpValue >= 1) return endValue;
-        if (Float.isNaN(lerpValue) || lerpValue == 0) return startValue;
+    public float apply(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue) {
+        if (lerpValue >= 1) return animationPoint.animationEndValue();
+        if (Float.isNaN(lerpValue) || lerpValue == 0) return animationPoint.animationStartValue();
+
+        List<List<Expression>> easingArgs = animationPoint.easingArgs();
 
         if (easingArgs == null || easingArgs.isEmpty())
-            return MochaMath.lerp(startValue, endValue, buildTransformer(null).apply(lerpValue));
+            return MochaMath.lerp(animationPoint.animationStartValue(), animationPoint.animationEndValue(), buildTransformer(null).apply(lerpValue));
 
         float rightValue;
         float rightTime;
@@ -38,7 +41,7 @@ abstract class BezierEasing implements EasingTypeTransformer {
             rightTime = 0.1f;
         }
 
-        transitionLength /= 20f;
+        float transitionLength = animationPoint.transitionLength() / 20f;
 
         float time_handle_before = rightTime/transitionLength;
         float time_handle_after  = leftTime/transitionLength;
@@ -55,10 +58,10 @@ abstract class BezierEasing implements EasingTypeTransformer {
             leftValue /= 1 + Math.abs(time_handle_after - unclamped);
         }
 
-        Vector2f P0 = new Vector2f(0, startValue);
-        Vector2f P1 = new Vector2f(time_handle_before, startValue + rightValue);
-        Vector2f P2 = new Vector2f(time_handle_after + 1, endValue + leftValue);
-        Vector2f P3 = new Vector2f(1, endValue);
+        Vector2f P0 = new Vector2f(0, animationPoint.animationStartValue());
+        Vector2f P1 = new Vector2f(time_handle_before, animationPoint.animationStartValue() + rightValue);
+        Vector2f P2 = new Vector2f(time_handle_after + 1, animationPoint.animationEndValue() + leftValue);
+        Vector2f P3 = new Vector2f(1, animationPoint.animationEndValue());
 
         final List<Vector2f> points = new ArrayList<>();
 
