@@ -1,9 +1,9 @@
 package com.zigythebird.playeranimcore.easing;
 
 import com.zigythebird.playeranimcore.animation.keyframe.AnimationPoint;
+import com.zigythebird.playeranimcore.math.ModVector2d;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector2f;
 import team.unnamed.mocha.MochaEngine;
 import team.unnamed.mocha.parser.ast.Expression;
 import team.unnamed.mocha.runtime.standard.MochaMath;
@@ -58,34 +58,34 @@ public class BezierEasing implements EasingTypeTransformer {
             leftValue /= 1 + Math.abs(time_handle_after - unclamped);
         }
 
-        Vector2f P0 = new Vector2f(0, animationPoint.animationStartValue());
-        Vector2f P1 = new Vector2f(time_handle_before, animationPoint.animationStartValue() + rightValue);
-        Vector2f P2 = new Vector2f(time_handle_after + 1, animationPoint.animationEndValue() + leftValue);
-        Vector2f P3 = new Vector2f(1, animationPoint.animationEndValue());
+        ModVector2d P0 = new ModVector2d(0, animationPoint.animationStartValue());
+        ModVector2d P1 = new ModVector2d(time_handle_before, animationPoint.animationStartValue() + rightValue);
+        ModVector2d P2 = new ModVector2d(time_handle_after + 1, animationPoint.animationEndValue() + leftValue);
+        ModVector2d P3 = new ModVector2d(1, animationPoint.animationEndValue());
 
-        final List<Vector2f> points = new ArrayList<>();
+        final List<ModVector2d> points = new ArrayList<>();
 
         final int divisions = 200;
         for (int d = 0; d <= divisions; d++) {
             float t = (float) d /divisions;
-            points.add(new Vector2f(
+            points.add(new ModVector2d(
                 CubicBezier(t, P0.x, P1.x, P2.x, P3.x),
                 CubicBezier(t, P0.y, P1.y, P2.y, P3.y)
             ));
         }
 
-        Vector2f closest = new Vector2f();
+        ModVector2d closest = new ModVector2d();
         float closest_diff = Float.POSITIVE_INFINITY;
-        for (Vector2f point : points) {
+        for (ModVector2d point : points) {
             float diff = Math.abs(point.x - lerpValue);
             if (diff < closest_diff) {
                 closest_diff = diff;
                 closest = point;
             }
 		}
-        Vector2f second_closest = new Vector2f();
+        ModVector2d second_closest = new ModVector2d();
         closest_diff = Float.POSITIVE_INFINITY;
-        for (Vector2f point : points) {
+        for (ModVector2d point : points) {
             if (point == closest) break;
             float diff = Math.abs(point.x - lerpValue);
             if (diff < closest_diff) {

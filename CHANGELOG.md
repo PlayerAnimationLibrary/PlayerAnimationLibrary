@@ -1,2 +1,2 @@
-- Added first person APIs `setFirstPersonFollowsCamera` and `setFirstPersonTransitionLength`.
-- Fixed an issue with custom pivot bones.  
+- Backport Bezier functionality from 26.1+  
+- Fixed an issue where some MoLang queries combined with the speed modifier caused a crash.
