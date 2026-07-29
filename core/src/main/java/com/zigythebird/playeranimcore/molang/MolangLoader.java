@@ -86,19 +86,26 @@ public class MolangLoader {
     }
 
     public static <T> boolean setDoubleQuery(QueryBinding<T> binding, String name, ToDoubleFunction<T> value) {
-        return setControllerQuery(binding, name, controller -> NumberValue.of(value.applyAsDouble(controller)));
+        return setControllerQuery(binding, name, controller -> NumberValue.of(value.applyAsDouble(controller)), NumberValue.of(0.0f));
     }
 
     public static <T> boolean setBoolQuery(QueryBinding<T> binding, String name, Function<T, Boolean> value) {
-        return setControllerQuery(binding, name, controller -> Value.of((boolean) value.apply(controller)));
+        return setControllerQuery(binding, name, controller -> Value.of((boolean) value.apply(controller)), Value.of(false));
     }
 
     /**
      * some shit code
      */
-    public static <T> boolean setControllerQuery(QueryBinding<T> binding, String name, Function<T, Value> value) {
+    public static <T> boolean setControllerQuery(QueryBinding<T> binding, String name, Function<T, Value> value, Value defaultValue) {
         return binding.set(name, (team.unnamed.mocha.runtime.value.Function<T>)
-                (ctx, args) -> value.apply(ctx.entity())
+                (ctx, args) -> {
+                    try {
+                        return value.apply(ctx.entity());
+                    } catch (Exception e) {
+                        PlayerAnimLib.LOGGER.error(e.toString());
+                        return defaultValue;
+                    }
+                }
         );
     }
 

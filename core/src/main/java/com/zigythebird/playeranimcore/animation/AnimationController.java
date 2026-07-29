@@ -922,6 +922,7 @@ public abstract class AnimationController implements IAnimation {
 
 	@Override
 	public void tick(AnimationData state) {
+		this.animationData = state;
 		for (int i = 0; i < modifiers.size(); i++) {
 			if (modifiers.get(i).canRemove()) {
 				removeModifier(i--);
