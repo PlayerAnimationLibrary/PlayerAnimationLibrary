@@ -55,6 +55,7 @@ public class SpeedModifier extends AbstractModifier {
         float delta = state.getPartialTick() - this.delta; //this should stay positive
         this.delta = state.getPartialTick();
         step(delta, state);
+        super.setupAnim(state);
     }
 
     protected void step(float delta, AnimationData state) {
@@ -65,7 +66,6 @@ public class SpeedModifier extends AbstractModifier {
             super.tick(state);
         }
         state.setPartialTick(delta);
-        super.setupAnim(state);
         this.shiftedDelta = delta;
     }
 
