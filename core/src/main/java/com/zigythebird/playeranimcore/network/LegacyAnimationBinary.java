@@ -65,6 +65,7 @@ public final class LegacyAnimationBinary {
      * @param version   Binary version
      */
     public static void write(Animation animation, ByteBuf buf, int version) {
+        Map<String, BoneAnimation> boneAnimations = bonesToWrite(animation);
         buf.writeInt(animation.data().<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).orElse(0F).intValue());
         int endTick = animation.data().<Float>get(ExtraAnimationData.END_TICK_KEY).orElse(animation.length()).intValue();
         buf.writeInt(endTick);
@@ -82,20 +83,43 @@ public final class LegacyAnimationBinary {
         putBoolean(buf, false); //NSFW tag
         buf.writeByte(keyframeSize(version));
         if (version >= 2) {
-            buf.writeInt(animation.boneAnimations().size());
-            for (Map.Entry<String, BoneAnimation> part : animation.boneAnimations().entrySet()) {
+            buf.writeInt(boneAnimations.size());
+            for (Map.Entry<String, BoneAnimation> part : boneAnimations.entrySet()) {
                 putString(buf, UniversalAnimLoader.restorePlayerBoneName(part.getKey()));
                 writePart(buf, part.getKey(), part.getValue(), version, easeBefore);
             }
         } else {
-            writePart(buf, "head", animation.getBone("head"), version, easeBefore);
-            writePart(buf, "body", animation.getBone("body"), version, easeBefore);
-            writePart(buf, "right_arm", animation.getBone("right_arm"), version, easeBefore);
-            writePart(buf, "left_arm", animation.getBone("left_arm"), version, easeBefore);
-            writePart(buf, "right_leg", animation.getBone("right_leg"), version, easeBefore);
-            writePart(buf, "left_leg", animation.getBone("left_leg"), version, easeBefore);
+            writePart(buf, "head", boneAnimations.get("head"), version, easeBefore);
+            writePart(buf, "body", boneAnimations.get("body"), version, easeBefore);
+            writePart(buf, "right_arm", boneAnimations.get("right_arm"), version, easeBefore);
+            writePart(buf, "left_arm", boneAnimations.get("left_arm"), version, easeBefore);
+            writePart(buf, "right_leg", boneAnimations.get("right_leg"), version, easeBefore);
+            writePart(buf, "left_leg", boneAnimations.get("left_leg"), version, easeBefore);
         }
         NetworkUtils.writeUuid(buf, animation.uuid());
+    }
+
+    /**
+     * This format has no separate torso slot for the bend {@link ExtraAnimationData#APPLY_BEND_TO_OTHER_BONES_KEY}
+     * refers to, it is carried by the {@code body} bone instead and turned back into a torso bend by
+     * {@link #read(ByteBuf, int)}. Applies that mapping before writing, otherwise the flag - and in version 1,
+     * where there is no torso bone at all, the bend itself - would be lost.
+     */
+    private static Map<String, BoneAnimation> bonesToWrite(Animation animation) {
+        BoneAnimation torso = animation.boneAnimations().get("torso");
+        if (torso == null || torso.bendKeyFrames().isEmpty() ||
+                animation.data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) != Boolean.TRUE)
+            return animation.boneAnimations();
+
+        Map<String, BoneAnimation> bones = new LinkedHashMap<>(animation.boneAnimations());
+        BoneAnimation body = bones.getOrDefault("body", new BoneAnimation());
+        bones.put("body", new BoneAnimation(body.rotationKeyFrames(), body.positionKeyFrames(), body.scaleKeyFrames(), torso.bendKeyFrames()));
+
+        BoneAnimation bendlessTorso = new BoneAnimation(torso.rotationKeyFrames(), torso.positionKeyFrames(), torso.scaleKeyFrames(), Collections.emptyList());
+        if (bendlessTorso.hasKeyframes()) bones.put("torso", bendlessTorso);
+        else bones.remove("torso");
+
+        return bones;
     }
 
     /**
@@ -264,6 +288,7 @@ public final class LegacyAnimationBinary {
             BoneAnimation torso = boneAnimations.computeIfAbsent("torso", name -> new BoneAnimation());
             torso.bendKeyFrames().addAll(body.bendKeyFrames());
             body.bendKeyFrames().clear();
+            if (!body.hasKeyframes()) boneAnimations.remove("body");
             data.put(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY, true);
         }
         data.put(ExtraAnimationData.UUID_KEY, NetworkUtils.readUuid(buf));
@@ -376,18 +401,19 @@ public final class LegacyAnimationBinary {
     public static int calculateSize(Animation animation, int version) {
         //I will create less efficient loops, but these will be more easily fixable
         int size = 36;//The header makes xx bytes IIIBIBBBLL
+        Map<String, BoneAnimation> boneAnimations = bonesToWrite(animation);
         boolean easeBefore = animation.data().<Boolean>get(ExtraAnimationData.EASING_BEFORE_KEY)
                 .orElse(animation.data().data().getOrDefault(ExtraAnimationData.FORMAT_KEY, AnimationFormat.GECKOLIB) == AnimationFormat.GECKOLIB);
         if (version < 2) {
-            size += partSize(animation.getBone("head"), false, version, easeBefore);
-            size += partSize(animation.getBone("body"), true, version, easeBefore);
-            size += partSize(animation.getBone("right_arm"), true, version, easeBefore);
-            size += partSize(animation.getBone("left_arm"), true, version, easeBefore);
-            size += partSize(animation.getBone("right_leg"), true, version, easeBefore);
-            size += partSize(animation.getBone("left_leg"), true, version, easeBefore);
+            size += partSize(boneAnimations.get("head"), false, version, easeBefore);
+            size += partSize(boneAnimations.get("body"), true, version, easeBefore);
+            size += partSize(boneAnimations.get("right_arm"), true, version, easeBefore);
+            size += partSize(boneAnimations.get("left_arm"), true, version, easeBefore);
+            size += partSize(boneAnimations.get("right_leg"), true, version, easeBefore);
+            size += partSize(boneAnimations.get("left_leg"), true, version, easeBefore);
         } else {
             size += 4;
-            for (Map.Entry<String, BoneAnimation> entry : animation.boneAnimations().entrySet()) {
+            for (Map.Entry<String, BoneAnimation> entry : boneAnimations.entrySet()) {
                 size += stringSize(UniversalAnimLoader.restorePlayerBoneName(entry.getKey())) + partSize(entry.getValue(), BEND_BONE.test(entry.getKey()), version, easeBefore);
             }
         }
