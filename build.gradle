@@ -75,5 +75,5 @@ tasks.register("publishToDiscord", PublishDiscordTask) {
         it.fromEnvHack()
     }
 
-    footer = ""
+    footer = "||<@&1411332060051669062>||"
 }
