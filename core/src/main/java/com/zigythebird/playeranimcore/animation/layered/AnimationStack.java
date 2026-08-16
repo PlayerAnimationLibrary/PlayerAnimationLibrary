@@ -113,6 +113,25 @@ public class AnimationStack implements IAnimation {
         return IAnimation.super.getFirstPersonConfiguration();
     }
 
+    public int getFirstPersonTransitionLength() {
+        for (int i = layers.size() - 1; i >= 0; i--) {
+            IAnimation layer = layers.get(i).right();
+            if (layer.isActive() && layer.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL) {
+                int transitionLength = layer.getFirstPersonTransitionLength();
+                if (transitionLength > 0) return transitionLength;
+            }
+        }
+        return 0;
+    }
+
+    public boolean isFirstPersonFollowsCamera() {
+        for (int i = layers.size() - 1; i >= 0; i--) {
+            IAnimation layer = layers.get(i).right();
+            if (layer.isActive()) return layer.isFirstPersonFollowsCamera();
+        }
+        return IAnimation.super.isFirstPersonFollowsCamera();
+    }
+
     public int getPriority() {
         int priority = 0;
         for (int i=layers.size()-1; i>=0; i--) {

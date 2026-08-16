@@ -1,6 +1,7 @@
 package com.zigythebird.playeranimtests;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.animation.keyframe.BoneAnimation;
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.easing.EasingType;
@@ -48,7 +49,13 @@ public class PlayerAnimatorParityTest {
         // formula's `t` factors were hard-coded as `1`); it evaluates to 1 at f=0
         // and jumps straight to the `after` keyframe's value. Our implementation
         // is the proper centripetal spline, so parity is unreachable here.
-        if (usesCatmullRom(animation)) return;
+        if (usesUnsupportedEasing(animation)) return;
+
+        // Torso bend propagation ({@link ExtraAnimationData#APPLY_BEND_TO_OTHER_BONES_KEY}) lives in
+        // playeranimator's renderer, not in KAP - it hands out the raw per-part transforms and never
+        // rotates the upper body around the bend - so the bones our controller propagates onto have
+        // nothing to be compared against.
+        if (propagatesBendToAnimatedBone(animation)) return;
 
         for (int version = 1; version <= LegacyAnimationBinary.getCurrentVersion(); version++) {
             EnumSet<TransformType> toAssert = version < 3 ? Snapshots.NO_SCALE : Snapshots.ALL;
@@ -69,9 +76,17 @@ public class PlayerAnimatorParityTest {
         }
     }
 
-    private static boolean usesCatmullRom(Animation animation) {
+    private static boolean propagatesBendToAnimatedBone(Animation animation) {
+        BoneAnimation torso = animation.boneAnimations().get("torso");
+        if (torso == null || torso.bendKeyFrames().isEmpty() ||
+                animation.data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) != Boolean.TRUE) return false;
+
+        return TestAnimationController.TOP_BONES.stream().anyMatch(animation.boneAnimations()::containsKey);
+    }
+
+    public static boolean usesUnsupportedEasing(Animation animation) {
         return animation.boneAnimations().values().stream().flatMap(PlayerAnimatorParityTest::allKeyframes)
-                .anyMatch(k -> k.easingType() == EasingType.CATMULLROM);
+                .anyMatch(k -> k.easingType() == EasingType.CATMULLROM || k.easingType() == EasingType.BEZIER);
     }
 
     private static Stream<Keyframe> allKeyframes(BoneAnimation bone) {

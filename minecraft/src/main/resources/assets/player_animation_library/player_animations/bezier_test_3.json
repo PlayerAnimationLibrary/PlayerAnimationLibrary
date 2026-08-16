@@ -1,0 +1,53 @@
+{
+    "format_version": "1.8.0",
+    "geckolib_format_version": 2,
+    "model": {},
+    "parents": {},
+    "animations": {
+        "bezier_test_3": {
+            "loopTick": 0.02,
+            "loop": true,
+            "animation_length": 2.0,
+            "player_animation_library": {
+                "name": "bezier_test_3",
+                "author": "MineEmotes",
+                "description": "",
+                "bages": []
+            },
+            "bones": {
+                "leftArm": {
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "bezier",
+                            "easingArgsX": [
+                                57.2816,
+                                -1.07442,
+                                -774.90649,
+                                13.47841
+                            ]
+                        },
+                        "2.0": {
+                            "vector": [
+                                0.0,
+                                "pal.disabled",
+                                "pal.disabled"
+                            ],
+                            "easingX": "bezier",
+                            "easingArgsX": [
+                                -714.36216,
+                                -11.43617,
+                                -40.17578,
+                                0.59973
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

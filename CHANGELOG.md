@@ -1,4 +1,4 @@
-- Fix compat with the playeranimator binary format
-- Fix crash
-- Bind cape to torso
-- Restore and deprecate old bend system
+- Added first person APIs `setFirstPersonFollowsCamera` and `setFirstPersonTransitionLength`.
+- Fix issue with custom pivots
+- Fix armor disappearing after first person animation is played
+- Fix NPE when currentAnimation is cleared during processing

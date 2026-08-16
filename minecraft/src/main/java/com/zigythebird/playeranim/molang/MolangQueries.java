@@ -170,7 +170,7 @@ public final class MolangQueries {
 
             return directionId < 2 ? 6 : directionId;
         });
-        MolangLoader.setDoubleQuery(binding, DISTANCE_FROM_CAMERA, actor -> Minecraft.getInstance().gameRenderer.getMainCamera().position().distanceTo(((PlayerAnimationController) actor).getAvatar().position()));
+        MolangLoader.setDoubleQuery(binding, DISTANCE_FROM_CAMERA, actor -> Minecraft.getInstance().gameRenderer.mainCamera().position().distanceTo(((PlayerAnimationController) actor).getAvatar().position()));
         MolangLoader.setDoubleQuery(binding, GET_ACTOR_INFO_ID, actor -> ((PlayerAnimationController) actor).getAvatar().getId());
         MolangLoader.setDoubleQuery(binding, EQUIPMENT_COUNT, actor -> ((PlayerAnimationController) actor).getAvatar() instanceof EquipmentUser armorable ? Arrays.stream(EquipmentSlot.values()).filter(EquipmentSlot::isArmor).filter(slot -> !armorable.getItemBySlot(slot).isEmpty()).count() : 0);
         MolangLoader.setBoolQuery(binding, HAS_COLLISION, actor -> !((PlayerAnimationController) actor).getAvatar().noPhysics);

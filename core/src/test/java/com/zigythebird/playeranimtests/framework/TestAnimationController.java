@@ -13,6 +13,7 @@ import com.zigythebird.playeranimcore.molang.MolangLoader;
 import org.redlance.common.utils.ReflectUtils;
 
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Test-only subclass of {@link HumanoidAnimationController} that drives the
@@ -24,6 +25,12 @@ import java.util.EnumSet;
  * lives here — there's no need to expose the field through a getter.
  */
 public class TestAnimationController extends HumanoidAnimationController {
+    /**
+     * {@link HumanoidAnimationController#top_bones} - the bones a torso bend is propagated onto when
+     * {@link ExtraAnimationData#APPLY_BEND_TO_OTHER_BONES_KEY} is set - is {@code protected} on the parent.
+     */
+    public static final List<String> TOP_BONES = new TestAnimationController().top_bones;
+
     public TestAnimationController() {
         super((_, _, _) -> PlayState.STOP, MolangLoader::createNewEngine);
     }

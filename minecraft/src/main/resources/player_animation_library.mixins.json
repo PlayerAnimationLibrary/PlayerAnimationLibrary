@@ -16,7 +16,7 @@
     "firstPerson.HumanoidArmorLayerMixin",
     "firstPerson.ItemInHandLayerMixin",
     "firstPerson.ItemInHandRendererMixin",
-    "firstPerson.LevelRendererMixin",
+    "firstPerson.LevelExtractorMixin",
     "firstPerson.LivingEntityRendererMixin"
   ],
   "mixins": [],
