@@ -102,6 +102,8 @@ public abstract class AnimationController implements IAnimation {
 
 	protected Function<AnimationController, FirstPersonMode> firstPersonMode = null;
 	protected Function<AnimationController, FirstPersonConfiguration> firstPersonConfiguration = null;
+	private boolean firstPersonFollowsCamera = false;
+	private int firstPersonTransitionLength = 0;
 	private final List<AbstractModifier> modifiers = new ArrayList<>();
 
 	private final InternalAnimationAccessor internalAnimationAccessor = new InternalAnimationAccessor(this);
@@ -122,6 +124,30 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	public abstract void registerBones();
+
+	/**
+	 * Sets whether the first‑person animation should follow the camera.
+	 */
+	public void setFirstPersonFollowsCamera(boolean followsCamera) {
+		this.firstPersonFollowsCamera = followsCamera;
+	}
+
+	@Override
+	public boolean isFirstPersonFollowsCamera() {
+		return this.firstPersonFollowsCamera;
+	}
+
+	/**
+	 * Sets duration in ticks for how long it takes for the vanilla hand to fully slide down/up the screen when first person animations are playing
+	 */
+	public void setFirstPersonTransitionLength(int ticks) {
+		this.firstPersonTransitionLength = Math.max(0, ticks);
+	}
+
+	@Override
+	public int getFirstPersonTransitionLength() {
+		return this.firstPersonTransitionLength;
+	}
 
 	/**
 	 * Applies the given {@link CustomKeyFrameEvents.CustomKeyFrameHandler} to this controller, for handling {@link SoundKeyframeData sound keyframe instructions}
@@ -481,7 +507,7 @@ public abstract class AnimationController implements IAnimation {
 	 */
 	@AutoreleasePool
 	public void process(AnimationData state) {
-		float adjustedTick = state.getPartialTick() + this.startAnimFrom + tick;
+		float adjustedTick = Math.max(0.0F, state.getPartialTick() + this.startAnimFrom + tick);
 
 		PlayState playState = handleAnimation(state);
 
@@ -519,13 +545,18 @@ public abstract class AnimationController implements IAnimation {
 	 */
 	@AutoreleasePool
 	private void processCurrentAnimation(float adjustedTick, AnimationData animationData) {
-		Animation animation = this.currentAnimation.animation();
+		QueuedAnimation queued = this.currentAnimation;
+		if (queued == null) {
+			this.animationState = State.STOPPED;
+			return;
+		}
+		Animation animation = queued.animation();
 
 		if (adjustedTick >= animation.length()) {
-			if (this.currentAnimation.loopType().shouldPlayAgain(this, animation)) {
+			if (queued.loopType().shouldPlayAgain(this, animation)) {
 				if (this.animationState != State.PAUSED) {
 					this.tick = 0;
-					this.startAnimFrom = this.currentAnimation.loopType().restartFromTick(this, animation);
+					this.startAnimFrom = queued.loopType().restartFromTick(this, animation);
 					adjustedTick = this.startAnimFrom;
 					this.startAnimFrom -= animationData.getPartialTick();
 					resetEventKeyFrames();
@@ -553,12 +584,13 @@ public abstract class AnimationController implements IAnimation {
 					this.startAnimFrom = -animationData.getPartialTick();
 					adjustedTick = 0;
 					this.currentAnimation = this.animationQueue.poll();
+					queued = this.currentAnimation;
 					setupNewAnimation();
 				}
 			}
 		}
 
-		if (this.currentAnimation == null) return;
+		if (queued == null) return;
 		for (PlayerAnimBone bone : this.bones.values()) {
 			bone.setToInitialPose();
 		}
@@ -584,19 +616,19 @@ public abstract class AnimationController implements IAnimation {
 			List<Keyframe> bendKeyFrames = boneAnimation.bendKeyFrames();
 			EasingType easingOverride = this.overrideEasingTypeFunction.apply(this);
 
-			bone.rotation.x = computeAnimValue(rotationKeyFrames.xKeyframes(), adjustedTick, TransformType.ROTATION, easingOverride, isAdvancedBone ? advancedBone::setRotXTransitionLength : null);
-			bone.rotation.y = computeAnimValue(rotationKeyFrames.yKeyframes(), adjustedTick, TransformType.ROTATION, easingOverride, isAdvancedBone ? advancedBone::setRotYTransitionLength : null);
-			bone.rotation.z = computeAnimValue(rotationKeyFrames.zKeyframes(), adjustedTick, TransformType.ROTATION, easingOverride, isAdvancedBone ? advancedBone::setRotZTransitionLength : null);
+			bone.rotation.x = computeAnimValue(queued, rotationKeyFrames.xKeyframes(), adjustedTick, TransformType.ROTATION, easingOverride, isAdvancedBone ? advancedBone::setRotXTransitionLength : null);
+			bone.rotation.y = computeAnimValue(queued, rotationKeyFrames.yKeyframes(), adjustedTick, TransformType.ROTATION, easingOverride, isAdvancedBone ? advancedBone::setRotYTransitionLength : null);
+			bone.rotation.z = computeAnimValue(queued, rotationKeyFrames.zKeyframes(), adjustedTick, TransformType.ROTATION, easingOverride, isAdvancedBone ? advancedBone::setRotZTransitionLength : null);
 
-			bone.position.x = computeAnimValue(positionKeyFrames.xKeyframes(), adjustedTick, TransformType.POSITION, easingOverride, isAdvancedBone ? advancedBone::setPositionXTransitionLength : null);
-			bone.position.y = computeAnimValue(positionKeyFrames.yKeyframes(), adjustedTick, TransformType.POSITION, easingOverride, isAdvancedBone ? advancedBone::setPositionYTransitionLength : null);
-			bone.position.z = computeAnimValue(positionKeyFrames.zKeyframes(), adjustedTick, TransformType.POSITION, easingOverride, isAdvancedBone ? advancedBone::setPositionZTransitionLength : null);
+			bone.position.x = computeAnimValue(queued, positionKeyFrames.xKeyframes(), adjustedTick, TransformType.POSITION, easingOverride, isAdvancedBone ? advancedBone::setPositionXTransitionLength : null);
+			bone.position.y = computeAnimValue(queued, positionKeyFrames.yKeyframes(), adjustedTick, TransformType.POSITION, easingOverride, isAdvancedBone ? advancedBone::setPositionYTransitionLength : null);
+			bone.position.z = computeAnimValue(queued, positionKeyFrames.zKeyframes(), adjustedTick, TransformType.POSITION, easingOverride, isAdvancedBone ? advancedBone::setPositionZTransitionLength : null);
 
-			bone.scale.x = computeAnimValue(scaleKeyFrames.xKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleXTransitionLength : null);
-			bone.scale.y = computeAnimValue(scaleKeyFrames.yKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleYTransitionLength : null);
-			bone.scale.z = computeAnimValue(scaleKeyFrames.zKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleZTransitionLength : null);
+			bone.scale.x = computeAnimValue(queued, scaleKeyFrames.xKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleXTransitionLength : null);
+			bone.scale.y = computeAnimValue(queued, scaleKeyFrames.yKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleYTransitionLength : null);
+			bone.scale.z = computeAnimValue(queued, scaleKeyFrames.zKeyframes(), adjustedTick, TransformType.SCALE, easingOverride, isAdvancedBone ? advancedBone::setScaleZTransitionLength : null);
 
-			bone.bend = computeAnimValue(bendKeyFrames, adjustedTick, TransformType.BEND, easingOverride, isAdvancedBone ? advancedBone::setBendTransitionLength : null);
+			bone.bend = computeAnimValue(queued, bendKeyFrames, adjustedTick, TransformType.BEND, easingOverride, isAdvancedBone ? advancedBone::setBendTransitionLength : null);
         }
 
 		applyCustomPivotPoints();
@@ -721,7 +753,7 @@ public abstract class AnimationController implements IAnimation {
 			if (bones.containsKey(entry.getKey())) {
 				AdvancedPlayerAnimBone bone = bones.get(entry.getKey());
 				this.activeBones.put(entry.getKey(), bone);
-				if (isDisableAxisIfNotModified()) {
+				if (this.currentAnimation.isDisableAxisIfNotModified()) {
 					BoneAnimation boneAnimation = entry.getValue();
 					bone.positionXEnabled = !boneAnimation.positionKeyFrames().xKeyframes().isEmpty();
 					bone.positionYEnabled = !boneAnimation.positionKeyFrames().yKeyframes().isEmpty();
@@ -757,11 +789,12 @@ public abstract class AnimationController implements IAnimation {
 	/**
 	 * Compute animation value for the given keyframes at the specified tick
 	 */
-	private float computeAnimValue(List<Keyframe> frames, float tick, TransformType type, @Nullable EasingType easingOverride, Consumer<Float> transitionLengthSetter) {
-		Animation animation = this.currentAnimation.animation();
-		float endTick = animation.data().<Float>get(ExtraAnimationData.END_TICK_KEY).orElse(animation.length()-1);
+	private float computeAnimValue(QueuedAnimation queued, List<Keyframe> frames, float tick, TransformType type, @Nullable EasingType easingOverride, Consumer<Float> transitionLengthSetter) {
+		Animation animation = queued.animation();
+		ExtraAnimationData extraData = animation.data();
+		float endTick = extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).orElse(animation.length()-1);
 
-		KeyframeLocation location = getCurrentKeyFrameLocation(frames, tick, type, this.isAnimationPlayerAnimatorFormat() && this.currentAnimation.loopType().shouldPlayAgain(null, animation), animation.length(), this.currentAnimation.loopType().restartFromTick(null, animation));
+		KeyframeLocation location = getCurrentKeyFrameLocation(frames, tick, type, queued.isAnimationPlayerAnimatorFormat() && queued.loopType().shouldPlayAgain(null, animation), animation.length(), queued.loopType().restartFromTick(null, animation));
 		Keyframe currentFrame = location.keyframe();
 		float startValue = this.molangRuntime.eval(currentFrame.startValue());
 		float endValue = this.molangRuntime.eval(currentFrame.endValue());
@@ -776,11 +809,10 @@ public abstract class AnimationController implements IAnimation {
 		}
 
 		if (transitionLengthSetter != null) {
-			ExtraAnimationData extraData = animation.data();
-			if (hasBeginTick() && !frames.isEmpty() && currentFrame == frames.getFirst() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > tick) {
+			if (queued.hasBeginTick() && !frames.isEmpty() && currentFrame == frames.getFirst() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > tick) {
 				startValue = endValue;
 				transitionLengthSetter.accept(currentFrame.length());
-			} else if (hasEndTick() && !frames.isEmpty() && currentFrame == frames.getLast() && endTick <= tick) {
+			} else if (queued.hasEndTick() && !frames.isEmpty() && currentFrame == frames.getLast() && endTick <= tick) {
 				transitionLengthSetter.accept(animation.length() - endTick);
 			} else transitionLengthSetter.accept(null);
 		}
@@ -835,12 +867,12 @@ public abstract class AnimationController implements IAnimation {
 	public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
 		if (activeBones.containsKey(bone.getName())) {
 			PlayerAnimBone bone1 = activeBones.get(bone.getName());
-			if (this.currentAnimation != null && bone1 instanceof AdvancedPlayerAnimBone advancedBone) {
-				ExtraAnimationData extraData = this.currentAnimation.animation().data();
-				if (hasBeginTick() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > this.getAnimationTicks()) {
+			QueuedAnimation queued = this.currentAnimation;
+			if (queued != null && bone1 instanceof AdvancedPlayerAnimBone advancedBone) {
+				ExtraAnimationData extraData = queued.animation().data();
+				if (queued.hasBeginTick() && extraData.<Float>get(ExtraAnimationData.BEGIN_TICK_KEY).get() > this.getAnimationTicks()) {
 					bone.beginOrEndTickLerp(advancedBone, this.getAnimationTicks(), null);
-				}
-				else if (hasEndTick() && extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get() <= this.getAnimationTicks()) {
+				} else if (queued.hasEndTick() && extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get() <= this.getAnimationTicks()) {
 					bone.beginOrEndTickLerp(advancedBone, this.getAnimationTicks() - extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).get(), this.currentAnimation.animation());
 				}
 				else bone.copyOtherBoneIfNotDisabled(bone1);
@@ -898,6 +930,7 @@ public abstract class AnimationController implements IAnimation {
 	@Override
 	@AutoreleasePool
 	public void tick(AnimationData state) {
+		this.animationData = state;
 		for (int i = 0; i < modifiers.size(); i++) {
 			if (modifiers.get(i).canRemove()) {
 				removeModifier(i--);

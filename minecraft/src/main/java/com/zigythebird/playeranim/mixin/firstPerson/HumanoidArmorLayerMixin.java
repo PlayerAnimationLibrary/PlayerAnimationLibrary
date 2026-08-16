@@ -44,7 +44,10 @@ public abstract class HumanoidArmorLayerMixin<T extends HumanoidRenderState, A e
     @Inject(method = "renderArmorPiece", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/EquipmentLayerRenderer;renderLayers(Lnet/minecraft/client/resources/model/EquipmentClientInfo$LayerType;Lnet/minecraft/resources/ResourceKey;Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lnet/minecraft/world/item/ItemStack;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;II)V"), cancellable = true)
     private void modifyArmorVisibility(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, ItemStack itemStack, EquipmentSlot equipmentSlot, int i, HumanoidRenderState humanoidRenderState, CallbackInfo ci, @Local(ordinal = 0) HumanoidModel<?> humanoidModel) {
         if (humanoidRenderState instanceof IAvatarAnimationState state && state.playerAnimLib$isFirstPersonPass()) {
-            humanoidModel.root().visible = false;
+            humanoidModel.head.visible = false;
+            humanoidModel.body.visible = false;
+            humanoidModel.leftLeg.visible = false;
+            humanoidModel.rightLeg.visible = false;
             AvatarAnimManager emote = state.playerAnimLib$getAnimManager();
             if (equipmentSlot == EquipmentSlot.CHEST && emote.getFirstPersonConfiguration().isShowArmor()) {
                 humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();

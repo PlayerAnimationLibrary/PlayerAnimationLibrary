@@ -32,9 +32,9 @@ import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
 import com.zigythebird.playeranim.util.ClientUtil;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.extract.LevelExtractor;
 import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,8 +42,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LevelRenderer.class)
-public class LevelRendererMixin {
+@Mixin(LevelExtractor.class)
+public class LevelExtractorMixin {
     @ModifyExpressionValue(method = "extractVisibleEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;isDetached()Z"))
     private boolean fakeThirdPersonMode(boolean original, @Local(argsOnly = true) Camera camera, @Share("firstPerson") LocalBooleanRef isFirstPerson) {
         if (ClientUtil.shouldBeFirstPersonPass(camera)) {
