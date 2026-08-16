@@ -72,18 +72,4 @@ public class PlayerAnimationController extends HumanoidAnimationController {
     public boolean replaceAnimationWithFade(@NotNull AbstractFadeModifier fadeModifier, @Nullable Identifier newAnimation) {
         return replaceAnimationWithFade(fadeModifier, newAnimation, true);
     }
-
-    /**
-     * Get the position of a bone in the world in the form of a PoseStack.
-     */
-    public @Nullable PoseStack getBoneWorldPositionPoseStack(String name, float tickDelta, Vec3 cameraPos) {
-        if (!this.activeBones.containsKey(name)) return null;
-        PoseStack poseStack = new PoseStack();
-        Vec3f pivot = getBonePosition(name);
-        Vec3 position = avatar.getPosition(tickDelta).subtract(cameraPos).add(pivot.x(), pivot.y(), pivot.z());
-        poseStack.translate(position.x(), position.y(), position.z());
-        poseStack.mulPose(Axis.YP.rotationDegrees(180 - Mth.lerp(tickDelta, avatar.yBodyRotO, avatar.yBodyRot)));
-        RenderUtil.translateMatrixToBone(poseStack, this.activeBones.get(name));
-        return poseStack;
-    }
 }
