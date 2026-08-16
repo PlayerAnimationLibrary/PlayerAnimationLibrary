@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.fabric;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
 import com.zigythebird.playeranim.animation.PlayerAnimResources;
 import com.zigythebird.playeranim.commands.PlayerAnimCommands;
@@ -9,6 +10,7 @@ import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.packs.PackType;
 
+@J2ObjCIncompatible
 public final class PlayerAnimLibModFabric extends PlayerAnimLibMod implements ClientModInitializer {
     @Override
     public void onInitializeClient() {

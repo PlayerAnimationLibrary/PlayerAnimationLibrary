@@ -1,6 +1,6 @@
 package com.zigythebird.playeranimcore.math;
 
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 /**
  * Some casts to {@link float} to make my life easier.

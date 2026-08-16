@@ -3,11 +3,11 @@ package com.zigythebird.playeranimcore.molang;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.runtime.binding.Binding;
-import team.unnamed.mocha.runtime.value.ObjectProperty;
-import team.unnamed.mocha.runtime.value.ObjectValue;
-import team.unnamed.mocha.runtime.value.Value;
-import team.unnamed.mocha.util.CaseInsensitiveStringHashMap;
+import org.redlance.mocha.runtime.binding.Binding;
+import org.redlance.mocha.runtime.value.ObjectProperty;
+import org.redlance.mocha.runtime.value.ObjectValue;
+import org.redlance.mocha.runtime.value.Value;
+import org.redlance.mocha.runtime.util.CaseInsensitiveStringHashMap;
 
 import java.util.Locale;
 import java.util.Map;

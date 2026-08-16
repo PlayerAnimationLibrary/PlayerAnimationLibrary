@@ -1,6 +1,7 @@
 package com.zigythebird.playeranimcore.util;
 
 import com.google.gson.*;
+import com.google.j2objc.annotations.ReflectionSupport;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 /**
  * Json helper class for various json functions
  */
+@ReflectionSupport(ReflectionSupport.Level.FULL)
 public final class JsonUtil {
     private JsonUtil() {}
 

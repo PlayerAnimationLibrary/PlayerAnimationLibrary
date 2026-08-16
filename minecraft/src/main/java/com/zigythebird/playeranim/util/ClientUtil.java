@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.util;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.accessors.IAnimatedAvatar;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
 import net.minecraft.client.Camera;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Helper class for segregating client-side code
  */
+@J2ObjCIncompatible
 public final class ClientUtil {
 	/**
 	 * Get the player on the client

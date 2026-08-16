@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "*"
-issueTrackerURL = "https://github.com/ZigyTheBird/PlayerAnimationLibrary/issues"
+issueTrackerURL = "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary/issues"
 license = "MIT License"
 
 [[mods]]
@@ -12,7 +12,7 @@ description = '''
 A library that allows mods to animate the player, in a way that doesn't conflict with other mods. (and much more!)
 '''
 
-displayURL = "https://docs.zigythebird.com/pal/intro"
+displayURL = "https://docs.zigythebird.com/pal"
 logoFile = "icon.png"
 
 [[dependencies.player_animation_library]]

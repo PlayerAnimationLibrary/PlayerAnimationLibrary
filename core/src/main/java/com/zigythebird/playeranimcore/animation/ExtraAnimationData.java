@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+@ReflectionSupport(ReflectionSupport.Level.FULL)
 public record ExtraAnimationData(Map<String, Object> data) {
     public static final String NAME_KEY = "name";
     public static final String UUID_KEY = "uuid";

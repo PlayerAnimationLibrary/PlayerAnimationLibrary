@@ -24,6 +24,7 @@
 
 package com.zigythebird.playeranim.molang;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
@@ -42,6 +43,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Arrays;
 import java.util.Optional;
 
+@J2ObjCIncompatible
 public final class MolangQueries {
     public static final String ACTOR_COUNT = "actor_count";
     public static final String BLOCKING = "blocking";

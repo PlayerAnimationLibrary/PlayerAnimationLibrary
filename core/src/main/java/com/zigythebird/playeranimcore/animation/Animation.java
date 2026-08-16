@@ -26,6 +26,7 @@ package com.zigythebird.playeranimcore.animation;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.animation.keyframe.BoneAnimation;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.CustomInstructionKeyframeData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.ParticleKeyframeData;
@@ -44,6 +45,7 @@ import java.util.function.Supplier;
  * <p>
  * Modifications or extensions of a compiled Animation are not supported, and therefore an instance of <code>Animation</code> is considered final and immutable
  */
+@ReflectionSupport(ReflectionSupport.Level.FULL)
 public record Animation(ExtraAnimationData data, float length, LoopType loopType, Map<String, BoneAnimation> boneAnimations, Keyframes keyFrames, Map<String, Vec3f> bones, Map<String, String> parents) implements Supplier<UUID> {
     public record Keyframes(SoundKeyframeData[] sounds, ParticleKeyframeData[] particles, CustomInstructionKeyframeData[] customInstructions) {
         @Override
