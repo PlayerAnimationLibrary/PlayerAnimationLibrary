@@ -1,4 +1,5 @@
 apply plugin: "java-library"
+apply plugin: "me.champeau.jmh"
 
 dependencies {
     api("org.redlance.common-utils:services:$rootProject.commonutils_version") { transitive = false }
@@ -20,8 +21,6 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("dev.kosmx.player-anim:anim-core:2.0.3.2+1.21.5")
     testImplementation("org.redlance.common-utils:reflect:$rootProject.commonutils_version") { transitive = false }
-    testImplementation("org.openjdk.jmh:jmh-core:1.37")
-    testAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
 }
 
 sourceSets {
@@ -30,6 +29,36 @@ sourceSets {
             srcDir("../minecraft/src/main/resources")
         }
     }
+
+    // The benchmarks measure the library against its own shipped animations
+    jmh {
+        resources {
+            srcDir("../minecraft/src/main/resources")
+        }
+    }
+}
+
+jmh {
+    jmhVersion = "1.37"
+    includeTests = false
+
+    // Otherwise a benchmark that throws is dropped from the results and the run still succeeds,
+    // leaving a report that silently compares fewer benchmarks than it ran.
+    failOnError = true
+
+    // Kept here rather than in @Fork/@Warmup/@Measurement so a CI run and a local run are configured
+    // in exactly one place. Two forks rather than one: a single JVM bakes in whichever compilation
+    // plan it happened to pick. Measured on this suite, the second fork pulls the error bars from a
+    // ~8% median down to ~2%, which is what makes a 5% regression distinguishable from noise at all.
+    // It also doubles the run to about five minutes, and the benchmark workflow runs it twice.
+    fork = 2
+    warmupIterations = 5
+    warmup = "1s"
+    iterations = 5
+    timeOnIteration = "1s"
+
+    resultFormat = "JSON"
+    resultsFile = layout.buildDirectory.file("results/jmh/results.json")
 }
 
 jar {
@@ -42,6 +71,12 @@ jar {
 tasks.test {
     useJUnitPlatform()
     maxHeapSize = "4G"
+}
+
+// The benchmarks call library API but nothing else builds them, so an ordinary `build` would let a
+// rename break them and only surface it on the next pull request's benchmark run.
+tasks.check {
+    dependsOn(tasks.jmhClasses)
 }
 
 publishing {
