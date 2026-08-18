@@ -13,12 +13,12 @@ A library that allows mods to animate the player, in a way that doesn't conflict
 '''
 
 displayURL = "https://docs.zigythebird.com/pal/intro"
-logoFile = "icon.png"
+iconFile = "icon.png"
 
 [[dependencies.player_animation_library]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.2.0.6-beta,)"
+versionRange = "[26.2.0.57,)"
 ordering = "NONE"
 side = "BOTH"
 
