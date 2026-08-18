@@ -1,1 +1,2 @@
-- Backport Bezier functionality from 26.1+
+- Fixed an issue where some MoLang queries combined with the speed modifier broke.
+- Fixed an issue where Emotecraft loaded some emotes incorrectly. 
