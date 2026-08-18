@@ -1,4 +1,3 @@
-- Added first person APIs `setFirstPersonFollowsCamera` and `setFirstPersonTransitionLength`.
-- Fix issue with custom pivots
-- Fix armor disappearing after first person animation is played
-- Fix NPE when currentAnimation is cleared during processing
+- Fixed an issue where some MoLang queries combined with the speed modifier broke.
+- Fixed an issue where Emotecraft loaded some emotes incorrectly.  
+- Now uses new NeoForge icon system
