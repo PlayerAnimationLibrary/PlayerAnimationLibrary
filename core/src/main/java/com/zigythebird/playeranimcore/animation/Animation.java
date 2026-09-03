@@ -47,6 +47,12 @@ import java.util.function.Supplier;
 public record Animation(ExtraAnimationData data, float length, LoopType loopType, Map<String, BoneAnimation> boneAnimations, Keyframes keyFrames, Map<String, Vec3f> bones, Map<String, String> parents) implements Supplier<UUID> {
     public record Keyframes(SoundKeyframeData[] sounds, ParticleKeyframeData[] particles, CustomInstructionKeyframeData[] customInstructions) {
         @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Keyframes that)) return false;
+            return Arrays.equals(sounds, that.sounds) && Arrays.equals(particles, that.particles) && Arrays.equals(customInstructions, that.customInstructions);
+        }
+
+        @Override
         public int hashCode() {
             return Objects.hash(Arrays.hashCode(sounds), Arrays.hashCode(particles), Arrays.hashCode(customInstructions));
         }
