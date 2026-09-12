@@ -42,14 +42,33 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends HumanoidModel<T>> {
     @Inject(method = "setPartVisibility", at = @At("HEAD"), cancellable = true)
     private void modifyArmorVisibility(A humanoidModel, EquipmentSlot equipmentSlot, CallbackInfo ci) {
+
         PlayerAnimManager emote = ((IAnimatedPlayer) Minecraft.getInstance().player).playerAnimLib$getAnimManager();
         if (emote.isActive() && emote.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL && FirstPersonMode.isFirstPersonPass()) {
             humanoidModel.setAllVisible(false);
-            if (equipmentSlot == EquipmentSlot.CHEST && emote.getFirstPersonConfiguration().isShowArmor()) {
-                humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();
-                humanoidModel.leftArm.visible = emote.getFirstPersonConfiguration().isShowLeftArm();
+            if (emote.getFirstPersonConfiguration().isShowArmor()) {
+                switch (equipmentSlot) {
+                    case HEAD:
+                        // Always hide first person (head only) models, such as helmets, etc...
+                        break;
+                    case CHEST:
+                        humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();
+                        humanoidModel.leftArm.visible = emote.getFirstPersonConfiguration().isShowLeftArm();
+                        break;
+                    case LEGS:
+                        humanoidModel.rightLeg.visible = false;
+                        humanoidModel.leftLeg.visible = false;
+                        break;
+                    case FEET:
+                        humanoidModel.rightLeg.visible = false;
+                        humanoidModel.leftLeg.visible = false;
+                        break;
+                    default:
+                        break;
+                }
             }
             ci.cancel();
         }
+
     }
 }

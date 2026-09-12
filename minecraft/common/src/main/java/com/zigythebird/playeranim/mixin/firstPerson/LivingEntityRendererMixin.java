@@ -26,6 +26,7 @@ package com.zigythebird.playeranim.mixin.firstPerson;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.zigythebird.playeranim.accessors.IAnimatedPlayer;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.LocalPlayer;
@@ -46,7 +47,22 @@ public class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityM
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/layers/RenderLayer;render(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;ILnet/minecraft/world/entity/Entity;FFFFFF)V"))
     private boolean filterLayers(RenderLayer layer, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, Entity entity, float v, float v1, float v2, float v3, float v4, float v5) {
         if (entity instanceof LocalPlayer && FirstPersonMode.isFirstPersonPass()) {
-            return layer instanceof PlayerItemInHandLayer || layer instanceof HumanoidArmorLayer<?,?,?>;
+
+            // Allows item rendering
+            if (layer instanceof PlayerItemInHandLayer) return true;
+
+            // If showArmor is enabled, allow all layers through
+            // (head slot will be hidden at the model part visibility level)
+            if (entity instanceof IAnimatedPlayer animPlayer) {
+                if (animPlayer.playerAnimLib$getAnimManager().getFirstPersonConfiguration().isShowArmor()) {
+                    if (layer instanceof HumanoidArmorLayer<?, ?, ?>) {
+                        return true;
+                    }
+                }
+            }
+
+            // Block all other layers (including custom modded armor layers)
+            return false;
         }
         return true;
     }
