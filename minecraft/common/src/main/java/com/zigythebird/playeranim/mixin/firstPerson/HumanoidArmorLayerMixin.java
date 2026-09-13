@@ -42,7 +42,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends HumanoidModel<T>> {
     @Inject(method = "setPartVisibility", at = @At("HEAD"), cancellable = true)
     private void modifyArmorVisibility(A humanoidModel, EquipmentSlot equipmentSlot, CallbackInfo ci) {
-
         PlayerAnimManager emote = ((IAnimatedPlayer) Minecraft.getInstance().player).playerAnimLib$getAnimManager();
         if (emote.isActive() && emote.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL && FirstPersonMode.isFirstPersonPass()) {
             humanoidModel.setAllVisible(false);
@@ -62,6 +61,5 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends 
             }
             ci.cancel();
         }
-
     }
 }
