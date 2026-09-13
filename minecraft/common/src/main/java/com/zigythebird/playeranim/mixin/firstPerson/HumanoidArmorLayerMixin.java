@@ -48,18 +48,11 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends 
             humanoidModel.setAllVisible(false);
             if (emote.getFirstPersonConfiguration().isShowArmor()) {
                 switch (equipmentSlot) {
-                    case HEAD:
-                        // Always hide first person (head only) models, such as helmets, etc...
-                        break;
                     case CHEST:
                         humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();
                         humanoidModel.leftArm.visible = emote.getFirstPersonConfiguration().isShowLeftArm();
                         break;
-                    case LEGS:
-                        humanoidModel.rightLeg.visible = false;
-                        humanoidModel.leftLeg.visible = false;
-                        break;
-                    case FEET:
+                    case LEGS, FEET:
                         humanoidModel.rightLeg.visible = false;
                         humanoidModel.leftLeg.visible = false;
                         break;
