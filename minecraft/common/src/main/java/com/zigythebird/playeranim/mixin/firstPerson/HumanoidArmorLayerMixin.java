@@ -46,17 +46,9 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends 
         if (emote.isActive() && emote.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL && FirstPersonMode.isFirstPersonPass()) {
             humanoidModel.setAllVisible(false);
             if (emote.getFirstPersonConfiguration().isShowArmor()) {
-                switch (equipmentSlot) {
-                    case CHEST:
-                        humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();
-                        humanoidModel.leftArm.visible = emote.getFirstPersonConfiguration().isShowLeftArm();
-                        break;
-                    case LEGS, FEET:
-                        humanoidModel.rightLeg.visible = false;
-                        humanoidModel.leftLeg.visible = false;
-                        break;
-                    default:
-                        break;
+                if (equipmentSlot == EquipmentSlot.CHEST) {
+                    humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();
+                    humanoidModel.leftArm.visible = emote.getFirstPersonConfiguration().isShowLeftArm();
                 }
             }
             ci.cancel();

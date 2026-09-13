@@ -48,21 +48,13 @@ public class LivingEntityRendererMixin<T extends LivingEntity, M extends EntityM
     private boolean filterLayers(RenderLayer layer, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, Entity entity, float v, float v1, float v2, float v3, float v4, float v5) {
         if (entity instanceof LocalPlayer && FirstPersonMode.isFirstPersonPass()) {
 
-            // Allows item rendering
+            // Still allows item rendering
             if (layer instanceof PlayerItemInHandLayer) return true;
 
-            // If showArmor is enabled, allow all layers through
-            // (head slot will be hidden at the model part visibility level)
-            if (entity instanceof IAnimatedPlayer animPlayer) {
-                if (animPlayer.playerAnimLib$getAnimManager().getFirstPersonConfiguration().isShowArmor()) {
-                    if (layer instanceof HumanoidArmorLayer<?, ?, ?>) {
-                        return true;
-                    }
-                }
-            }
-
-            // Block all other layers (including custom modded armor layers)
-            return false;
+            // Only allows standard armor layers when showArmor is enabled (head is hidden at model level).
+            return entity instanceof IAnimatedPlayer animPlayer &&
+                    animPlayer.playerAnimLib$getAnimManager().getFirstPersonConfiguration().isShowArmor() &&
+                    layer instanceof HumanoidArmorLayer<?, ?, ?>;
         }
         return true;
     }
