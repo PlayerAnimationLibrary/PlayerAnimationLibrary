@@ -45,11 +45,9 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, A extends 
         PlayerAnimManager emote = ((IAnimatedPlayer) Minecraft.getInstance().player).playerAnimLib$getAnimManager();
         if (emote.isActive() && emote.getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL && FirstPersonMode.isFirstPersonPass()) {
             humanoidModel.setAllVisible(false);
-            if (emote.getFirstPersonConfiguration().isShowArmor()) {
-                if (equipmentSlot == EquipmentSlot.CHEST) {
-                    humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();
-                    humanoidModel.leftArm.visible = emote.getFirstPersonConfiguration().isShowLeftArm();
-                }
+            if (equipmentSlot == EquipmentSlot.CHEST && emote.getFirstPersonConfiguration().isShowArmor()) {
+                humanoidModel.rightArm.visible = emote.getFirstPersonConfiguration().isShowRightArm();
+                humanoidModel.leftArm.visible = emote.getFirstPersonConfiguration().isShowLeftArm();
             }
             ci.cancel();
         }
