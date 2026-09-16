@@ -217,7 +217,7 @@ public final class MolangQueries {
         MolangLoader.setDoubleQuery(binding, HEAD_Y_ROTATION, actor -> ((PlayerAnimationController) actor).getAvatar().getViewYRot(actor.getAnimationData().getPartialTick()));
         MolangLoader.setDoubleQuery(binding, HEALTH, actor -> ((PlayerAnimationController) actor).getAvatar().getHealth());
         MolangLoader.setDoubleQuery(binding, HURT_TIME, actor -> ((PlayerAnimationController) actor).getAvatar().hurtTime == 0 ? 0 : ((PlayerAnimationController) actor).getAvatar().hurtTime - actor.getAnimationData().getPartialTick());
-        MolangLoader.setDoubleQuery(binding, INVULNERABLE_TICKS, actor -> ((PlayerAnimationController) actor).getAvatar().invulnerableTime == 0 ? 0 : ((PlayerAnimationController) actor).getAvatar().invulnerableTime - actor.getAnimationData().getPartialTick());
+        MolangLoader.setDoubleQuery(binding, INVULNERABLE_TICKS, actor -> ((PlayerAnimationController) actor).getAvatar().getInvulnerableTime() == 0 ? 0 : ((PlayerAnimationController) actor).getAvatar().getInvulnerableTime() - actor.getAnimationData().getPartialTick());
         MolangLoader.setBoolQuery(binding, IS_BABY, actor -> ((PlayerAnimationController) actor).getAvatar().isBaby());
         MolangLoader.setBoolQuery(binding, IS_SLEEPING, actor -> ((PlayerAnimationController) actor).getAvatar().isSleeping());
         MolangLoader.setBoolQuery(binding, IS_USING_ITEM, actor -> ((PlayerAnimationController) actor).getAvatar().isUsingItem());

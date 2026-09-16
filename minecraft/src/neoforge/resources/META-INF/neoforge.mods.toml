@@ -12,25 +12,21 @@ description = '''
 A library that allows mods to animate the player, in a way that doesn't conflict with other mods. (and much more!)
 '''
 
-<<<<<<< HEAD
-displayURL = "https://docs.zigythebird.com/pal"
-logoFile = "icon.png"
-=======
 displayURL = "https://docs.zigythebird.com/pal/intro"
+logoFile = "icon.png"
 iconFile = "icon.png"
->>>>>>> main
 
 [[dependencies.player_animation_library]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.2.0.57,)"
+versionRange = "[26.3.0.1-beta,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.player_animation_library]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.2,)"
+versionRange = "[26.3,)"
 ordering = "NONE"
 side = "BOTH"
 

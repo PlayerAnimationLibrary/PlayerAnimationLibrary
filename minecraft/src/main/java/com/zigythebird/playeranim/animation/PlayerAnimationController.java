@@ -84,7 +84,7 @@ public class PlayerAnimationController extends HumanoidAnimationController {
         Vec3f pivot = getBonePosition(name);
         Vec3 position = avatar.getPosition(tickDelta).subtract(cameraPos).add(pivot.x(), pivot.y(), pivot.z());
         poseStack.translate(position.x(), position.y(), position.z());
-        poseStack.mulPose(Axis.YP.rotationDegrees(180 - Mth.lerp(tickDelta, avatar.yBodyRotO, avatar.yBodyRot)));
+        poseStack.rotateDegrees(Axis.YP, 180 - Mth.lerp(tickDelta, avatar.yBodyRotO, avatar.yBodyRot));
         RenderUtil.translateMatrixToBone(poseStack, this.activeBones.get(name));
         return poseStack;
     }

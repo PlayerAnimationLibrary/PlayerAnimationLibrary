@@ -13,6 +13,7 @@
     "LivingEntityRendererMixin",
     "PlayerCapeModelMixin",
     "PlayerModelMixin",
+    "firstPerson.FirstPersonHandsAndItemsMixin",
     "firstPerson.HumanoidArmorLayerMixin",
     "firstPerson.ItemInHandLayerMixin",
     "firstPerson.ItemInHandRendererMixin",
