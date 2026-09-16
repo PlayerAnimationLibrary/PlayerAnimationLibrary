@@ -1,3 +1,1 @@
-- Fixed an issue where some MoLang queries combined with the speed modifier broke.
-- Fixed an issue where Emotecraft loaded some emotes incorrectly.  
-- Now uses new NeoForge icon system
+- Port to 26.3
