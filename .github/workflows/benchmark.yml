@@ -1,0 +1,116 @@
+name: Benchmark against the base branch.
+
+on:
+  pull_request
+
+permissions:
+    contents: read
+    pull-requests: write
+
+concurrency:
+    group: benchmark-${{ github.event.pull_request.number }}
+    cancel-in-progress: true
+
+jobs:
+    benchmark:
+        runs-on: ubuntu-latest
+        # The suite takes about five minutes per run, and it runs twice.
+        timeout-minutes: 30
+        steps:
+            # The pull request's own head, not the merge ref: the merge ref also carries whatever
+            # landed on the base branch since, which would be measured as this pull request's doing.
+            - name: Checkout Branch
+              uses: actions/checkout@v7
+              with:
+                  ref: ${{ github.event.pull_request.head.sha }}
+                  fetch-depth: 0
+
+            - name: Setup Java
+              uses: actions/setup-java@v5
+              with:
+                  distribution: 'adopt'
+                  java-version: 25
+
+            - name: Cache Gradle
+              uses: actions/cache@v6
+              with:
+                  path: |
+                      ~/.gradle/caches
+                      ~/.gradle/wrapper
+                  key: gradle-benchmark-${{ hashFiles('**/*.gradle', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
+                  restore-keys: gradle-benchmark-
+
+            - name: Grant Execute Permission
+              run: chmod +x gradlew
+
+            # Where this branch was cut from, rather than the base branch's current tip, so commits that
+            # landed on the base since don't get attributed to this pull request.
+            - name: Resolve Base Commit
+              id: base
+              run: echo "sha=$(git merge-base HEAD "${{ github.event.pull_request.base.sha }}")" >> "${GITHUB_OUTPUT}"
+
+            # Downloads everything up front so the first measured run isn't the one paying for it.
+            # --configure-on-demand keeps Gradle from configuring the Minecraft module, which would
+            # otherwise pull a full Minecraft setup for a benchmark that never touches it.
+            - name: Build Benchmarks
+              run: ./gradlew :core:jmhJar --configure-on-demand
+
+            - name: Benchmark This PR
+              run: |
+                  ./gradlew :core:jmh --configure-on-demand
+                  mv core/build/results/jmh/results.json "${RUNNER_TEMP}/pr.json"
+
+            # The benchmarks only exist on this branch, so the base is measured by dropping the sources
+            # this branch was cut from - and the dependency versions they were written against - under
+            # this branch's benchmark code, leaving the measured code as the only difference between the
+            # two runs. The build scripts stay on this branch's side because the base may not have the
+            # JMH plugin at all, which also means a dependency pinned in core/build.gradle rather than
+            # gradle.properties is the same on both sides and won't show up in the report.
+            - name: Check Out Base Sources
+              id: base-sources
+              continue-on-error: true
+              run: |
+                  git worktree add "${RUNNER_TEMP}/base" "${{ steps.base.outputs.sha }}"
+                  rm -rf core/src/main
+                  cp -r "${RUNNER_TEMP}/base/core/src/main" core/src/main
+                  cp "${RUNNER_TEMP}/base/gradle.properties" gradle.properties
+
+            # Rebuilt in its own step so the base measurement starts from the same idle machine the PR
+            # measurement did, instead of one that just ran javac and written out the benchmark jar.
+            # Fails when the PR changes API the benchmarks use, in which case the report falls back
+            # to absolute numbers for this PR alone.
+            - name: Benchmark Base Branch
+              if: steps.base-sources.outcome == 'success'
+              continue-on-error: true
+              run: |
+                  ./gradlew :core:jmhJar --configure-on-demand
+                  ./gradlew :core:jmh --configure-on-demand
+
+            - name: Compare Results
+              env:
+                  BASE_SHA: ${{ steps.base.outputs.sha }}
+                  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+              run: |
+                  python3 .github/scripts/compare_jmh.py \
+                      --pr "${RUNNER_TEMP}/pr.json" \
+                      --base core/build/results/jmh/results.json \
+                      --refs "\`${BASE_SHA::7}\` (base) → \`${HEAD_SHA::7}\` (PR)" \
+                      > "${RUNNER_TEMP}/report.md"
+                  cat "${RUNNER_TEMP}/report.md" >> "${GITHUB_STEP_SUMMARY}"
+
+            # Pull requests from forks get a read-only token, so the report lives in the job summary
+            # either way and the comment is best-effort.
+            - name: Comment on the Pull Request
+              uses: actions/github-script@v9
+              continue-on-error: true
+              with:
+                  script: |
+                      const body = require('fs').readFileSync(process.env.RUNNER_TEMP + '/report.md', 'utf8');
+                      const { owner, repo } = context.repo;
+                      const issue_number = context.payload.pull_request.number;
+
+                      const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+                      const previous = comments.find(comment => comment.body.startsWith('<!-- jmh-benchmark -->'));
+
+                      if (previous) await github.rest.issues.updateComment({ owner, repo, comment_id: previous.id, body });
+                      else await github.rest.issues.createComment({ owner, repo, issue_number, body });
