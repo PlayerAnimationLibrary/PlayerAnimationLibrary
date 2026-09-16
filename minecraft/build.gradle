@@ -1,4 +1,5 @@
 import org.apache.commons.lang3.StringUtils
+import xyz.wagyourtail.unimined.api.minecraft.MinecraftConfig
 
 plugins {
     id "xyz.wagyourtail.unimined"
@@ -10,7 +11,18 @@ sourceSets {
     neoforge
 }
 
+// TODO remove once https://github.com/unimined/Unimined/pull/215 is merged
+static void includeRenderPearl(MinecraftConfig config) {
+    def field = MinecraftConfig.getDeclaredField("includeGlobs")
+    field.accessible = true
+    List<String> globs = field.get(config) as List<String>
+    if (!globs.contains("com/mojang/renderpearl/**")) {
+        field.set(config, globs + "com/mojang/renderpearl/**")
+    }
+}
+
 unimined.minecraft(sourceSets.main) {
+    includeRenderPearl(delegate)
     version rootProject.minecraft_version
 
     fabric {
@@ -27,6 +39,7 @@ unimined.minecraft(sourceSets.main) {
 }
 
 unimined.minecraft(sourceSets.fabric) {
+    includeRenderPearl(delegate)
     combineWith(sourceSets.main)
 
     fabric {
