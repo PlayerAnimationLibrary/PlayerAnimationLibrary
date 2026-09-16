@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "*"
-issueTrackerURL = "https://github.com/ZigyTheBird/PlayerAnimationLibrary/issues"
+issueTrackerURL = "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary/issues"
 license = "MIT License"
 
 [[mods]]
@@ -13,19 +13,20 @@ A library that allows mods to animate the player, in a way that doesn't conflict
 '''
 
 displayURL = "https://docs.zigythebird.com/pal/intro"
+logoFile = "icon.png"
 iconFile = "icon.png"
 
 [[dependencies.player_animation_library]]
 modId = "neoforge"
 type = "required"
-versionRange = "[26.2.0.57,)"
+versionRange = "[26.3.0.1-beta,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.player_animation_library]]
 modId = "minecraft"
 type = "required"
-versionRange = "[26.2,)"
+versionRange = "[26.3,)"
 ordering = "NONE"
 side = "BOTH"
 

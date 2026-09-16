@@ -24,6 +24,7 @@
 
 package com.zigythebird.playeranimcore.animation;
 
+import com.google.j2objc.annotations.AutoreleasePool;
 import com.zigythebird.playeranimcore.PlayerAnimLib;
 import com.zigythebird.playeranimcore.animation.keyframe.*;
 import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
@@ -53,8 +54,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.runtime.MolangInterpreter;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -77,7 +78,7 @@ public abstract class AnimationController implements IAnimation {
 	protected final Map<String, PlayerAnimBone> activeBones = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, PivotBone> pivotBones = new Object2ObjectOpenHashMap<>();
 	protected Queue<QueuedAnimation> animationQueue = new LinkedList<>();
-	protected final MochaEngine<AnimationController> molangRuntime;
+	protected final MolangInterpreter<AnimationController> molangRuntime;
 
 	protected boolean needsAnimationReload = false;
 
@@ -114,7 +115,7 @@ public abstract class AnimationController implements IAnimation {
 	 * @param bonePositions    Map of bones and their pivots
 	 * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
 	 */
-	public AnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+	public AnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
 		this.stateHandler = animationHandler;
 		this.bonePositions = bonePositions;
 		this.molangRuntime = molangRuntime.apply(this);
@@ -355,6 +356,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param startAnimFrom Where to start the animation from in ticks
 	 */
+	@AutoreleasePool
 	protected void setAnimation(RawAnimation rawAnimation, float startAnimFrom) {
 		if (rawAnimation == null || rawAnimation.getAnimationStages().isEmpty()) {
 			stop();
@@ -503,6 +505,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param state                 The animation test state
 	 */
+	@AutoreleasePool
 	public void process(AnimationData state) {
 		float adjustedTick = Math.max(0.0F, state.getPartialTick() + this.startAnimFrom + tick);
 
@@ -540,6 +543,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param adjustedTick The controller-adjusted tick for animation purposes
 	 */
+	@AutoreleasePool
 	private void processCurrentAnimation(float adjustedTick, AnimationData animationData) {
 		QueuedAnimation queued = this.currentAnimation;
 		if (queued == null) {
@@ -719,6 +723,24 @@ public abstract class AnimationController implements IAnimation {
 		return this.tick + this.startAnimFrom + this.animationData.getPartialTick();
 	}
 
+	public boolean hasBeginTick() {
+		return this.currentAnimation.animation().data().has(ExtraAnimationData.BEGIN_TICK_KEY);
+	}
+
+	public boolean hasEndTick() {
+		Animation animation = this.currentAnimation.animation();
+		return !animation.loopType().shouldPlayAgain(null, animation) && animation.data().has(ExtraAnimationData.END_TICK_KEY);
+	}
+
+	public boolean isDisableAxisIfNotModified() {
+		return this.currentAnimation != null && this.currentAnimation.animation().data().isDisableAxisIfNotModified();
+	}
+
+	public boolean isAnimationPlayerAnimatorFormat() {
+		return this.currentAnimation != null && this.currentAnimation.animation().data().isAnimationPlayerAnimatorFormat();
+	}
+
+	@AutoreleasePool
 	protected void setupNewAnimation() {
 		this.isLoopStarted = false;
 		if (currentAnimation == null) return;
@@ -906,6 +928,7 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	@Override
+	@AutoreleasePool
 	public void tick(AnimationData state) {
 		this.animationData = state;
 		for (int i = 0; i < modifiers.size(); i++) {

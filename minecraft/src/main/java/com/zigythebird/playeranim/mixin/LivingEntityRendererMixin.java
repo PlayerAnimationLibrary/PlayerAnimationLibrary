@@ -51,8 +51,8 @@ public class LivingEntityRendererMixin<S extends LivingEntityRenderState> {
                 if (avatarRenderState.playerAnimLib$isFirstPersonPass()) {
                     poseStack.translate(0.0F, state.eyeHeight, 0.0F);
                     if (animationPlayer.isFirstPersonFollowsCamera()) {
-                        poseStack.mulPose(Axis.YP.rotationDegrees(-state.yRot));
-                        poseStack.mulPose(Axis.XP.rotationDegrees(-state.xRot));
+                        poseStack.rotateDegrees(Axis.YP, -state.yRot);
+                        poseStack.rotateDegrees(Axis.XP, -state.xRot);
                     }
                     poseStack.translate(0.0F, -state.eyeHeight, 0.0F);
                 }

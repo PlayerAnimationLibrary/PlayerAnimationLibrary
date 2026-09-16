@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.api;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import com.zigythebird.playeranimcore.animation.layered.IAnimation;
 import net.minecraft.resources.Identifier;
@@ -20,6 +21,7 @@ import java.util.function.Function;
  * <p>
  * {@link PlayerAnimationAccess#REGISTER_ANIMATION_EVENT} is invoked <strong>after</strong> factories are done.
  */
+@J2ObjCIncompatible
 public interface PlayerAnimationFactory {
 
     FactoryHolder ANIMATION_DATA_FACTORY = new FactoryHolder();

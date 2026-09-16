@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.neoforge;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
 import com.zigythebird.playeranim.animation.PlayerAnimResources;
 import com.zigythebird.playeranim.api.PlayerAnimationAccess;
@@ -16,6 +17,7 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
 
+@J2ObjCIncompatible
 @Mod(value = PlayerAnimLibModNeo.MOD_ID)
 public final class PlayerAnimLibModNeo extends PlayerAnimLibMod {
     public PlayerAnimLibModNeo(IEventBus bus) {

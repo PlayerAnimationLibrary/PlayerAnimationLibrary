@@ -2,8 +2,7 @@ apply plugin: "java-library"
 
 dependencies {
     api("org.redlance.common-utils:services:$rootProject.commonutils_version") { transitive = false }
-    api("com.zigythebird:mochafloats:$rootProject.molang_version") { transitive = false }
-    compileOnlyApi("org.jetbrains:annotations:26.1.0")
+    api("org.redlance.mochafloats:runtime:$rootProject.molang_version")
 
     // Minecraft libs
     api("com.google.code.gson:gson:2.14.0")
@@ -46,6 +45,11 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId = "PlayerAnimationLibCore"
+
+            pom {
+                configurePom(it, artifactId)
+            }
+
             from components.java
         }
     }

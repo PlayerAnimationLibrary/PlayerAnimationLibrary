@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.commands;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@J2ObjCIncompatible
 public class AnimationArgumentProvider<S> implements SuggestionProvider<S> {
     @Override
     public CompletableFuture<Suggestions> getSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {

@@ -24,6 +24,7 @@
 
 package com.zigythebird.playeranim.molang;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.molang.MolangLoader;
@@ -42,6 +43,7 @@ import net.minecraft.world.entity.player.Player;
 import java.util.Arrays;
 import java.util.Optional;
 
+@J2ObjCIncompatible
 public final class MolangQueries {
     public static final String ACTOR_COUNT = "actor_count";
     public static final String BLOCKING = "blocking";
@@ -215,7 +217,7 @@ public final class MolangQueries {
         MolangLoader.setDoubleQuery(binding, HEAD_Y_ROTATION, actor -> ((PlayerAnimationController) actor).getAvatar().getViewYRot(actor.getAnimationData().getPartialTick()));
         MolangLoader.setDoubleQuery(binding, HEALTH, actor -> ((PlayerAnimationController) actor).getAvatar().getHealth());
         MolangLoader.setDoubleQuery(binding, HURT_TIME, actor -> ((PlayerAnimationController) actor).getAvatar().hurtTime == 0 ? 0 : ((PlayerAnimationController) actor).getAvatar().hurtTime - actor.getAnimationData().getPartialTick());
-        MolangLoader.setDoubleQuery(binding, INVULNERABLE_TICKS, actor -> ((PlayerAnimationController) actor).getAvatar().invulnerableTime == 0 ? 0 : ((PlayerAnimationController) actor).getAvatar().invulnerableTime - actor.getAnimationData().getPartialTick());
+        MolangLoader.setDoubleQuery(binding, INVULNERABLE_TICKS, actor -> ((PlayerAnimationController) actor).getAvatar().getInvulnerableTime() == 0 ? 0 : ((PlayerAnimationController) actor).getAvatar().getInvulnerableTime() - actor.getAnimationData().getPartialTick());
         MolangLoader.setBoolQuery(binding, IS_BABY, actor -> ((PlayerAnimationController) actor).getAvatar().isBaby());
         MolangLoader.setBoolQuery(binding, IS_SLEEPING, actor -> ((PlayerAnimationController) actor).getAvatar().isSleeping());
         MolangLoader.setBoolQuery(binding, IS_USING_ITEM, actor -> ((PlayerAnimationController) actor).getAvatar().isUsingItem());
