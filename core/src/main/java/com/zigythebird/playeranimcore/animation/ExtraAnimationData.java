@@ -136,6 +136,10 @@ public record ExtraAnimationData(Map<String, Object> data) {
         return this.<Boolean>get(DISABLE_AXIS_IF_NOT_MODIFIED).orElse(true);
     }
 
+    public boolean isEasingBefore() {
+        return this.<Boolean>get(EASING_BEFORE_KEY).orElse(true);
+    }
+
     public boolean isAnimationPlayerAnimatorFormat() {
         return this.<AnimationFormat>get(ExtraAnimationData.FORMAT_KEY).orElse(null) == AnimationFormat.PLAYER_ANIMATOR;
     }
