@@ -790,7 +790,7 @@ public abstract class AnimationController implements IAnimation {
 		ExtraAnimationData extraData = animation.data();
 		float endTick = extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).orElse(animation.length()-1);
 
-		KeyframeLocation<Keyframe> location = getCurrentKeyFrameLocation(frames, tick, type, extraData.isAnimationPlayerAnimatorFormat() && queued.loopType().shouldPlayAgain(null, animation), animation.length(), queued.loopType().restartFromTick(null, animation));
+		KeyframeLocation<Keyframe> location = getCurrentKeyFrameLocation(frames, tick, type, extraData.isAnimationPlayerAnimatorFormat() && queued.loopType().shouldPlayAgain(null, animation), animation.length(), queued.loopType().restartFromTick(null, animation), extraData.isEasingBefore());
 		Keyframe currentFrame = location.keyframe();
 		float startValue = this.molangRuntime.eval(currentFrame.startValue());
 		float endValue = this.molangRuntime.eval(currentFrame.endValue());
@@ -824,29 +824,43 @@ public abstract class AnimationController implements IAnimation {
 	 * @param ageInTicks The current tick time
 	 * @return A new {@code KeyFrameLocation} containing the current {@code KeyFrame} and the tick time used to find it
 	 */
-	private KeyframeLocation<Keyframe> getCurrentKeyFrameLocation(List<Keyframe> frames, float ageInTicks, TransformType type, boolean isPlayerAnimatorLoop, float animTime, float returnToTick) {
+	private KeyframeLocation<Keyframe> getCurrentKeyFrameLocation(List<Keyframe> frames, float ageInTicks, TransformType type, boolean isPlayerAnimatorLoop, float animTime, float returnToTick, boolean easeBefore) {
 		if (frames.isEmpty())
 			return type == TransformType.SCALE ? EMPTY_SCALE_KEYFRAME_LOCATION : EMPTY_KEYFRAME_LOCATION;
 
-		Keyframe firstFrame = returnToTick == 0 ? frames.getFirst() : Keyframe.getKeyframeAtTime(frames, returnToTick);
+		Keyframe firstFrame = isPlayerAnimatorLoop ? Keyframe.getKeyframeAtTime(frames, returnToTick) : null;
+		float firstFrameEnd = 0;
+		float loopLength = animTime - returnToTick;
 		float totalFrameTime = 0;
 
 		for (Keyframe frame : frames) {
 			totalFrameTime += frame.length();
+			if (frame == firstFrame) firstFrameEnd = totalFrameTime;
 
 			if (totalFrameTime > ageInTicks) {
 				if (isPlayerAnimatorLoop && isLoopStarted() && frame == firstFrame) {
-					float stopTickMinusLastKeyframe = animTime - Keyframe.getLastKeyframeTime(frames);
-					return new KeyframeLocation<>(new Keyframe(frame.length() + stopTickMinusLastKeyframe, frames.getLast().endValue(), frame.endValue(), frame.easingType(), frame.easingArgs()), ageInTicks + stopTickMinusLastKeyframe);
+					return getLoopSeamLocation(frames, firstFrame, firstFrameEnd + loopLength, ageInTicks + loopLength, animTime, easeBefore);
 				}
 				return new KeyframeLocation<>(frame, (ageInTicks - (totalFrameTime - frame.length())));
 			}
 		}
 
 		if (isPlayerAnimatorLoop)
-			return new KeyframeLocation<>(new Keyframe(firstFrame.length() + animTime - totalFrameTime, frames.getLast().endValue(), firstFrame.endValue(), firstFrame.easingType(), firstFrame.easingArgs()), ageInTicks - totalFrameTime);
+			return getLoopSeamLocation(frames, firstFrame, firstFrameEnd + loopLength, ageInTicks, animTime, easeBefore);
 
 		return new KeyframeLocation<>(frames.getLast(), ageInTicks);
+	}
+
+	/**
+	 * PlayerAnimator blends a loop from its last keyframe, across the wrap, into the keyframe the restart tick falls in.
+	 * {@code end} and {@code tick} run on past the wrap instead of starting over from the restart tick.
+	 */
+	private static KeyframeLocation<Keyframe> getLoopSeamLocation(List<Keyframe> frames, Keyframe firstFrame, float end, float tick, float animTime, boolean easeBefore) {
+		Keyframe lastFrame = frames.getLast();
+		// The loop never plays past its end, not even the 0.001 tick keyframe that carries the last easing
+		float start = Math.min(Keyframe.getLastKeyframeTime(frames), animTime);
+		Keyframe easing = easeBefore ? firstFrame : lastFrame;
+		return new KeyframeLocation<>(new Keyframe(end - start, lastFrame.endValue(), firstFrame.endValue(), easing.easingType(), easing.easingArgs()), tick - start);
 	}
 
 	/**
