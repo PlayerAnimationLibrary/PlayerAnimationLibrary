@@ -26,6 +26,8 @@ import static com.zigythebird.playeranimcore.loading.UniversalAnimLoader.NO_KEYF
 public class PlayerAnimatorLoader implements JsonDeserializer<Animation> {
     public static final List<Expression> ZERO = Collections.singletonList(FloatExpression.ZERO);
     public static final List<Expression> ONE = Collections.singletonList(FloatExpression.ONE);
+    /** The easing argument a PlayerAnimator keyframe carries when it has none, shared rather than allocated per keyframe. */
+    public static final List<List<Expression>> EMPTY_EASING_ARG = Collections.singletonList(Collections.emptyList());
     private static final int modVersion = 3;
 
     public static final Gson GSON = new GsonBuilder()
@@ -214,9 +216,8 @@ public class PlayerAnimatorLoader implements JsonDeserializer<Animation> {
 
         float value = convertPlayerAnimValue(def, node.get(name).getAsFloat(), transformType, degrees, shouldNegate, rotate);
         List<Expression> expressions = Collections.singletonList(FloatExpression.of(value));
-        List<List<Expression>> emptyList = Collections.singletonList(new ObjectArrayList<>(0));
 
-        part.add(new Keyframe(delta, lastFrame == null ? (transformType == TransformType.SCALE ? ONE : ZERO) : lastFrame.endValue(), expressions, easing, emptyList));
+        part.add(new Keyframe(delta, lastFrame == null ? (transformType == TransformType.SCALE ? ONE : ZERO) : lastFrame.endValue(), expressions, easing, EMPTY_EASING_ARG));
     }
 
     private static float convertPlayerAnimValue(float def, float value, TransformType transformType, boolean degrees, boolean shouldNegate, int rotate) {
