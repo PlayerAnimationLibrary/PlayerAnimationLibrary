@@ -18,7 +18,6 @@ import team.unnamed.mocha.util.network.ProtocolUtils;
 import team.unnamed.mocha.util.network.VarIntUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -213,7 +212,7 @@ final class AnimationBinaryV6 {
             if (hasEasingArgs) {
                 easingArgs = ProtocolUtils.readList(buf, ExprBytesUtils::readExpressions);
             } else if (shouldStartFromDefault && i > 0) {
-                easingArgs = Collections.singletonList(new ArrayList<>(0));
+                easingArgs = PlayerAnimatorLoader.EMPTY_EASING_ARG;
             } else {
                 easingArgs = new ArrayList<>(0);
             }
