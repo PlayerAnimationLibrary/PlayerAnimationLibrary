@@ -380,7 +380,7 @@ public final class LegacyAnimationBinary {
                     // keyframe lerps from the rest-pose fallback to the written value.
                     : easeBefore ? expression : fallback;
             part.add(new Keyframe(keyframeLength, startValue, expression, easingType,
-                    easingArg == null ? Collections.singletonList(Collections.emptyList()) :
+                    easingArg == null ? PlayerAnimatorLoader.EMPTY_EASING_ARG :
                             Collections.singletonList(Collections.singletonList(FloatExpression.of(easingArg)))));
             buf.readerIndex(currentPos + keyframeSize);
         }
