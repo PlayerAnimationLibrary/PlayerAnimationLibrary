@@ -1,1 +1,2 @@
 - Port to 26.3
+- Keyframes without easing arguments share one empty argument list instead of allocating their own
