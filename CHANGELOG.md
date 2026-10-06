@@ -1,3 +1,2 @@
-- Fixed an issue where some MoLang queries combined with the speed modifier broke.
-- Fixed an issue where Emotecraft loaded some emotes incorrectly.  
-- Now uses new NeoForge icon system
+- Fixed an issue where looping PlayerAnimator animations snapped back at the end of each loop instead of blending into the next one
+- Keyframes without easing arguments share one empty argument list instead of allocating their own
