@@ -75,7 +75,8 @@ tasks.register("publishToDiscord", PublishDiscordTask) {
         it.fromEnvHack()
     }
 
-    footer = "||<@&1411332060051669062>||"
+    def ping = providers.environmentVariable("DISCORD_PING").map { it.toBoolean() }.getOrElse(true)
+    footer = ping ? "||<@&1411332060051669062>||" : ""
 }
 
 static def configurePom(pom, name) {
