@@ -22,7 +22,7 @@ public class UnbakedCuboidGeometryMixin {
     )
     private static Material.Baked pal$resolveCustomBoneSlot(MaterialBaker instance, TextureSlots slots, String id, ModelDebugName name, Operation<Material.Baked> original) {
         if (name instanceof MinecraftCustomBone customBone) {
-            return new Material.Baked(customBone.getSprite(), false);
+            return new Material.Baked(customBone.getSprite(), true);
         }
         return original.call(instance, slots, id, name);
     }

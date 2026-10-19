@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
-import com.zigythebird.playeranimcore.PlayerAnimLib;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.bones.CustomBone;
 import net.minecraft.client.Minecraft;
@@ -22,59 +21,47 @@ import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
 import net.minecraft.client.resources.model.cuboid.UnbakedCuboidGeometry;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.client.resources.model.sprite.TextureSlots;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MinecraftCustomBone extends CustomBone implements ModelBaker, ModelBaker.Interner, ModelDebugName {
+public class MinecraftCustomBone extends CustomBone implements ModelBaker, ModelBaker.Interner, ModelDebugName, BlockStateModelPart, Closeable {
     private static final AtomicInteger TEXTURE_COUNTER = new AtomicInteger(0);
 
-    @Nullable
-    private TextureAtlasSprite sprite;
-    @Nullable
-    private RenderType renderType;
-    @Nullable
-    private QuadCollection geometry;
+    private final TextureAtlasSprite sprite;
+    private final RenderType renderType;
+    private final QuadCollection geometry;
 
-    public MinecraftCustomBone(String name, CustomModelBone data) {
+    public MinecraftCustomBone(String name, CustomModelBone data) throws IOException {
         super(name, data);
-        if (hasModelData()) {
-            try {
-                this.sprite = loadAtlasSprite(data.texture().toPng());
-                this.renderType = RenderTypes.entityTranslucent(this.sprite.atlasLocation());
 
-                List<CuboidModelElement> blockElements = new ArrayList<>();
-                for (JsonElement element : data.elements()) {
-                    blockElements.add(CuboidModel.GSON.fromJson(element, CuboidModelElement.class));
-                }
-                this.geometry = UnbakedCuboidGeometry.bake(blockElements, TextureSlots.EMPTY, this, BlockModelRotation.IDENTITY, this);
-            } catch (Exception e) {
-                PlayerAnimLib.LOGGER.error("Failed to load custom model for bone: {}", name, e);
-            }
+        this.sprite = loadAtlasSprite(Objects.requireNonNull(data.texture()).toPng());
+        this.renderType = RenderTypes.entityTranslucent(this.sprite.atlasLocation());
+
+        List<CuboidModelElement> blockElements = new ArrayList<>();
+        for (JsonElement element : Objects.requireNonNull(data.elements())) {
+            blockElements.add(CuboidModel.GSON.fromJson(element, CuboidModelElement.class));
         }
+        this.geometry = UnbakedCuboidGeometry.bake(blockElements, TextureSlots.EMPTY, this, BlockModelRotation.IDENTITY, this);
     }
 
-    public boolean hasModel() {
-        return this.geometry != null;
-    }
-
-    public @Nullable QuadCollection getGeometry() {
-        return this.geometry;
-    }
-
-    public @Nullable RenderType getRenderType() {
+    public @NonNull RenderType getRenderType() {
         return this.renderType;
     }
 
-    public @Nullable TextureAtlasSprite getSprite() {
+    public @NonNull TextureAtlasSprite getSprite() {
         return this.sprite;
     }
 
@@ -82,10 +69,7 @@ public class MinecraftCustomBone extends CustomBone implements ModelBaker, Model
     public void close() {
         if (this.sprite != null) {
             this.sprite.close();
-            this.sprite = null;
         }
-        this.renderType = null;
-        this.geometry = null;
     }
 
     @Override
@@ -142,5 +126,26 @@ public class MinecraftCustomBone extends CustomBone implements ModelBaker, Model
         int h = image.getHeight();
         SpriteContents contents = new SpriteContents(texId, new FrameSize(w, h), image);
         return new TextureAtlasSprite(texId, contents, w, h, 0, 0, 0);
+    }
+
+    @Override
+    public @NonNull List<BakedQuad> getQuads(@Nullable Direction direction) {
+        return this.geometry.getQuads(direction);
+    }
+
+    @Override
+    public boolean useAmbientOcclusion() {
+        return true;
+    }
+
+    @Override
+    @SuppressWarnings("all")
+    public Material.@NonNull Baked particleMaterial() {
+        return null;
+    }
+
+    @Override
+    public @BakedQuad.MaterialFlags int materialFlags() {
+        return this.geometry.materialFlags();
     }
 }

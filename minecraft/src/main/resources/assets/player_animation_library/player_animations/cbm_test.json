@@ -17,14 +17,14 @@
       ]
     }
   },
+  "parents": {
+    "left_arm": "cbm"
+  },
   "animations": {
     "cbm_test1": {
       "loop": true,
       "bones": {
         "cmm": {
-          "rotation": {
-            "vector": [0, "q.anim_time * 20", 0]
-          }
         }
       }
     }

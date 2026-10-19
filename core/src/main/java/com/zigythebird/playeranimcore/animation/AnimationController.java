@@ -795,16 +795,13 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	protected CustomBone createCustomBone(String name, CustomModelBone data) {
-		return new CustomBone(name, data) {
-			@Override
-			public void close() {}
-		};
+		return new CustomBone(name, data);
 	}
 
 	@Override
 	public void collectModels(Consumer<CustomBone> consumer) {
 		for (CustomBone customBone : this.pivotBones.values()) {
-			if (!customBone.hasModelData()) continue;
+			if (!customBone.getData().hasModelData()) continue;
 			consumer.accept(customBone);
 		}
 	}

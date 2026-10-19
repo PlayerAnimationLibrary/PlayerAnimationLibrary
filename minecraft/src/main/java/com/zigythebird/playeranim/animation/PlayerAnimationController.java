@@ -6,6 +6,7 @@ import com.mojang.math.Axis;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
 import com.zigythebird.playeranim.animation.cmm.MinecraftCustomBone;
 import com.zigythebird.playeranim.util.RenderUtil;
+import com.zigythebird.playeranimcore.PlayerAnimLib;
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.animation.HumanoidAnimationController;
@@ -99,6 +100,13 @@ public class PlayerAnimationController extends HumanoidAnimationController {
 
     @Override
     protected CustomBone createCustomBone(String name, CustomModelBone data) {
-        return new MinecraftCustomBone(name, data);
+        if (data.hasModelData()) {
+            try {
+                return new MinecraftCustomBone(name, data);
+            } catch (Exception e) {
+                PlayerAnimLib.LOGGER.error("Failed to load custom model for bone: {}", name, e);
+            }
+        }
+        return super.createCustomBone(name, data);
     }
 }

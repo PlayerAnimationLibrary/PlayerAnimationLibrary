@@ -25,7 +25,6 @@
 package com.zigythebird.playeranim.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.math.Axis;
 import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
 import com.zigythebird.playeranim.animation.AvatarAnimManager;
@@ -35,21 +34,20 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
-import net.minecraft.client.resources.model.geometry.QuadCollection;
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Collections;
 
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends EntityRenderer<T, S> {
@@ -104,17 +102,13 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
         AvatarAnimManager animationPlayer = avatarRenderState.playerAnimLib$getAnimManager();
         if (animationPlayer == null || !animationPlayer.isActive()) return;
 
-        int lightCoords = state.lightCoords;
-
         poseStack.pushPose();
 
-        poseStack.translate(0, 1.501F, 0);
-        poseStack.scale(-1, -1, -1);
+        poseStack.translate(0, -EntityModel.MODEL_Y_OFFSET, 0);
+        poseStack.scale(-1.0F, -1.0F, -1.0F);
 
         animationPlayer.collectModels(bone -> {
-            if (!(bone instanceof MinecraftCustomBone mcBone) || !mcBone.hasModel()) return;
-
-            QuadCollection bakedPart = mcBone.getGeometry();
+            if (!(bone instanceof MinecraftCustomBone mcBone)) return;
 
             poseStack.pushPose();
             Vec3f pivot = bone.getPivot().div(16);
@@ -122,23 +116,11 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
             RenderUtil.applyBoneRotationScale(poseStack, bone);
             poseStack.translate(-pivot.x() - 0.5f, -pivot.y(), -pivot.z() - 0.5f);
 
-            submitNodeCollector.submitCustomGeometry(
-                    poseStack, mcBone.getRenderType(),
-
-                    (pose, buffer) -> {
-                        QuadInstance instance = new QuadInstance();
-                        instance.setLightCoords(lightCoords);
-                        instance.setOverlayCoords(OverlayTexture.NO_OVERLAY);
-
-                        for (BakedQuad quad : bakedPart.getQuads(null)) {
-                            buffer.putBakedQuad(pose, quad, instance);
-                        }
-                        for (Direction dir : ModelBlockRenderer.DIRECTIONS) {
-                            for (BakedQuad quad : bakedPart.getQuads(dir)) {
-                                buffer.putBakedQuad(pose, quad, instance);
-                            }
-                        }
-                    }
+            submitNodeCollector.submitBlockModel(poseStack, mcBone.getRenderType(), Collections.singletonList(mcBone),
+                    BlockModelRenderState.EMPTY_TINTS,
+                    state.lightCoords,
+                    OverlayTexture.NO_OVERLAY,
+                    state.outlineColor
             );
 
             poseStack.popPose();

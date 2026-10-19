@@ -32,4 +32,8 @@ public record CustomModelBone(Vec3f pivot, @Nullable DecodedImage texture, @Null
             }
         }
     }
+
+    public boolean hasModelData() {
+        return this.texture() != null && this.elements() != null && !this.elements().isEmpty();
+    }
 }

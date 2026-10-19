@@ -3,10 +3,12 @@ package com.zigythebird.playeranimcore.bones;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 
-public abstract class CustomBone extends PlayerAnimBone implements AutoCloseable {
+import java.io.Closeable;
+
+public class CustomBone extends PlayerAnimBone implements Closeable {
     private final CustomModelBone data;
 
-    protected CustomBone(String name, CustomModelBone data) {
+    public CustomBone(String name, CustomModelBone data) {
         super(name);
         this.data = data;
     }
@@ -19,10 +21,8 @@ public abstract class CustomBone extends PlayerAnimBone implements AutoCloseable
         return this.data;
     }
 
-    public boolean hasModelData() {
-        return this.data.texture() != null && this.data.elements() != null && !this.data.elements().isEmpty();
-    }
-
     @Override
-    public abstract void close();
+    public void close() {
+        // no-op
+    }
 }
