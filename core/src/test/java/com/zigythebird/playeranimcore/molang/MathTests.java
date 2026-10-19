@@ -3,11 +3,11 @@ package com.zigythebird.playeranimcore.molang;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 public class MathTests {
-    private static final MochaEngine<?> ENGINE = MolangLoader.createNewEngine();
+    private static final MolangInterpreter<?> ENGINE = MolangLoader.createNewEngine();
 
     @Test
     public void testMocha() {

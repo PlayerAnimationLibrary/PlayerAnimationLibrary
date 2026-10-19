@@ -1,4 +1,4 @@
-package com.zigythebird.playeranim.animation;
+package com.zigythebird.playeranim.animation.cmm;
 
 import com.google.gson.JsonElement;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -22,7 +22,6 @@ import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
 import net.minecraft.client.resources.model.cuboid.UnbakedCuboidGeometry;
 import net.minecraft.client.resources.model.geometry.BakedQuad;
 import net.minecraft.client.resources.model.geometry.QuadCollection;
-import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.client.resources.model.sprite.TextureSlots;
 import net.minecraft.resources.Identifier;
@@ -35,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MinecraftCustomBone extends CustomBone implements MaterialBaker, ModelBaker, ModelBaker.Interner, ModelDebugName {
+public class MinecraftCustomBone extends CustomBone implements ModelBaker, ModelBaker.Interner, ModelDebugName {
     private static final AtomicInteger TEXTURE_COUNTER = new AtomicInteger(0);
 
     @Nullable
@@ -75,6 +74,10 @@ public class MinecraftCustomBone extends CustomBone implements MaterialBaker, Mo
         return this.renderType;
     }
 
+    public @Nullable TextureAtlasSprite getSprite() {
+        return this.sprite;
+    }
+
     @Override
     public void close() {
         if (this.sprite != null) {
@@ -92,16 +95,6 @@ public class MinecraftCustomBone extends CustomBone implements MaterialBaker, Mo
     }
 
     @Override
-    public Material.@NonNull Baked get(Material material, @NonNull ModelDebugName name) {
-        return new Material.Baked(this.sprite, material.forceTranslucent());
-    }
-
-    @Override
-    public Material.@NonNull Baked reportMissingReference(@NonNull String reference, @NonNull ModelDebugName name) {
-        return new Material.Baked(this.sprite, false);
-    }
-
-    @Override
     public @NonNull ResolvedModel getModel(@NonNull Identifier location) {
         throw new UnsupportedOperationException();
     }
@@ -112,8 +105,9 @@ public class MinecraftCustomBone extends CustomBone implements MaterialBaker, Mo
     }
 
     @Override
+    @SuppressWarnings("all")
     public @NonNull MaterialBaker materials() {
-        return this;
+        return null;
     }
 
     @Override
@@ -132,7 +126,7 @@ public class MinecraftCustomBone extends CustomBone implements MaterialBaker, Mo
     }
 
     @Override
-    public <T> T compute(SharedOperationKey<T> key) {
+    public <T> @NonNull T compute(SharedOperationKey<T> key) {
         return key.compute(this);
     }
 

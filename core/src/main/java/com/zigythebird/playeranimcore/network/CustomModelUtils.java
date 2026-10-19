@@ -3,8 +3,8 @@ package com.zigythebird.playeranimcore.network;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.netty.buffer.ByteBuf;
-import team.unnamed.mocha.util.network.ProtocolUtils;
-import team.unnamed.mocha.util.network.VarIntUtils;
+import org.redlance.mocha.parser.util.network.ProtocolUtils;
+import org.redlance.mocha.parser.util.network.VarIntUtils;
 
 class CustomModelUtils {
     private static final String[] DIRECTION_NAMES = {"down", "up", "north", "south", "west", "east"};

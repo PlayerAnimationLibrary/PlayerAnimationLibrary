@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.util;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.accessors.IAnimatedAvatar;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
 import net.minecraft.client.Camera;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.ApiStatus;
 /**
  * Helper class for segregating client-side code
  */
+@J2ObjCIncompatible
 public final class ClientUtil {
 	/**
 	 * Get the player on the client
@@ -36,6 +38,7 @@ public final class ClientUtil {
 	public static boolean shouldBeFirstPersonPass(Camera camera) {
 		return !camera.isDetached() && camera.entity() instanceof IAnimatedAvatar player && player.playerAnimLib$getAnimManager().isActive()
 				&& player.playerAnimLib$getAnimManager().getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL
+				&& player.playerAnimLib$getAnimManager().getFirstPersonTransitionProgress() == 1
 				&& (!(camera.entity() instanceof LivingEntity) || !((LivingEntity)camera.entity()).isSleeping());
 	}
 }

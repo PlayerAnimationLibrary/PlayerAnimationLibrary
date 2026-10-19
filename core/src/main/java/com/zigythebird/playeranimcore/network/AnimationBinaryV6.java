@@ -10,15 +10,14 @@ import com.zigythebird.playeranimcore.easing.EasingType;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
 import com.zigythebird.playeranimcore.loading.PlayerAnimatorLoader;
 import io.netty.buffer.ByteBuf;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.parser.ast.FloatExpression;
-import team.unnamed.mocha.runtime.IsConstantExpression;
-import team.unnamed.mocha.util.ExprBytesUtils;
-import team.unnamed.mocha.util.network.ProtocolUtils;
-import team.unnamed.mocha.util.network.VarIntUtils;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.runtime.IsConstantExpression;
+import org.redlance.mocha.parser.util.ExprBytesUtils;
+import org.redlance.mocha.parser.util.network.ProtocolUtils;
+import org.redlance.mocha.parser.util.network.VarIntUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -213,7 +212,7 @@ final class AnimationBinaryV6 {
             if (hasEasingArgs) {
                 easingArgs = ProtocolUtils.readList(buf, ExprBytesUtils::readExpressions);
             } else if (shouldStartFromDefault && i > 0) {
-                easingArgs = Collections.singletonList(new ArrayList<>(0));
+                easingArgs = PlayerAnimatorLoader.EMPTY_EASING_ARG;
             } else {
                 easingArgs = new ArrayList<>(0);
             }

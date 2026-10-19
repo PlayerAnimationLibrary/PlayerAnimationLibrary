@@ -3,8 +3,8 @@ import org.apache.commons.lang3.StringUtils
 
 plugins {
     id "org.redlance.dima_dencep.gradle.PublishToDiscord" version "1.0.8"
-    id "xyz.wagyourtail.unimined" version "1.4.2+redlance.3" apply false
-    id "com.gradleup.shadow" version "9.4.3" apply false
+    id "xyz.wagyourtail.unimined" version "1.4.2-SNAPSHOT" apply false
+    id "com.gradleup.shadow" version "9.6.1" apply false
 }
 
 allprojects {
@@ -75,5 +75,38 @@ tasks.register("publishToDiscord", PublishDiscordTask) {
         it.fromEnvHack()
     }
 
-    footer = "||<@&1411332060051669062>||"
+    def ping = providers.environmentVariable("DISCORD_PING").map { it.toBoolean() }.getOrElse(true)
+    footer = ping ? "||<@&1411332060051669062>||" : ""
+}
+
+static def configurePom(pom, name) {
+    pom.name = name
+    pom.description = "A library that allows mods to animate the player, in a way that doesn't conflict with other mods"
+    pom.url = "https://docs.zigythebird.com/pal"
+
+    pom.developers {
+        developer {
+            id = "dima_dencep"
+            name = "dima_dencep"
+            email = "dima_dencep@redlance.org"
+        }
+        developer {
+            id = "zigythebird"
+            name = "ZigyTheBird"
+            email = "imanyarandi222@gmail.com"
+        }
+    }
+
+    pom.licenses {
+        license {
+            name = "MIT"
+            url = "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary/blob/HEAD/LICENSE"
+        }
+    }
+
+    pom.scm {
+        connection = "scm:git:github.com/PlayerAnimationLibrary/PlayerAnimationLibrary.git"
+        developerConnection = "scm:git:github.com/PlayerAnimationLibrary/PlayerAnimationLibrary.git"
+        url = "https://github.com/PlayerAnimationLibrary/PlayerAnimationLibrary.git"
+    }
 }

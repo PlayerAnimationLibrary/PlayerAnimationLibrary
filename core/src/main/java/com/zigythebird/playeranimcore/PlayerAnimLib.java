@@ -3,6 +3,7 @@ package com.zigythebird.playeranimcore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.loading.AnimationLoader;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+@ReflectionSupport(ReflectionSupport.Level.FULL)
 public class PlayerAnimLib {
     public static final String MOD_ID = "player_animation_library";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);

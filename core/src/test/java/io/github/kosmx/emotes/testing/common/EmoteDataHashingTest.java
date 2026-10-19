@@ -34,8 +34,13 @@ public class EmoteDataHashingTest {
     }
 
     public static final UUID ANIMATION_UUID = UUID.fromString("0003a26e-3bf7-b554-0007-698deefeb9da");
+
     public static Animation loadAnimation() throws IOException {
-        try (InputStream is = EmoteDataHashingTest.class.getResourceAsStream("/bye-bye-bye.json")) {
+        return loadAnimation("/bye-bye-bye.json");
+    }
+
+    public static Animation loadAnimation(String name) throws IOException {
+        try (InputStream is = EmoteDataHashingTest.class.getResourceAsStream(name)) {
             return UniversalAnimLoader.loadAnimations(is).values().iterator().next();
         }
     }

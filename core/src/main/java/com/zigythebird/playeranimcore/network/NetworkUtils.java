@@ -8,7 +8,7 @@ import io.netty.buffer.ByteBuf;
 import org.redlance.platformtools.webp.decoder.DecodedImage;
 import org.redlance.platformtools.webp.decoder.PlatformWebPDecoder;
 import org.redlance.platformtools.webp.encoder.PlatformWebPEncoder;
-import team.unnamed.mocha.util.network.VarIntUtils;
+import org.redlance.mocha.parser.util.network.VarIntUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

@@ -13,6 +13,7 @@ import com.zigythebird.playeranimcore.molang.MolangLoader;
 import org.redlance.common.utils.ReflectUtils;
 
 import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Test-only subclass of {@link HumanoidAnimationController} that drives the
@@ -24,6 +25,12 @@ import java.util.EnumSet;
  * lives here — there's no need to expose the field through a getter.
  */
 public class TestAnimationController extends HumanoidAnimationController {
+    /**
+     * {@link HumanoidAnimationController#top_bones} - the bones a torso bend is propagated onto when
+     * {@link ExtraAnimationData#APPLY_BEND_TO_OTHER_BONES_KEY} is set - is {@code protected} on the parent.
+     */
+    public static final List<String> TOP_BONES = new TestAnimationController().top_bones;
+
     public TestAnimationController() {
         super((_, _, _) -> PlayState.STOP, MolangLoader::createNewEngine);
     }
@@ -48,12 +55,23 @@ public class TestAnimationController extends HumanoidAnimationController {
     }
 
     /**
+     * Playback of {@code animation} with its own loop type, so a loop wraps as it does in game.
+     * Strips the begin-tick lerp metadata for the same parity reason as {@link #playing}.
+     */
+    public static TestAnimationController looping(Animation animation) {
+        animation.data().data().remove(ExtraAnimationData.BEGIN_TICK_KEY);
+
+        TestAnimationController controller = new TestAnimationController();
+        controller.triggerAnimation(RawAnimation.begin().then(animation, Animation.LoopType.DEFAULT));
+        return controller;
+    }
+
+    /**
      * Tick this controller and {@code target} in lockstep until the current
      * animation's natural end, asserting per-tick that every bone this
      * controller considers active matches the transform produced by the target.
      */
     public void captureAgainst(IAnimation target, String label, EnumSet<TransformType> toAssert) {
-        AnimationData data = new AnimationData(0f, 0f, false);
         // AnimationLoader.calculateAnimationLength returns Float.MAX_VALUE for
         // animations without temporally-distributed keyframes (e.g. static bends
         // on bend_test.json: one keyframe at t=0 → keyframe deltas sum to 0);
@@ -61,15 +79,23 @@ public class TestAnimationController extends HumanoidAnimationController {
         // int cast on write. Treat either sentinel as "no natural end" — a
         // single tick is enough to verify the static pose is preserved.
         float length = this.getCurrentAnimationInstance().length();
-        float limit = length >= Integer.MAX_VALUE ? 1f : length;
-        for (float tick = 0f; tick < limit; tick += 1f) {
+        captureAgainst(target, label, toAssert, length >= Integer.MAX_VALUE ? 1f : length, Snapshots.DEFAULT_EPSILON);
+    }
+
+    /**
+     * Like {@link #captureAgainst(IAnimation, String, EnumSet)}, for {@code ticks} ticks and within
+     * {@code epsilon}, which lets a looping animation be compared across its wraps.
+     */
+    public void captureAgainst(IAnimation target, String label, EnumSet<TransformType> toAssert, float ticks, float epsilon) {
+        AnimationData data = new AnimationData(0f, 0f, false);
+        for (float tick = 0f; tick < ticks; tick += 1f) {
             this.setupAnim(data);
             target.setupAnim(data);
 
             for (String name : this.activeBones.keySet()) {
                 PlayerAnimBone expected = this.get3DTransform(name);
                 PlayerAnimBone actual = target.get3DTransform(name);
-                Snapshots.assertBonesEqual(expected, actual, label, tick, toAssert);
+                Snapshots.assertBonesEqual(expected, actual, epsilon, label, tick, toAssert);
             }
 
             this.tick(data);

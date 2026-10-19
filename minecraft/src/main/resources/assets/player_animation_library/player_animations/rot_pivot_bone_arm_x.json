@@ -1,0 +1,744 @@
+{
+    "format_version": "1.8.0",
+    "geckolib_format_version": 2,
+    "model": {
+        "body_control": {
+            "pivot": [
+                0.0,
+                12.0,
+                0.0
+            ]
+        }
+    },
+    "parents": {
+        "torso": "body_control",
+        "left_arm": "body_control",
+        "right_arm": "body_control",
+        "head": "body_control",
+        "left_leg": "body_control",
+        "right_leg": "body_control"
+    },
+    "animations": {
+        "rot_pivot_bone_arm_x": {
+            "loopTick": 0.0,
+            "loop": true,
+            "animation_length": 2.667,
+            "player_animation_library": {
+                "name": "rot_pivot_bone_arm_x",
+                "author": "MineEmotes",
+                "description": "",
+                "bages": []
+            },
+            "bones": {
+                "body": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "body_control": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "0.5": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "1.0": {
+                            "vector": [
+                                "pal.disabled",
+                                0.0,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "1.5": {
+                            "vector": [
+                                "pal.disabled",
+                                8.737,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "0.5": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "1.0": {
+                            "vector": [
+                                -0.0,
+                                -0.0,
+                                67.437
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "0.5": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    }
+                },
+                "head": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "left_arm": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "bend": {
+                        "0.0": {
+                            "value": 0.0,
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "left_leg": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "bend": {
+                        "0.0": {
+                            "value": 0.0,
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "right_arm": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "0.5": {
+                            "vector": [
+                                -8.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "bend": {
+                        "0.0": {
+                            "value": 0.0,
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "right_leg": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "bend": {
+                        "0.0": {
+                            "value": 0.0,
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "torso": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "bend": {
+                        "0.0": {
+                            "value": 0.0,
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "right_item": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                -0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "left_item": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                -0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "cape": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -26,9 +26,10 @@ package com.zigythebird.playeranim.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
+import com.mojang.math.Axis;
 import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
 import com.zigythebird.playeranim.animation.AvatarAnimManager;
-import com.zigythebird.playeranim.animation.MinecraftCustomBone;
+import com.zigythebird.playeranim.animation.cmm.MinecraftCustomBone;
 import com.zigythebird.playeranim.util.RenderUtil;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
@@ -64,6 +65,15 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
                 avatarRenderState.playerAnimLib$getAnimManager().handleAnimations(animationPlayer.getTickDelta(), false, avatarRenderState.playerAnimLib$isFirstPersonPass());
                 poseStack.scale(-1.0F, -1.0F, 1.0F);
 
+                if (avatarRenderState.playerAnimLib$isFirstPersonPass()) {
+                    poseStack.translate(0.0F, state.eyeHeight, 0.0F);
+                    if (animationPlayer.isFirstPersonFollowsCamera()) {
+                        poseStack.rotateDegrees(Axis.YP, -state.yRot);
+                        poseStack.rotateDegrees(Axis.XP, -state.xRot);
+                    }
+                    poseStack.translate(0.0F, -state.eyeHeight, 0.0F);
+                }
+
                 //These are additive properties
                 PlayerAnimBone body = animationPlayer.get3DTransform("body");
 
@@ -84,7 +94,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
             method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IIILnet/minecraft/client/renderer/texture/TextureAtlasSprite;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V",
+                    target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/rendertype/RenderType;IIILnet/minecraft/client/renderer/texture/UvMapping;I)V",
                     shift = At.Shift.AFTER
             )
     )

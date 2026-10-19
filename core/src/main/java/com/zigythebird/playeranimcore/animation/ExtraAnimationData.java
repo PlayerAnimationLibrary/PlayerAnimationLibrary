@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,7 @@ import org.redlance.platformtools.webp.decoder.DecodedImage;
 import java.io.IOException;
 import java.util.*;
 
+@ReflectionSupport(ReflectionSupport.Level.FULL)
 public record ExtraAnimationData(Map<String, Object> data) {
     public static final String NAME_KEY = "name";
     public static final String UUID_KEY = "uuid";
@@ -155,6 +157,10 @@ public record ExtraAnimationData(Map<String, Object> data) {
 
     public boolean isDisableAxisIfNotModified() {
         return this.<Boolean>get(DISABLE_AXIS_IF_NOT_MODIFIED).orElse(true);
+    }
+
+    public boolean isEasingBefore() {
+        return this.<Boolean>get(EASING_BEFORE_KEY).orElse(true);
     }
 
     public boolean isAnimationPlayerAnimatorFormat() {

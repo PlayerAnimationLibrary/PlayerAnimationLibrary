@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.animation.layered.modifier;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranimcore.animation.layered.modifier.MirrorModifier;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
@@ -8,6 +9,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import org.jetbrains.annotations.NotNull;
 
 /**Apply the mirror modifier only if the client has their main arm set as the left one*/
+@J2ObjCIncompatible
 public class MirrorIfLeftHandModifier extends MirrorModifier {
     public MirrorIfLeftHandModifier() {
         super();
