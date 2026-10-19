@@ -54,8 +54,7 @@ public final class RenderUtil {
 
 	public static void applyBoneRotationScale(PoseStack poseStack, PlayerAnimBone bone) {
 		RenderUtil.rotateMatrixAroundBone(poseStack, bone);
-		if (bone.scale.x != 1 || bone.scale.y != 1 || bone.scale.z != 1)
-			poseStack.scale(bone.scale.x, bone.scale.y, bone.scale.z);
+		poseStack.scale(bone.scale.x, bone.scale.y, bone.scale.z);
 	}
 
 	public static PlayerAnimBone copyVanillaPart(ModelPart part, PlayerAnimBone bone) {
