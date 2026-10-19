@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 //Set the priority high cause why not!
 @Mixin(value = PlayerCapeModel.class, priority = 2001)

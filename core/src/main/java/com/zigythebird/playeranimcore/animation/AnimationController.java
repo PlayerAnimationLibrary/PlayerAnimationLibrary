@@ -24,6 +24,7 @@
 
 package com.zigythebird.playeranimcore.animation;
 
+import com.google.j2objc.annotations.AutoreleasePool;
 import com.zigythebird.playeranimcore.PlayerAnimLib;
 import com.zigythebird.playeranimcore.animation.keyframe.*;
 import com.zigythebird.playeranimcore.animation.keyframe.event.CustomKeyFrameEvents;
@@ -53,8 +54,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.runtime.MolangInterpreter;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -76,7 +77,7 @@ public abstract class AnimationController implements IAnimation {
 	protected final Map<String, AdvancedPlayerAnimBone> bones = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, PivotBone> pivotBones = new Object2ObjectOpenHashMap<>();
 	protected Queue<QueuedAnimation> animationQueue = new LinkedList<>();
-	protected final MochaEngine<AnimationController> molangRuntime;
+	protected final MolangInterpreter<AnimationController> molangRuntime;
 
 	protected boolean needsAnimationReload = false;
 
@@ -100,6 +101,8 @@ public abstract class AnimationController implements IAnimation {
 
 	protected Function<AnimationController, FirstPersonMode> firstPersonMode = null;
 	protected Function<AnimationController, FirstPersonConfiguration> firstPersonConfiguration = null;
+	private boolean firstPersonFollowsCamera = false;
+	private int firstPersonTransitionLength = 0;
 	private final List<AbstractModifier> modifiers = new ArrayList<>();
 
 	private final InternalAnimationAccessor internalAnimationAccessor = new InternalAnimationAccessor(this);
@@ -111,10 +114,34 @@ public abstract class AnimationController implements IAnimation {
 	 * @param bonePositions    Map of bones and their pivots
 	 * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
 	 */
-	public AnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+	public AnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
 		this.stateHandler = animationHandler;
 		this.bonePositions = bonePositions;
 		this.molangRuntime = molangRuntime.apply(this);
+	}
+
+	/**
+	 * Sets whether the first‑person animation should follow the camera.
+	 */
+	public void setFirstPersonFollowsCamera(boolean followsCamera) {
+		this.firstPersonFollowsCamera = followsCamera;
+	}
+
+	@Override
+	public boolean isFirstPersonFollowsCamera() {
+		return this.firstPersonFollowsCamera;
+	}
+
+	/**
+	 * Sets duration in ticks for how long it takes for the vanilla hand to fully slide down/up the screen when first person animations are playing
+	 */
+	public void setFirstPersonTransitionLength(int ticks) {
+		this.firstPersonTransitionLength = Math.max(0, ticks);
+	}
+
+	@Override
+	public int getFirstPersonTransitionLength() {
+		return this.firstPersonTransitionLength;
 	}
 
 	/**
@@ -324,6 +351,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param startAnimFrom Where to start the animation from in ticks
 	 */
+	@AutoreleasePool
 	protected void setAnimation(RawAnimation rawAnimation, float startAnimFrom) {
 		if (rawAnimation == null || rawAnimation.getAnimationStages().isEmpty()) {
 			stop();
@@ -472,6 +500,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param state                 The animation test state
 	 */
+	@AutoreleasePool
 	public void process(AnimationData state) {
 		float adjustedTick = Math.max(0.0F, state.getPartialTick() + this.startAnimFrom + tick);
 
@@ -509,6 +538,7 @@ public abstract class AnimationController implements IAnimation {
 	 *
 	 * @param adjustedTick The controller-adjusted tick for animation purposes
 	 */
+	@AutoreleasePool
 	private void processCurrentAnimation(float adjustedTick, AnimationData animationData) {
 		QueuedAnimation queued = this.currentAnimation;
 		if (queued == null) {
@@ -679,6 +709,24 @@ public abstract class AnimationController implements IAnimation {
 		return this.tick + this.startAnimFrom + this.animationData.getPartialTick();
 	}
 
+	public boolean hasBeginTick() {
+		return this.currentAnimation.animation().data().has(ExtraAnimationData.BEGIN_TICK_KEY);
+	}
+
+	public boolean hasEndTick() {
+		Animation animation = this.currentAnimation.animation();
+		return !animation.loopType().shouldPlayAgain(null, animation) && animation.data().has(ExtraAnimationData.END_TICK_KEY);
+	}
+
+	public boolean isDisableAxisIfNotModified() {
+		return this.currentAnimation != null && this.currentAnimation.animation().data().isDisableAxisIfNotModified();
+	}
+
+	public boolean isAnimationPlayerAnimatorFormat() {
+		return this.currentAnimation != null && this.currentAnimation.animation().data().isAnimationPlayerAnimatorFormat();
+	}
+
+	@AutoreleasePool
 	protected void setupNewAnimation() {
 		this.isLoopStarted = false;
 		if (currentAnimation == null) return;
@@ -729,7 +777,7 @@ public abstract class AnimationController implements IAnimation {
 		ExtraAnimationData extraData = animation.data();
 		float endTick = extraData.<Float>get(ExtraAnimationData.END_TICK_KEY).orElse(animation.length()-1);
 
-		KeyframeLocation location = getCurrentKeyFrameLocation(frames, tick, type, queued.isAnimationPlayerAnimatorFormat() && queued.loopType().shouldPlayAgain(null, animation), animation.length(), queued.loopType().restartFromTick(null, animation));
+		KeyframeLocation location = getCurrentKeyFrameLocation(frames, tick, type, queued.isAnimationPlayerAnimatorFormat() && queued.loopType().shouldPlayAgain(null, animation), animation.length(), queued.loopType().restartFromTick(null, animation), extraData.isEasingBefore());
 		Keyframe currentFrame = location.keyframe();
 		float startValue = this.molangRuntime.eval(currentFrame.startValue());
 		float endValue = this.molangRuntime.eval(currentFrame.endValue());
@@ -764,29 +812,43 @@ public abstract class AnimationController implements IAnimation {
 	 * @param ageInTicks The current tick time
 	 * @return A new {@code KeyFrameLocation} containing the current {@code KeyFrame} and the tick time used to find it
 	 */
-	private KeyframeLocation getCurrentKeyFrameLocation(List<Keyframe> frames, float ageInTicks, TransformType type, boolean isPlayerAnimatorLoop, float animTime, float returnToTick) {
+	private KeyframeLocation getCurrentKeyFrameLocation(List<Keyframe> frames, float ageInTicks, TransformType type, boolean isPlayerAnimatorLoop, float animTime, float returnToTick, boolean easeBefore) {
 		if (frames.isEmpty()) return type == TransformType.SCALE ? EMPTY_SCALE_KEYFRAME_LOCATION : EMPTY_KEYFRAME_LOCATION;
 
-		Keyframe firstFrame = returnToTick == 0 ? frames.getFirst() : Keyframe.getKeyframeAtTime(frames, returnToTick);
+		Keyframe firstFrame = isPlayerAnimatorLoop ? Keyframe.getKeyframeAtTime(frames, returnToTick) : null;
+		float firstFrameEnd = 0;
+		float loopLength = animTime - returnToTick;
 		float totalFrameTime = 0;
 
 		for (Keyframe frame : frames) {
 			totalFrameTime += frame.length();
+			if (frame == firstFrame) firstFrameEnd = totalFrameTime;
 
 			if (totalFrameTime > ageInTicks) {
 				if (isPlayerAnimatorLoop && isLoopStarted() && frame == firstFrame) {
-					float stopTickMinusLastKeyframe = animTime - Keyframe.getLastKeyframeTime(frames);
-					return new KeyframeLocation(new Keyframe(frame.length() + stopTickMinusLastKeyframe, frames.getLast().endValue(), frame.endValue(), frame.easingType(), frame.easingArgs()), ageInTicks + stopTickMinusLastKeyframe);
+					return getLoopSeamLocation(frames, firstFrame, firstFrameEnd + loopLength, ageInTicks + loopLength, animTime, easeBefore);
 				}
 				return new KeyframeLocation(frame, ageInTicks - (totalFrameTime - frame.length()));
 			}
 		}
 
 		if (isPlayerAnimatorLoop) {
-			return new KeyframeLocation(new Keyframe(firstFrame.length() + animTime - totalFrameTime, frames.getLast().endValue(), firstFrame.endValue(), firstFrame.easingType(), firstFrame.easingArgs()), ageInTicks - totalFrameTime);
+			return getLoopSeamLocation(frames, firstFrame, firstFrameEnd + loopLength, ageInTicks, animTime, easeBefore);
 		}
 
 		return new KeyframeLocation(frames.getLast(), ageInTicks);
+	}
+
+	/**
+	 * PlayerAnimator blends a loop from its last keyframe, across the wrap, into the keyframe the restart tick falls in.
+	 * {@code end} and {@code tick} run on past the wrap instead of starting over from the restart tick.
+	 */
+	private static KeyframeLocation getLoopSeamLocation(List<Keyframe> frames, Keyframe firstFrame, float end, float tick, float animTime, boolean easeBefore) {
+		Keyframe lastFrame = frames.getLast();
+		// The loop never plays past its end, not even the 0.001 tick keyframe that carries the last easing
+		float start = Math.min(Keyframe.getLastKeyframeTime(frames), animTime);
+		Keyframe easing = easeBefore ? firstFrame : lastFrame;
+		return new KeyframeLocation(new Keyframe(end - start, lastFrame.endValue(), firstFrame.endValue(), easing.easingType(), easing.easingArgs()), tick - start);
 	}
 
 	/**
@@ -863,7 +925,9 @@ public abstract class AnimationController implements IAnimation {
 	}
 
 	@Override
+	@AutoreleasePool
 	public void tick(AnimationData state) {
+		this.animationData = state;
 		for (int i = 0; i < modifiers.size(); i++) {
 			if (modifiers.get(i).canRemove()) {
 				removeModifier(i--);

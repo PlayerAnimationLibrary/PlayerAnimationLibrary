@@ -1,0 +1,1104 @@
+{
+    "format_version": "1.8.0",
+    "geckolib_format_version": 2,
+    "model": {
+        "body_control": {
+            "pivot": [
+                0.0,
+                12.0,
+                -12.0
+            ]
+        }
+    },
+    "parents": {
+        "torso": "body_control",
+        "left_arm": "body_control",
+        "right_arm": "body_control",
+        "head": "body_control",
+        "left_leg": "body_control",
+        "right_leg": "body_control"
+    },
+    "animations": {
+        "pivot_placement_test_three": {
+            "loopTick": 0.0,
+            "loop": true,
+            "animation_length": 1.667,
+            "player_animation_library": {
+                "name": "pivot_placement_test_three",
+                "author": "MineEmotes",
+                "description": "",
+                "bages": []
+            },
+            "bones": {
+                "body": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "body_control": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "0.5": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "1.0": {
+                            "vector": [
+                                "pal.disabled",
+                                0.0,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "1.5": {
+                            "vector": [
+                                "pal.disabled",
+                                8.737,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "0.5": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "1.0": {
+                            "vector": [
+                                -0.0,
+                                -67.437,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        },
+                        "0.5": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.166667,
+                                0.0,
+                                0.166667
+                            ]
+                        }
+                    }
+                },
+                "head": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "left_arm": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "left_leg": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "right_arm": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easingX": "bezier",
+                            "easingArgsX": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                -0.0,
+                                -0.011111,
+                                -0.0,
+                                0.011111
+                            ],
+                            "easingZ": "bezier",
+                            "easingArgsZ": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        },
+                        "0.033": {
+                            "vector": [
+                                "pal.disabled",
+                                0.102,
+                                "pal.disabled"
+                            ],
+                            "easingY": "bezier",
+                            "easingArgsY": [
+                                -0.06637,
+                                -0.011111,
+                                0.06637,
+                                0.011111
+                            ]
+                        },
+                        "0.067": {
+                            "vector": [
+                                "pal.disabled",
+                                0.389,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear",
+                            "easingArgsY": [
+                                -0.06637,
+                                -0.011111,
+                                0.06637,
+                                0.011111
+                            ]
+                        },
+                        "0.1": {
+                            "vector": [
+                                "pal.disabled",
+                                0.832,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.133": {
+                            "vector": [
+                                "pal.disabled",
+                                1.403,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.167": {
+                            "vector": [
+                                "pal.disabled",
+                                2.073,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.2": {
+                            "vector": [
+                                "pal.disabled",
+                                2.815,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.233": {
+                            "vector": [
+                                "pal.disabled",
+                                3.599,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.267": {
+                            "vector": [
+                                "pal.disabled",
+                                4.398,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.3": {
+                            "vector": [
+                                "pal.disabled",
+                                5.182,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.333": {
+                            "vector": [
+                                "pal.disabled",
+                                5.924,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.367": {
+                            "vector": [
+                                "pal.disabled",
+                                6.595,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.4": {
+                            "vector": [
+                                "pal.disabled",
+                                7.166,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.433": {
+                            "vector": [
+                                "pal.disabled",
+                                7.609,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.467": {
+                            "vector": [
+                                "pal.disabled",
+                                7.896,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.5": {
+                            "vector": [
+                                "pal.disabled",
+                                7.997,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.533": {
+                            "vector": [
+                                "pal.disabled",
+                                7.997,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.567": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.6": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.633": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.667": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.7": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.733": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.767": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.8": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.833": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.867": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.9": {
+                            "vector": [
+                                "pal.disabled",
+                                7.997,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.933": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "0.967": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.0": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.033": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.067": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.1": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.133": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.167": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.2": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.233": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.267": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.3": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.333": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.367": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.4": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.433": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.467": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.5": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.533": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.567": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.6": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.633": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.667": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        },
+                        "1.7": {
+                            "vector": [
+                                "pal.disabled",
+                                7.998,
+                                "pal.disabled"
+                            ],
+                            "easingY": "linear"
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "right_leg": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "torso": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "right_item": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                -0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "left_item": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                -0.0,
+                                -0.0,
+                                -0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                -0.0,
+                                -0.033333,
+                                -0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                },
+                "cape": {
+                    "position": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                -0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "rotation": {
+                        "0.0": {
+                            "vector": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    },
+                    "scale": {
+                        "0.0": {
+                            "vector": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "easing": "bezier",
+                            "easingArgs": [
+                                0.0,
+                                -0.033333,
+                                0.0,
+                                0.033333
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

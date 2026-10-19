@@ -1,10 +1,12 @@
 package com.zigythebird.playeranim.animation;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.accessors.IAnimatedAvatar;
 import com.zigythebird.playeranim.util.RenderUtil;
 import com.zigythebird.playeranimcore.animation.AnimationData;
 import com.zigythebird.playeranimcore.animation.layered.AnimationStack;
 import com.zigythebird.playeranimcore.animation.layered.IAnimation;
+import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import it.unimi.dsi.fastutil.Pair;
 import net.minecraft.client.Minecraft;
@@ -19,12 +21,15 @@ import org.jetbrains.annotations.ApiStatus;
  * <p>
  * Generally speaking, a single working-instance of a player will have a single instance of {@code PlayerAnimManager} associated with it
  */
+@J2ObjCIncompatible
 public class AvatarAnimManager extends AnimationStack {
 	private final Avatar avatar;
 
 	private float lastUpdateTime;
 	private boolean isFirstTick = true;
 	private float tickDelta;
+	private float firstPersonTransitionProgress = 0;
+	private boolean firstPersonTransitioningToPAL;
 
 	public AvatarAnimManager(Avatar avatar) {
 		this.avatar = avatar;
@@ -67,6 +72,14 @@ public class AvatarAnimManager extends AnimationStack {
 		return this.tickDelta;
 	}
 
+	public float getFirstPersonTransitionProgress() {
+		return firstPersonTransitionProgress;
+	}
+
+	public boolean isFirstPersonTransitioningToPAL() {
+		return firstPersonTransitioningToPAL;
+	}
+
 	/**
 	 * If you touch this, you're a horrible person.
 	 */
@@ -105,5 +118,26 @@ public class AvatarAnimManager extends AnimationStack {
 
 	public Avatar getAvatar() {
 		return avatar;
+	}
+
+	@Override
+	public void tick(AnimationData state) {
+		super.tick(state);
+
+		int firstPersonTransitionLength = getFirstPersonTransitionLength();
+		float target = getFirstPersonMode() == FirstPersonMode.THIRD_PERSON_MODEL ? 1.0f : 0.0f;
+		if (firstPersonTransitionLength <= 0) firstPersonTransitionProgress = target;
+		else {
+			float step = 1.0f / firstPersonTransitionLength;
+			if (firstPersonTransitionProgress < target) {
+				firstPersonTransitionProgress += step;
+				firstPersonTransitioningToPAL = true;
+				if (firstPersonTransitionProgress > target) firstPersonTransitionProgress = target;
+			} else if (firstPersonTransitionProgress > target) {
+				firstPersonTransitionProgress -= step;
+				firstPersonTransitioningToPAL = false;
+				if (firstPersonTransitionProgress < target) firstPersonTransitionProgress = target;
+			}
+		}
 	}
 }

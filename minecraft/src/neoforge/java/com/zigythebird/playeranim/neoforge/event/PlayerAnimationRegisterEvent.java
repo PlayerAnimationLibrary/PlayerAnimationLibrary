@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.neoforge.event;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.accessors.IAnimatedAvatar;
 import com.zigythebird.playeranim.animation.AvatarAnimManager;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -12,6 +13,7 @@ import net.neoforged.bus.api.Event;
  * <hr>
  * NOTE: When the event fires, {@link IAnimatedAvatar#playerAnimLib$getAnimManager()} will be null you'll have to use the given stack.
  */
+@J2ObjCIncompatible
 public class PlayerAnimationRegisterEvent extends Event {
     private final Avatar avatar;
     private final AvatarAnimManager manager;

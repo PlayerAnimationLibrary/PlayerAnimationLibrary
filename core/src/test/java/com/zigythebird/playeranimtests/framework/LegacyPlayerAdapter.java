@@ -43,11 +43,21 @@ public final class LegacyPlayerAdapter implements IAnimation {
      * {@code TestAnimationController}'s tick-guard-free, non-looping playback.
      */
     public LegacyPlayerAdapter(KeyframeAnimation animation) {
+        this(animation, false);
+    }
+
+    /**
+     * With {@code looping}, only the begin tick is stripped, matching {@code TestAnimationController#looping}:
+     * the player keeps its loop, and the stop tick it derives past the end tick never cuts it short.
+     */
+    public LegacyPlayerAdapter(KeyframeAnimation animation, boolean looping) {
         BEGIN_TICK.set(animation, 0);
-        IS_INFINITE.set(animation, false);
-        if (animation.stopTick != animation.endTick) {
-            STOP_TICK.set(animation, animation.endTick);
-            END_TICK.set(animation, animation.endTick);
+        if (!looping) {
+            IS_INFINITE.set(animation, false);
+            if (animation.stopTick != animation.endTick) {
+                STOP_TICK.set(animation, animation.endTick);
+                END_TICK.set(animation, animation.endTick);
+            }
         }
         this.player = new KeyframeAnimationPlayer(animation);
     }

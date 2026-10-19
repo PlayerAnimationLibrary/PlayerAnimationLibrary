@@ -1,1 +1,2 @@
-- Port to 26.2
+- Fixed an issue where looping PlayerAnimator animations snapped back at the end of each loop instead of blending into the next one
+- Keyframes without easing arguments share one empty argument list instead of allocating their own

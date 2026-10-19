@@ -24,12 +24,13 @@
 
 package com.zigythebird.playeranimcore.animation;
 
+import com.google.j2objc.annotations.AutoreleasePool;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.util.MatrixUtil;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
-import team.unnamed.mocha.MochaEngine;
+import org.redlance.mocha.runtime.MolangInterpreter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,7 @@ public class HumanoidAnimationController extends AnimationController {
     /**
      * Used for applying torso bend to bones like the head.
      */
-    protected final List<String> top_bones = List.of("right_arm", "left_arm", "head", "cape");
+    protected final List<String> topBones = new ArrayList<>();
 
     private float torsoBend;
     private int torsoBendSign;
@@ -70,7 +71,7 @@ public class HumanoidAnimationController extends AnimationController {
      * @param animationHandler The {@link AnimationStateHandler} animation state handler responsible for deciding which animations to play
      * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
      */
-    public HumanoidAnimationController(AnimationStateHandler animationHandler, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+    public HumanoidAnimationController(AnimationStateHandler animationHandler, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
         this(animationHandler, BONE_POSITIONS, molangRuntime);
     }
 
@@ -81,11 +82,21 @@ public class HumanoidAnimationController extends AnimationController {
      * @param bonePositions    Map of bones and their pivots
      * @param molangRuntime    A function that provides the MoLang runtime engine for this animation controller when applied
      */
-    public HumanoidAnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MochaEngine<AnimationController>> molangRuntime) {
+    public HumanoidAnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
         super(animationHandler, bonePositions, molangRuntime);
+
+        this.registerTopPlayerAnimBone("right_arm");
+        this.registerTopPlayerAnimBone("left_arm");
+        this.registerTopPlayerAnimBone("head");
+        this.registerTopPlayerAnimBone("cape");
+    }
+
+    public void registerTopPlayerAnimBone(String name) {
+        this.topBones.add(name);
     }
 
     @Override
+    @AutoreleasePool
     public void process(AnimationData state) {
         super.process(state);
         if (this.bones.containsKey("torso")) {
@@ -101,7 +112,7 @@ public class HumanoidAnimationController extends AnimationController {
     public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
         bone = super.get3DTransformRaw(bone);
         String name = bone.getName();
-        if (this.torsoBendSign != 0 && this.top_bones.contains(name)) {
+        if (this.torsoBendSign != 0 && this.topBones.contains(name)) {
             Matrix4f matrix4f = new Matrix4f();
             matrix4f.translate(0, 18, 0);
             matrix4f.rotateX(this.torsoBend);

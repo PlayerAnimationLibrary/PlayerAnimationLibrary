@@ -26,7 +26,7 @@ package com.zigythebird.playeranimcore.animation.keyframe;
 
 import com.zigythebird.playeranimcore.easing.EasingType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import team.unnamed.mocha.parser.ast.Expression;
+import org.redlance.mocha.parser.ast.Expression;
 
 import java.util.Collections;
 import java.util.List;
@@ -63,7 +63,7 @@ public record Keyframe(float length, List<Expression> startValue, List<Expressio
 
 		for (Keyframe keyframe : list) {
 			totalFrameTime += keyframe.length;
-			if (totalFrameTime >= tick) return keyframe;
+			if (totalFrameTime > tick) return keyframe;
 		}
 
 		return list.getLast();
