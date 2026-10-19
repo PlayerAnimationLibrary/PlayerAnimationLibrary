@@ -523,6 +523,7 @@ public abstract class AnimationController implements IAnimation {
 
 		if (this.animationState == State.STOPPED && !this.pivotBones.isEmpty()) {
 			for (CustomBone bone : this.pivotBones.values()) bone.close();
+			this.pivotBones.clear();
 		}
 	}
 

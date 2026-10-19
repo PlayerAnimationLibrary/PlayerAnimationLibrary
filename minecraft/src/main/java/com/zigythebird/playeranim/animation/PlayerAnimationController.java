@@ -104,7 +104,7 @@ public class PlayerAnimationController extends HumanoidAnimationController {
             try {
                 return new MinecraftCustomBone(name, data);
             } catch (Exception e) {
-                PlayerAnimLib.LOGGER.error("Failed to load custom model for bone: {}", name, e);
+                PlayerAnimLib.LOGGER.error("Failed to load custom model for bone: {}!", name, e);
             }
         }
         return super.createCustomBone(name, data);

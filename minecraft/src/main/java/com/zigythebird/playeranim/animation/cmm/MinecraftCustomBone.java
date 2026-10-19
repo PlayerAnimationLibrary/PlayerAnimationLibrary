@@ -67,14 +67,11 @@ public class MinecraftCustomBone extends CustomBone implements ModelBaker, Model
 
     @Override
     public void close() {
-        if (this.sprite != null) {
-            this.sprite.close();
-        }
+        this.sprite.close();
     }
 
     @Override
     public @NonNull String debugName() {
-        if (this.sprite == null) return PlayerAnimLibMod.MOD_ID + ":custom_bone";
         return this.sprite.atlasLocation().toString();
     }
 
@@ -118,7 +115,7 @@ public class MinecraftCustomBone extends CustomBone implements ModelBaker, Model
         RenderSystem.assertOnRenderThread();
         NativeImage image = NativeImage.read(texture);
 
-        Identifier texId = PlayerAnimLibMod.id("dynamic/texture_" + TEXTURE_COUNTER.getAndIncrement());
+        Identifier texId = PlayerAnimLibMod.id("cmb/texture_" + TEXTURE_COUNTER.getAndIncrement());
         DynamicTexture dynTex = new DynamicTexture(texId::toString, image);
         Minecraft.getInstance().getTextureManager().register(texId, dynTex);
 
