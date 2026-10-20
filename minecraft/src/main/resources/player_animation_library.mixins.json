@@ -13,6 +13,7 @@
     "LivingEntityRendererMixin",
     "PlayerCapeModelMixin",
     "PlayerModelMixin",
+    "cmm.UnbakedCuboidGeometryMixin",
     "firstPerson.FirstPersonHandsAndItemsMixin",
     "firstPerson.HumanoidArmorLayerMixin",
     "firstPerson.ItemInHandLayerMixin",

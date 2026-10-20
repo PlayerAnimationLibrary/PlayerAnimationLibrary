@@ -3,11 +3,11 @@ package com.zigythebird.playeranimcore.loading;
 import com.google.gson.*;
 import com.zigythebird.playeranimcore.PlayerAnimLib;
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.CustomInstructionKeyframeData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.ParticleKeyframeData;
 import com.zigythebird.playeranimcore.animation.keyframe.event.data.SoundKeyframeData;
-import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.util.JsonUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -39,13 +39,17 @@ public class UniversalAnimLoader implements JsonDeserializer<Map<String, Animati
     public static Map<@NotNull String, Animation> loadAnimations(JsonObject json) {
         if (json.has("animations")) {
             Map<String, Animation> animationMap = PlayerAnimLib.GSON.fromJson(json.get("animations"), PlayerAnimLib.ANIMATIONS_MAP_TYPE);
-            if (json.has("parents") && json.has("model")) {
-                Map<String, String> parents = UniversalAnimLoader.getParents(JsonUtil.getAsJsonObject(json, "parents", new JsonObject()));
-                Map<String, Vec3f> bones = UniversalAnimLoader.getModel(JsonUtil.getAsJsonObject(json, "model", new JsonObject()));
+            if (json.has("model")) {
+                Map<String, CustomModelBone> bones = UniversalAnimLoader.getModel(JsonUtil.getAsJsonObject(json, "model", new JsonObject()), PlayerAnimLib.GSON::fromJson);
                 for (Animation animation : animationMap.values()) {
                     if (animation.bones().isEmpty()) {
                         animation.bones().putAll(bones);
                     }
+                }
+            }
+            if (json.has("parents")) {
+                Map<String, String> parents = UniversalAnimLoader.getParents(JsonUtil.getAsJsonObject(json, "parents", new JsonObject()));
+                for (Animation animation : animationMap.values()) {
                     if (animation.parents().isEmpty()) {
                         animation.parents().putAll(parents);
                     }
@@ -86,13 +90,10 @@ public class UniversalAnimLoader implements JsonDeserializer<Map<String, Animati
         return parents;
     }
 
-    public static Map<String, Vec3f> getModel(JsonObject modelObj) {
-        Map<String, Vec3f> bones = new HashMap<>(modelObj.size());
+    public static Map<String, CustomModelBone> getModel(JsonObject modelObj, JsonDeserializationContext ctx) {
+        Map<String, CustomModelBone> bones = new HashMap<>(modelObj.size());
         for (Map.Entry<String, JsonElement> entry : modelObj.entrySet()) {
-            JsonObject object = entry.getValue().getAsJsonObject();
-            JsonArray pivot = object.get("pivot").getAsJsonArray();
-            Vec3f bone = new Vec3f(pivot.get(0).getAsFloat(), pivot.get(1).getAsFloat(), pivot.get(2).getAsFloat());
-            bones.put(entry.getKey(), bone);
+            bones.put(entry.getKey(), ctx.deserialize(entry.getValue(), CustomModelBone.class));
         }
         return bones;
     }

@@ -49,6 +49,10 @@ public final class RenderUtil {
 
 	public static void translateMatrixToBone(PoseStack poseStack, PlayerAnimBone bone) {
 		poseStack.translate(bone.position.x / 16, bone.position.y / 16, bone.position.z / 16);
+		RenderUtil.applyBoneRotationScale(poseStack, bone);
+	}
+
+	public static void applyBoneRotationScale(PoseStack poseStack, PlayerAnimBone bone) {
 		RenderUtil.rotateMatrixAroundBone(poseStack, bone);
 		poseStack.scale(bone.scale.x, bone.scale.y, bone.scale.z);
 	}
