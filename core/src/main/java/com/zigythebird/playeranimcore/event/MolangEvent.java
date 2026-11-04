@@ -2,7 +2,7 @@ package com.zigythebird.playeranimcore.event;
 
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.molang.QueryBinding;
-import team.unnamed.mocha.MochaEngine;
+import org.redlance.mocha.runtime.MolangInterpreter;
 
 /**
  * Register you own Molang queries and variables.
@@ -16,6 +16,6 @@ public class MolangEvent {
 
     @FunctionalInterface
     public interface MolangEventInterface {
-        void registerMolangQueries(AnimationController controller, MochaEngine<AnimationController> engine, QueryBinding<AnimationController> queryBinding);
+        void registerMolangQueries(AnimationController controller, MolangInterpreter<AnimationController> engine, QueryBinding<AnimationController> queryBinding);
     }
 }

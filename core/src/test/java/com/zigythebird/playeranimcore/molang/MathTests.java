@@ -3,11 +3,11 @@ package com.zigythebird.playeranimcore.molang;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 public class MathTests {
-    private static final MochaEngine<?> ENGINE = MolangLoader.createNewEngine();
+    private static final MolangInterpreter<?> ENGINE = MolangLoader.createNewEngine();
 
     @Test
     public void testMocha() {
@@ -15,6 +15,14 @@ public class MathTests {
         Assertions.assertEquals(Math.acos(1), ENGINE.eval("math.acos(1);"));
         Assertions.assertEquals(MochaMath.PI, ENGINE.eval("math.PI;"));
         Assertions.assertEquals(MochaMath.d2r(10), ENGINE.eval("math.d2r(10);"));
+    }
+
+    @Test
+    public void unboundedMolangIsAborted() {
+        // keyframe expressions a client could send over the network; the step limit set in
+        // createBaseEngine aborts them to 0 instead of letting them hang the thread
+        Assertions.assertEquals(0F, ENGINE.eval("loop(2147483647, {loop(2147483647, {1})})"));
+        Assertions.assertEquals(0F, ENGINE.eval("math.die_roll(2147483647, 0, 1)"));
     }
 
     @Test
