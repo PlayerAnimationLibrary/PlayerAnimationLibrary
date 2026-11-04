@@ -21,7 +21,13 @@ configurations {
 dependencies {
     neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
 
-    implementation forgeRuntimeLibrary(api(include("com.zigythebird:mochafloats:$rootProject.molang_version"))) {
+    implementation forgeRuntimeLibrary(api(include("org.redlance.mochafloats:runtime:$rootProject.molang_version"))) {
+        transitive = false
+    }
+    implementation forgeRuntimeLibrary(api(include("org.redlance.mochafloats:parser:$rootProject.molang_version"))) {
+        transitive = false
+    }
+    implementation forgeRuntimeLibrary(api(include("org.redlance.mochafloats:lexer:$rootProject.molang_version"))) {
         transitive = false
     }
     modRuntimeOnly forgeRuntimeLibrary(include("org.javassist:javassist:$rootProject.javassist_version"))

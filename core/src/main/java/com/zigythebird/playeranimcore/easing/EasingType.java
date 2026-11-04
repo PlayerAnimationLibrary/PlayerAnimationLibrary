@@ -7,8 +7,8 @@ import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.math.MathHelper;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 import java.util.Locale;
 import java.util.Map;
@@ -97,7 +97,7 @@ public enum EasingType implements EasingTypeTransformer {
 		return this.transformer.buildTransformer(value);
 	}
 
-	public static float lerpWithOverride(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable EasingType override) {
+	public static float lerpWithOverride(MolangInterpreter<?> env, AnimationPoint animationPoint, @Nullable EasingType override) {
 		EasingType easingType = override;
 
 		if (override == null)
@@ -107,12 +107,12 @@ public enum EasingType implements EasingTypeTransformer {
 	}
 
 	@Override
-	public float apply(MochaEngine<?> env, AnimationPoint animationPoint) {
+	public float apply(MolangInterpreter<?> env, AnimationPoint animationPoint) {
 		return this.transformer.apply(env, animationPoint);
 	}
 
 	@Override
-	public float apply(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue) {
+	public float apply(MolangInterpreter<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue) {
 		return this.transformer.apply(env, animationPoint, easingValue, lerpValue);
 	}
 

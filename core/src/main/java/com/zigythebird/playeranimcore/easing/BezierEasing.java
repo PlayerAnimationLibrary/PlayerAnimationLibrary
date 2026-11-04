@@ -4,9 +4,9 @@ import com.zigythebird.playeranimcore.animation.keyframe.AnimationPoint;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2f;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class BezierEasing implements EasingTypeTransformer {
     }
 
     @Override
-    public float apply(MochaEngine<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue) {
+    public float apply(MolangInterpreter<?> env, AnimationPoint animationPoint, @Nullable Float easingValue, float lerpValue) {
         if (lerpValue >= 1) return animationPoint.animationEndValue();
         if (Float.isNaN(lerpValue) || lerpValue == 0) return animationPoint.animationStartValue();
 

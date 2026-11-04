@@ -1,9 +1,7 @@
 apply plugin: "java-library"
 
 dependencies {
-    implementation api("com.zigythebird:mochafloats:$rootProject.molang_version") {
-        transitive = false
-    }
+    implementation api("org.redlance.mochafloats:runtime:$rootProject.molang_version")
     implementation api("org.javassist:javassist:$rootProject.javassist_version")
     compileOnlyApi("org.jetbrains:annotations:26.0.2")
 
