@@ -6,9 +6,9 @@ import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.math.MathHelper;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.runtime.standard.MochaMath;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.standard.MochaMath;
 
 import java.util.List;
 import java.util.Locale;
@@ -98,11 +98,11 @@ public enum EasingType implements EasingTypeTransformer {
 		return this.transformer.buildTransformer(value);
 	}
 
-	public float apply(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
+	public float apply(MolangInterpreter<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs) {
 		return this.transformer.apply(env, startValue, endValue, transitionLength, lerpValue, easingArgs);
 	}
 
-	public static float lerpWithOverride(MochaEngine<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs, EasingType easingType, @Nullable EasingType override) {
+	public static float lerpWithOverride(MolangInterpreter<?> env, float startValue, float endValue, float transitionLength, float lerpValue, @Nullable List<List<Expression>> easingArgs, EasingType easingType, @Nullable EasingType override) {
 		EasingType easing = override != null ? override : easingType;
 		return easing.apply(env, startValue, endValue, transitionLength, lerpValue, easingArgs);
 	}

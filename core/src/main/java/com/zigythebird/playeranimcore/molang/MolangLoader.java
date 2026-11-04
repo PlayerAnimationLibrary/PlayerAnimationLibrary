@@ -7,14 +7,15 @@ import com.zigythebird.playeranimcore.event.MolangEvent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import team.unnamed.mocha.MochaEngine;
-import team.unnamed.mocha.parser.MolangParser;
-import team.unnamed.mocha.parser.ParseException;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.parser.ast.FloatExpression;
-import team.unnamed.mocha.runtime.IsConstantExpression;
-import team.unnamed.mocha.runtime.value.NumberValue;
-import team.unnamed.mocha.runtime.value.Value;
+import org.redlance.mocha.parser.MolangParser;
+import org.redlance.mocha.parser.ParseException;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.runtime.IsConstantExpression;
+import org.redlance.mocha.runtime.MolangEvaluationLimitException;
+import org.redlance.mocha.runtime.MolangInterpreter;
+import org.redlance.mocha.runtime.value.NumberValue;
+import org.redlance.mocha.runtime.value.Value;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,9 +29,18 @@ public class MolangLoader {
     private static final Consumer<ParseException> HANDLER = e -> PlayerAnimLib.LOGGER.warn("Failed to parse!", e);
 
     /**
-     * Common compiler, use only for compiling constants!
+     * One Molang evaluation (a single keyframe expression) runs very few steps, so this
+     * generous cap stops a malicious animation's unbounded loop or die_roll - which a client
+     * can send over the network - without affecting legitimate content.
      */
-    public static final MochaEngine<?> MOCHA_ENGINE = MolangLoader.createNewEngine();
+    private static final long EVALUATION_STEP_LIMIT = 100_000;
+    private static final Consumer<MolangEvaluationLimitException> LIMIT_HANDLER =
+            e -> PlayerAnimLib.LOGGER.warn("Aborted a Molang evaluation that exceeded its step limit", e);
+
+    /**
+     * Shared interpreter, use only for folding constant expressions!
+     */
+    public static final MolangInterpreter<?> MOCHA_ENGINE = MolangLoader.createNewEngine();
 
     @Contract("_, null, _ -> new; _, !null, _ -> new")
     public static List<Expression> parseJson(boolean isForRotation, @Nullable JsonElement element, @NotNull Expression defaultValue) {
@@ -57,8 +67,8 @@ public class MolangLoader {
         return expressions;
     }
 
-    public static MochaEngine<AnimationController> createNewEngine(AnimationController controller) {
-        MochaEngine<AnimationController> engine = createBaseEngine(controller);
+    public static MolangInterpreter<AnimationController> createNewEngine(AnimationController controller) {
+        MolangInterpreter<AnimationController> engine = createBaseEngine(controller);
 
         QueryBinding<AnimationController> queryBinding = new QueryBinding<>(controller);
         setDoubleQuery(queryBinding, "anim_time", AnimationController::getAnimationTime);
@@ -72,14 +82,16 @@ public class MolangLoader {
         return engine;
     }
 
-    public static MochaEngine<?> createNewEngine() {
+    public static MolangInterpreter<?> createNewEngine() {
         return createNewEngine(null);
     }
 
-    public static <T> MochaEngine<T> createBaseEngine(T entity) {
-        MochaEngine<T> engine = MochaEngine.createStandard(entity);
+    public static <T> MolangInterpreter<T> createBaseEngine(T entity) {
+        MolangInterpreter<T> engine = MolangInterpreter.standard(entity);
         engine.handleParseExceptions(MolangLoader.HANDLER);
         engine.warnOnReflectiveFunctionUsage(true);
+        engine.evaluationLimit(EVALUATION_STEP_LIMIT);
+        engine.handleEvaluationLimit(LIMIT_HANDLER);
 
         engine.scope().set("math", new MochaMathExtensions(engine.scope().getProperty("math")));
         return engine;
@@ -97,7 +109,7 @@ public class MolangLoader {
      * some shit code
      */
     public static <T> boolean setControllerQuery(QueryBinding<T> binding, String name, Function<T, Value> value) {
-        return binding.set(name, (team.unnamed.mocha.runtime.value.Function<T>)
+        return binding.set(name, (org.redlance.mocha.runtime.value.Function<T>)
                 (ctx, args) -> value.apply(ctx.entity())
         );
     }
