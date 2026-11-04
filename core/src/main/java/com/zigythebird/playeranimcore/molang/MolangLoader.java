@@ -12,6 +12,7 @@ import org.redlance.mocha.parser.ParseException;
 import org.redlance.mocha.parser.ast.Expression;
 import org.redlance.mocha.parser.ast.FloatExpression;
 import org.redlance.mocha.runtime.IsConstantExpression;
+import org.redlance.mocha.runtime.MolangEvaluationLimitException;
 import org.redlance.mocha.runtime.MolangInterpreter;
 import org.redlance.mocha.runtime.value.NumberValue;
 import org.redlance.mocha.runtime.value.Value;
@@ -28,7 +29,16 @@ public class MolangLoader {
     private static final Consumer<ParseException> HANDLER = e -> PlayerAnimLib.LOGGER.warn("Failed to parse!", e);
 
     /**
-     * Common compiler, use only for compiling constants!
+     * One Molang evaluation (a single keyframe expression) runs very few steps, so this
+     * generous cap stops a malicious animation's unbounded loop or die_roll - which a client
+     * can send over the network - without affecting legitimate content.
+     */
+    private static final long EVALUATION_STEP_LIMIT = 100_000;
+    private static final Consumer<MolangEvaluationLimitException> LIMIT_HANDLER =
+            e -> PlayerAnimLib.LOGGER.warn("Aborted a Molang evaluation that exceeded its step limit", e);
+
+    /**
+     * Shared interpreter, use only for folding constant expressions!
      */
     public static final MolangInterpreter<?> MOCHA_ENGINE = MolangLoader.createNewEngine();
 
@@ -80,6 +90,8 @@ public class MolangLoader {
         MolangInterpreter<T> engine = MolangInterpreter.standard(entity);
         engine.handleParseExceptions(MolangLoader.HANDLER);
         engine.warnOnReflectiveFunctionUsage(true);
+        engine.evaluationLimit(EVALUATION_STEP_LIMIT);
+        engine.handleEvaluationLimit(LIMIT_HANDLER);
 
         engine.scope().set("math", new MochaMathExtensions(engine.scope().getProperty("math")));
         return engine;
