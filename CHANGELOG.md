@@ -1,2 +1,2 @@
-- Fixed an issue where looping PlayerAnimator animations snapped back at the end of each loop instead of blending into the next one
-- Keyframes without easing arguments share one empty argument list instead of allocating their own
+- Fixed a denial of service: a crafted emote's Molang (an unbounded or deeply nested loop, or a huge die_roll) could peg the server's network thread or freeze clients; untrusted animation Molang is now bounded and aborts safely
+- Updated mochafloats to 6.2.0
