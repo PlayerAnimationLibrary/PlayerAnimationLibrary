@@ -60,7 +60,7 @@ public class HumanoidAnimationController extends AnimationController {
     /**
      * Used for applying torso bend to bones like the head.
      */
-    protected List<String> top_bones;
+    protected final List<String> topBones = new ArrayList<>();
 
     private float torsoBend;
     private int torsoBendSign;
@@ -84,38 +84,27 @@ public class HumanoidAnimationController extends AnimationController {
      */
     public HumanoidAnimationController(AnimationStateHandler animationHandler, Map<String, Vec3f> bonePositions, Function<AnimationController, MolangInterpreter<AnimationController>> molangRuntime) {
         super(animationHandler, bonePositions, molangRuntime);
-    }
 
-    @Override
-    public void registerBones() {
-        this.top_bones = new ArrayList<>();
-
-        this.registerPlayerAnimBone("body");
         this.registerTopPlayerAnimBone("right_arm");
         this.registerTopPlayerAnimBone("left_arm");
-        this.registerPlayerAnimBone("right_leg");
-        this.registerPlayerAnimBone("left_leg");
         this.registerTopPlayerAnimBone("head");
-        this.registerPlayerAnimBone("torso");
-        this.registerPlayerAnimBone("right_item");
-        this.registerPlayerAnimBone("left_item");
         this.registerTopPlayerAnimBone("cape");
-        this.registerPlayerAnimBone("elytra");
     }
 
     public void registerTopPlayerAnimBone(String name) {
-        this.top_bones.add(name);
-        this.registerPlayerAnimBone(name);
+        this.topBones.add(name);
     }
 
     @Override
     @AutoreleasePool
     public void process(AnimationData state) {
         super.process(state);
-        this.torsoBend = bones.get("torso").bend;
-        float absBend = Math.abs(this.torsoBend);
-        if (absBend > 0.001 && (this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE)) {
-            this.torsoBendSign = (int) Math.signum(this.torsoBend);
+        if (this.bones.containsKey("torso")) {
+            this.torsoBend = this.bones.get("torso").bend;
+            float absBend = Math.abs(this.torsoBend);
+            if (absBend > 0.001 && (this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE)) {
+                this.torsoBendSign = (int) Math.signum(this.torsoBend);
+            } else this.torsoBendSign = 0;
         } else this.torsoBendSign = 0;
     }
 
@@ -123,7 +112,7 @@ public class HumanoidAnimationController extends AnimationController {
     public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
         bone = super.get3DTransformRaw(bone);
         String name = bone.getName();
-        if (this.torsoBendSign != 0 && this.top_bones.contains(name)) {
+        if (this.torsoBendSign != 0 && this.topBones.contains(name)) {
             Matrix4f matrix4f = new Matrix4f();
             matrix4f.translate(0, 18, 0);
             matrix4f.rotateX(this.torsoBend);
