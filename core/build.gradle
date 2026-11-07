@@ -5,7 +5,7 @@ dependencies {
     api("org.redlance.mochafloats:runtime:$rootProject.molang_version")
 
     // Minecraft libs
-    api("com.google.code.gson:gson:2.14.0")
+    api("com.google.code.gson:gson:2.15.0")
     api("org.slf4j:slf4j-api:2.0.20")
     api("it.unimi.dsi:fastutil:8.5.19")
     api("io.netty:netty-buffer:4.2.19.Final")
