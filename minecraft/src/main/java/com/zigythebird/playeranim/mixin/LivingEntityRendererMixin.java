@@ -46,16 +46,33 @@ public class LivingEntityRendererMixin<S extends LivingEntityRenderState> {
             var animationPlayer = avatarRenderState.playerAnimLib$getAnimManager();
             if (animationPlayer != null && animationPlayer.isActive()) {
                 avatarRenderState.playerAnimLib$getAnimManager().handleAnimations(animationPlayer.getTickDelta(), false, avatarRenderState.playerAnimLib$isFirstPersonPass());
-                poseStack.scale(-1.0F, -1.0F, 1.0F);
 
                 if (avatarRenderState.playerAnimLib$isFirstPersonPass()) {
+                    // Done before scale(): eyeHeight is in world units
+                    poseStack.scale(-1.0F, -1.0F, 1.0F);
                     poseStack.translate(0.0F, state.eyeHeight, 0.0F);
                     if (animationPlayer.isFirstPersonFollowsCamera()) {
                         poseStack.rotateDegrees(Axis.YP, -state.yRot);
                         poseStack.rotateDegrees(Axis.XP, -state.xRot);
                     }
                     poseStack.translate(0.0F, -state.eyeHeight, 0.0F);
+                    poseStack.scale(-1.0F, -1.0F, 1.0F);
                 }
+            }
+        }
+    }
+
+    /**
+     * Applied after {@link LivingEntityRenderer#scale}, so the body offset and pivot are in the same
+     * (model) units as every other bone. Before, the player renderer's 0.9375 scale only affected the
+     * other bones, so body movement didn't line up with them.
+     */
+    @Inject(method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;scale(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;)V", shift = At.Shift.AFTER))
+    private void doBodyTransform(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, CallbackInfo ci) {
+        if (state instanceof IAvatarAnimationState avatarRenderState) {
+            var animationPlayer = avatarRenderState.playerAnimLib$getAnimManager();
+            if (animationPlayer != null && animationPlayer.isActive()) {
+                poseStack.scale(-1.0F, -1.0F, 1.0F);
 
                 //These are additive properties
                 PlayerAnimBone body = animationPlayer.get3DTransform("body");
