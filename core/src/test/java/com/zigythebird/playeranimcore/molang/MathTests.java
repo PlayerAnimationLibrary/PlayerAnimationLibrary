@@ -18,6 +18,14 @@ public class MathTests {
     }
 
     @Test
+    public void unboundedMolangIsAborted() {
+        // keyframe expressions a client could send over the network; the step limit set in
+        // createBaseEngine aborts them to 0 instead of letting them hang the thread
+        Assertions.assertEquals(0F, ENGINE.eval("loop(2147483647, {loop(2147483647, {1})})"));
+        Assertions.assertEquals(0F, ENGINE.eval("math.die_roll(2147483647, 0, 1)"));
+    }
+
+    @Test
     public void testEasing() {
         for (float i = 0; i <= 1.0F; i += 0.1F) {
             float real = EasingType.EASE_OUT_BOUNCE.apply(1F, 10F, i);
