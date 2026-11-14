@@ -1,4 +1,2 @@
-- Added first person APIs `setFirstPersonFollowsCamera` and `setFirstPersonTransitionLength`.
-- Fix issue with custom pivots
-- Fix armor disappearing after first person animation is played
-- Fix NPE when currentAnimation is cleared during processing
+- Fixed a denial of service: a crafted emote's Molang (an unbounded or deeply nested loop, or a huge die_roll) could peg the server's network thread or freeze clients; untrusted animation Molang is now bounded and aborts safely
+- Updated mochafloats to 6.2.0

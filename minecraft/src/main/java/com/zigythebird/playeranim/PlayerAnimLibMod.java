@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranim.animation.keyframe.event.builtin.AutoPlayingSoundKeyframeHandler;
 import com.zigythebird.playeranim.api.PlayerAnimationFactory;
@@ -10,6 +11,7 @@ import com.zigythebird.playeranimcore.enums.PlayState;
 import com.zigythebird.playeranimcore.event.MolangEvent;
 import net.minecraft.resources.Identifier;
 
+@J2ObjCIncompatible
 public abstract class PlayerAnimLibMod extends PlayerAnimLib {
     public static final Identifier ANIMATION_LAYER_ID = PlayerAnimLibMod.id("factory");
 

@@ -34,8 +34,8 @@ import com.zigythebird.playeranimcore.loading.PlayerAnimatorLoader;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import io.netty.buffer.ByteBuf;
-import team.unnamed.mocha.parser.ast.Expression;
-import team.unnamed.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.parser.ast.Expression;
+import org.redlance.mocha.parser.ast.FloatExpression;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -380,7 +380,7 @@ public final class LegacyAnimationBinary {
                     // keyframe lerps from the rest-pose fallback to the written value.
                     : easeBefore ? expression : fallback;
             part.add(new Keyframe(keyframeLength, startValue, expression, easingType,
-                    easingArg == null ? Collections.singletonList(Collections.emptyList()) :
+                    easingArg == null ? PlayerAnimatorLoader.EMPTY_EASING_ARG :
                             Collections.singletonList(Collections.singletonList(FloatExpression.of(easingArg)))));
             buf.readerIndex(currentPos + keyframeSize);
         }

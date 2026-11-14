@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.commands;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.Avatar;
 import java.io.IOException;
 import java.util.Objects;
 
+@J2ObjCIncompatible
 @SuppressWarnings({"unchecked","unused"})
 public class PlayerAnimCommands {
     public static <T> void register(CommandDispatcher<T> dispatcher, CommandBuildContext registryAccess) {

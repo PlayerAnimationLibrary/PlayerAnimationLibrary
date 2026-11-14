@@ -50,7 +50,7 @@ public class ItemInHandLayerMixin {
     @Unique
     private final PlayerAnimBone playerAnimLib$leftItem = new PlayerAnimBone("left_item");
 
-    @Inject(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;mulPose(Lorg/joml/Quaternionfc;)V", ordinal = 0))
+    @Inject(method = "submitArmWithItem", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;rotateDegrees(Lcom/mojang/math/Axis;F)V", ordinal = 0))
     private void changeItemLocation(ArmedEntityRenderState renderState, ItemStackRenderState itemStackRenderState, ItemStack itemStack, HumanoidArm arm, PoseStack matrices, SubmitNodeCollector submitNodeCollector, int i, CallbackInfo ci, @Share("pal_active") LocalBooleanRef active) {
         if (renderState instanceof IAvatarAnimationState state && state.playerAnimLib$getAnimManager() != null && state.playerAnimLib$getAnimManager().isActive()) {
             AvatarAnimManager anim = state.playerAnimLib$getAnimManager();
@@ -77,14 +77,9 @@ public class ItemInHandLayerMixin {
             if (arm == HumanoidArm.LEFT) bone = playerAnimLib$leftItem;
             else bone = playerAnimLib$rightItem;
 
-            if (bone.rotation.z != 0)
-                poseStack.mulPose(Axis.ZP.rotation(-bone.rotation.y));
-
-            if (bone.rotation.y != 0)
-                poseStack.mulPose(Axis.YP.rotation(-bone.rotation.z));
-
-            if (bone.rotation.x != 0)
-                poseStack.mulPose(Axis.XP.rotation(-bone.rotation.x));
+            if (bone.rotation.y != 0) poseStack.rotate(Axis.ZP, -bone.rotation.y);
+            if (bone.rotation.z != 0) poseStack.rotate(Axis.YP, -bone.rotation.z);
+            if (bone.rotation.x != 0) poseStack.rotate(Axis.XP, -bone.rotation.x);
 
             poseStack.scale(bone.scale.x, bone.scale.y, bone.scale.z);
         }

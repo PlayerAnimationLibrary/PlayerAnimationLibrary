@@ -1,5 +1,6 @@
 package com.zigythebird.playeranim.animation;
 
+import com.google.j2objc.annotations.J2ObjCIncompatible;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
 import com.zigythebird.playeranimcore.PlayerAnimLib;
 import com.zigythebird.playeranimcore.animation.Animation;
@@ -22,6 +23,7 @@ import java.util.concurrent.Executor;
 /**
  * Cache class for holding loaded {@link Animation Animations}
  */
+@J2ObjCIncompatible
 public class PlayerAnimResources implements ResourceManagerReloadListener {
 	public static final Identifier KEY = PlayerAnimLibMod.id("animation");
 	private static final Map<Identifier, Animation> ANIMATIONS = new Object2ObjectOpenHashMap<>();

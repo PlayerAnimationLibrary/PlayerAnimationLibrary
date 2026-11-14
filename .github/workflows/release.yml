@@ -2,6 +2,11 @@ name: Publish on Modrinth & CurseForge
 
 on:
   workflow_dispatch:
+    inputs:
+      discord_ping:
+        description: 'Ping the updates role in Discord'
+        type: boolean
+        default: true
     secrets:
       CURSEFORGE_TOKEN:
         required: true
@@ -19,10 +24,10 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
-          distribution: 'adopt'
-          java-version: 25
+          distribution: 'microsoft'
+          java-version: '25'
 
       - name: Grant Execute Permission
         run: chmod +x gradlew
@@ -57,11 +62,12 @@ jobs:
 
           files: |
             ./minecraft/build/libs/PlayerAnimationLibMerged-*.jar
-          version-type: release
+          version-type: beta
 
           loaders: |
             fabric
             neoforge
+
           game-versions: |
             ${{ steps.gradle_properties.outputs.minecraft_version }}
 
@@ -92,3 +98,4 @@ jobs:
         run: ./gradlew publishToDiscord
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_PING: ${{ inputs.discord_ping }}
