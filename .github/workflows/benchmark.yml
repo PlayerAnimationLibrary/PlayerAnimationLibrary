@@ -1,0 +1,202 @@
+name: Benchmark against the base branch.
+
+# Every push resets the comment's checkbox, and ticking it benchmarks the commit it names.
+on:
+    pull_request_target:
+        types: [opened, reopened, synchronize]
+    issue_comment:
+        types: [edited]
+
+permissions: {}
+
+env:
+    # The comment's task line, unchecked or checked, as the reset writes it.
+    BENCHMARK_TASK: '^- \[([ xX])\] Benchmark ([0-9a-f]{40}) .*$'
+
+jobs:
+    # pull_request_target, as only it can write to fork pull requests; that is also why it never checks one out.
+    reset:
+        if: github.event_name == 'pull_request_target'
+        runs-on: ubuntu-latest
+        permissions:
+            pull-requests: write
+        # Only new commits supersede a running benchmark.
+        concurrency:
+            group: benchmark-${{ github.event.pull_request.number }}
+            cancel-in-progress: ${{ github.event.action == 'synchronize' }}
+        steps:
+            # The head is read afresh, since a later push may already have replaced the event's.
+            - name: Reset the Benchmark Comment
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      const marker = '<!-- jmh-benchmark -->';
+                      const { owner, repo } = context.repo;
+                      const issue_number = context.payload.pull_request.number;
+
+                      const { data: pull } = await github.rest.pulls.get({ owner, repo, pull_number: issue_number });
+                      const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number });
+                      const previous = comments.find(comment => comment.user.login === 'github-actions[bot]' && comment.body.startsWith(marker));
+
+                      // A reopen without new commits, or a repeated delivery, keeps what the comment shows for this head.
+                      if (previous?.body.match(new RegExp(process.env.BENCHMARK_TASK, 'm'))?.[2] === pull.head.sha) return;
+
+                      const body = `${marker}\n## Benchmarks\n\n- [ ] Benchmark ${pull.head.sha} against its base branch\n\nThe results replace this comment until the next push resets it.\n`;
+                      if (previous) await github.rest.issues.updateComment({ owner, repo, comment_id: previous.id, body });
+                      else await github.rest.issues.createComment({ owner, repo, issue_number, body });
+
+    # The bot's own comment, which only users allowed to edit others' comments can tick, unlike a lookalike.
+    resolve:
+        if: >-
+            github.event_name == 'issue_comment'
+            && github.event.issue.pull_request
+            && github.event.comment.user.login == 'github-actions[bot]'
+            && startsWith(github.event.comment.body, '<!-- jmh-benchmark -->')
+            && contains(github.event.changes.body.from, '- [ ] ')
+            && contains(github.event.comment.body, '- [x] ')
+        runs-on: ubuntu-latest
+        permissions:
+            pull-requests: read
+        outputs:
+            prompt: ${{ steps.approval.outputs.prompt }}
+            head: ${{ steps.approval.outputs.head }}
+            base: ${{ steps.approval.outputs.base }}
+        steps:
+            # The commit the first box names, as the results under it come from the pull request's code.
+            - name: Read the Approved Commit
+              id: approval
+              uses: actions/github-script@v9
+              with:
+                  script: |
+                      const body = context.payload.comment.body;
+                      const task = body.match(new RegExp(process.env.BENCHMARK_TASK, 'm'));
+                      if (!task || task[1] === ' ') return core.setFailed('The comment\'s first task is not a ticked benchmark request.');
+
+                      const { data: pull } = await github.rest.pulls.get({ ...context.repo, pull_number: context.issue.number });
+                      if (pull.head.sha !== task[2]) return core.setFailed(`${task[2]} is no longer the head of this pull request.`);
+
+                      core.setOutput('prompt', body.slice(0, task.index + task[0].length));
+                      core.setOutput('head', task[2]);
+                      core.setOutput('base', pull.base.sha);
+
+    benchmark:
+        needs: resolve
+        runs-on: ubuntu-latest
+        # The suite takes about five minutes per run, and it runs twice.
+        timeout-minutes: 30
+        # The reset's group, so a push cancels the run and a second tick waits for the first.
+        concurrency:
+            group: benchmark-${{ github.event.issue.number }}
+        # The pull request's code runs here, so its token can only read.
+        permissions:
+            contents: read
+        outputs:
+            report: ${{ steps.compare.outputs.report }}
+        steps:
+            # The pull request's own head, not the merge ref: the merge ref also carries whatever
+            # landed on the base branch since, which would be measured as this pull request's doing.
+            - name: Checkout Branch
+              uses: actions/checkout@v7
+              with:
+                  ref: ${{ needs.resolve.outputs.head }}
+                  fetch-depth: 0
+                  persist-credentials: false
+
+            - name: Setup Java
+              uses: actions/setup-java@v6
+              with:
+                  distribution: microsoft
+                  java-version: 25
+
+            - name: Grant Execute Permission
+              run: chmod +x gradlew
+
+            # Where this branch was cut from, rather than the base branch's current tip, so commits that
+            # landed on the base since don't get attributed to this pull request.
+            - name: Resolve Base Commit
+              id: base
+              env:
+                  BASE_TIP: ${{ needs.resolve.outputs.base }}
+              run: echo "sha=$(git merge-base HEAD "${BASE_TIP}")" >> "${GITHUB_OUTPUT}"
+
+            # Downloads everything up front so the first measured run isn't the one paying for it.
+            # --configure-on-demand keeps Gradle from configuring the Minecraft module, which would
+            # otherwise pull a full Minecraft setup for a benchmark that never touches it.
+            - name: Build Benchmarks
+              run: ./gradlew :core:jmhJar --configure-on-demand
+
+            - name: Benchmark This PR
+              run: |
+                  ./gradlew :core:jmh --configure-on-demand
+                  mv core/build/results/jmh/results.json "${RUNNER_TEMP}/pr.json"
+
+            # The benchmarks only exist on this branch, so the base is measured by dropping the sources
+            # this branch was cut from - and the dependency versions they were written against - under
+            # this branch's benchmark code, leaving the measured code as the only difference between the
+            # two runs. The build scripts stay on this branch's side because the base may not have the
+            # JMH plugin at all, which also means a dependency pinned in core/build.gradle rather than
+            # gradle.properties is the same on both sides and won't show up in the report.
+            - name: Check Out Base Sources
+              id: base-sources
+              continue-on-error: true
+              run: |
+                  git worktree add "${RUNNER_TEMP}/base" "${{ steps.base.outputs.sha }}"
+                  rm -rf core/src/main
+                  cp -r "${RUNNER_TEMP}/base/core/src/main" core/src/main
+                  cp "${RUNNER_TEMP}/base/gradle.properties" gradle.properties
+
+            # Rebuilt in its own step so the base measurement starts from the same idle machine the PR
+            # measurement did, instead of one that just ran javac and written out the benchmark jar.
+            # Fails when the PR changes API the benchmarks use, in which case the report falls back
+            # to absolute numbers for this PR alone.
+            - name: Benchmark Base Branch
+              if: steps.base-sources.outcome == 'success'
+              continue-on-error: true
+              run: |
+                  ./gradlew :core:jmhJar --configure-on-demand
+                  ./gradlew :core:jmh --configure-on-demand
+
+            - name: Compare Results
+              id: compare
+              env:
+                  BASE_SHA: ${{ steps.base.outputs.sha }}
+                  HEAD_SHA: ${{ needs.resolve.outputs.head }}
+              run: |
+                  python3 .github/scripts/compare_jmh.py \
+                      --pr "${RUNNER_TEMP}/pr.json" \
+                      --base core/build/results/jmh/results.json \
+                      --refs "\`${BASE_SHA::7}\` (base) → \`${HEAD_SHA::7}\` (PR)" \
+                      > "${RUNNER_TEMP}/report.md"
+                  cat "${RUNNER_TEMP}/report.md" >> "${GITHUB_STEP_SUMMARY}"
+
+                  delimiter="$(openssl rand -hex 16)"
+                  { echo "report<<${delimiter}"; cat "${RUNNER_TEMP}/report.md"; echo "${delimiter}"; } >> "${GITHUB_OUTPUT}"
+
+    comment:
+        needs: [resolve, benchmark]
+        # Whichever way the run ended, or the box would stay ticked with nothing to show for it.
+        if: always() && needs.resolve.result == 'success'
+        runs-on: ubuntu-latest
+        permissions:
+            pull-requests: write
+        steps:
+            - name: Comment on the Pull Request
+              uses: actions/github-script@v9
+              env:
+                  PROMPT: ${{ needs.resolve.outputs.prompt }}
+                  HEAD_SHA: ${{ needs.resolve.outputs.head }}
+                  BENCHMARK_RESULT: ${{ needs.benchmark.result }}
+                  REPORT: ${{ needs.benchmark.outputs.report }}
+              with:
+                  script: |
+                      const { PROMPT, HEAD_SHA, BENCHMARK_RESULT, REPORT } = process.env;
+                      const { owner, repo } = context.repo;
+                      const { data: pull } = await github.rest.pulls.get({ owner, repo, pull_number: context.issue.number });
+
+                      // A push since the tick has reset the comment for its new head, or is about to.
+                      if (pull.head.sha !== HEAD_SHA) return;
+
+                      const log = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+                      const results = BENCHMARK_RESULT === 'success' ? REPORT : `The run did not finish (${BENCHMARK_RESULT}), see [its log](${log}).\n`;
+
+                      await github.rest.issues.updateComment({ owner, repo, comment_id: context.payload.comment.id, body: `${PROMPT}\n\n${results}` });
