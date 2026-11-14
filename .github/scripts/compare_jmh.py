@@ -114,12 +114,12 @@ def main():
 
     pr = load(args.pr)
     if not pr:
-        print("<!-- jmh-benchmark -->\n## Benchmarks\n\nThe benchmark run produced no results.")
+        print("The benchmark run produced no results.")
         return
 
     base = load(args.base)
 
-    lines = ["<!-- jmh-benchmark -->", "## Benchmarks", ""]
+    lines = []
     if base is None:
         lines += [
             "The base branch produced no results - it failed to build, or the benchmarks don't compile against "
