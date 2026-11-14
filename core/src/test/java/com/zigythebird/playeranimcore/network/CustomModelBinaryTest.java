@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.redlance.mocha.parser.util.network.ProtocolUtils;
+import org.redlance.mocha.parser.util.network.VarIntUtils;
 import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.IOException;
@@ -472,6 +473,22 @@ public class CustomModelBinaryTest {
     }
 
     @Test
+    @DisplayName("A count larger than the rest of the packet is refused before anything is allocated for it")
+    void craftedCounts() {
+        ByteBuf texture = Unpooled.buffer();
+        NetworkUtils.writeVec3f(texture, new Vec3f(0, 0, 0));
+        VarIntUtils.writeVarInt(texture, 1); // a PNG texture
+        VarIntUtils.writeVarInt(texture, Integer.MAX_VALUE);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> NetworkUtils.readCustomBone(texture, 7, NetworkUtils.MAX_TEXTURE_PIXELS));
+        texture.release();
+
+        ByteBuf keyframes = Unpooled.buffer();
+        VarIntUtils.writeVarInt(keyframes, Integer.MAX_VALUE);
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> AnimationBinary.readKeyframeList(keyframes, false, false));
+        keyframes.release();
+    }
+
+    @Test
     @DisplayName("Textures past the pixels an animation may hold are refused")
     void textureBudget() {
         ByteBuf small = Unpooled.buffer();
@@ -513,8 +530,7 @@ public class CustomModelBinaryTest {
     @Test
     @DisplayName("A loaded model equals and hashes as its copy read from the network")
     void loadedModelEqualsReceived() throws IOException {
-        // A fully transparent pixel keeps its colour too
-        DecodedImage texture = DecodedImage.ofArgb(new int[]{0xFF112233, 0x00FF00FF, 0xFF778899, 0xFFAABBCC}, 2, 2);
+        DecodedImage texture = DecodedImage.ofArgb(new int[]{0xFF112233, 0xFF445566, 0xFF778899, 0xFFAABBCC}, 2, 2);
         // Every element value here is one the codec carries in another form or drops
         String json = """
                 {

@@ -182,7 +182,7 @@ final class AnimationBinaryV6 {
     }
 
     private static List<Keyframe> readKeyframeList(ByteBuf buf, boolean shouldStartFromDefault, boolean isScale, int version) {
-        int count = VarIntUtils.readVarInt(buf);
+        int count = ProtocolUtils.readCount(buf);
         List<Keyframe> list = new ArrayList<>(count);
 
         for (int i = 0; i < count; i++) {

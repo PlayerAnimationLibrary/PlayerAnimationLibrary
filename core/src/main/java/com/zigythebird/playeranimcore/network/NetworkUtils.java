@@ -33,7 +33,7 @@ public class NetworkUtils {
     public static final long MAX_TEXTURE_PIXELS = 2048L * 2048L;
 
     public static <K, V> Map<K, V> readMap(ByteBuf buf, Function<ByteBuf, K> keyReader, Function<ByteBuf, V> valueReader) {
-        int count = VarIntUtils.readVarInt(buf);
+        int count = ProtocolUtils.readCount(buf);
         Map<K, V> map = new HashMap<>(count);
         for (int i = 0; i < count; i++) {
             K key = keyReader.apply(buf);
@@ -52,7 +52,7 @@ public class NetworkUtils {
     }
 
     public static Map<String, CustomModelBone> readCustomBones(ByteBuf buf, int version) {
-        int count = VarIntUtils.readVarInt(buf);
+        int count = ProtocolUtils.readCount(buf);
         Map<String, CustomModelBone> bones = new HashMap<>(count);
         long texturePixels = 0;
         for (int i = 0; i < count; i++) {
@@ -79,8 +79,7 @@ public class NetworkUtils {
             if ((boneFlags & 1) != 0) {
                 boolean isWebP = (boneFlags & 2) != 0;
 
-                int len = VarIntUtils.readVarInt(buf);
-                byte[] rawTexture = new byte[len];
+                byte[] rawTexture = new byte[ProtocolUtils.readCount(buf)];
                 buf.readBytes(rawTexture);
 
                 try {
@@ -100,7 +99,7 @@ public class NetworkUtils {
             }
 
             if ((boneFlags & 4) != 0) {
-                int count = VarIntUtils.readVarInt(buf);
+                int count = ProtocolUtils.readCount(buf);
                 elements = new JsonArray(count);
                 for (int i = 0; i < count; i++) {
                     elements.add(CustomModelUtils.readBlockElement(buf, version));

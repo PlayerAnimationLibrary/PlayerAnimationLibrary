@@ -208,7 +208,7 @@ public final class AnimationBinary {
     }
 
     public static List<Keyframe> readKeyframeList(ByteBuf buf, boolean shouldStartFromDefault, boolean isScale) {
-        int count = VarIntUtils.readVarInt(buf);
+        int count = ProtocolUtils.readCount(buf);
         List<Keyframe> list = new ArrayList<>(count);
 
         for (int i = 0; i < count; ++i) {
@@ -227,7 +227,7 @@ public final class AnimationBinary {
 
     static Animation.Keyframes readEventKeyframes(ByteBuf buf) {
         // Sounds
-        int soundCount = VarIntUtils.readVarInt(buf);
+        int soundCount = ProtocolUtils.readCount(buf);
         SoundKeyframeData[] sounds = new SoundKeyframeData[soundCount];
         for (int i = 0; i < soundCount; i++) {
             float startTick = buf.readFloat();
@@ -236,7 +236,7 @@ public final class AnimationBinary {
         }
 
         // Particles
-        int particleCount = VarIntUtils.readVarInt(buf);
+        int particleCount = ProtocolUtils.readCount(buf);
         ParticleKeyframeData[] particles = new ParticleKeyframeData[particleCount];
         for (int i = 0; i < particleCount; i++) {
             float startTick = buf.readFloat();
@@ -247,7 +247,7 @@ public final class AnimationBinary {
         }
 
         // Instructions
-        int customInstructionCount = VarIntUtils.readVarInt(buf);
+        int customInstructionCount = ProtocolUtils.readCount(buf);
         CustomInstructionKeyframeData[] customInstructions = new CustomInstructionKeyframeData[customInstructionCount];
         for (int i = 0; i < customInstructionCount; i++) {
             float startTick = buf.readFloat();

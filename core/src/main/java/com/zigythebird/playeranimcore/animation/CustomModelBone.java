@@ -9,7 +9,6 @@ import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 
@@ -47,25 +46,10 @@ public record CustomModelBone(Vec3f pivot, @Nullable DecodedImage texture, @Null
     }
 
     /**
-     * An image compares by identity, so the texture is compared by its pixels.
-     */
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof CustomModelBone(Vec3f otherPivot, DecodedImage otherTexture, JsonArray otherElements)
-                && this.pivot.equals(otherPivot) && samePixels(this.texture, otherTexture) && Objects.equals(this.elements, otherElements);
-    }
-
-    /**
      * A bone without texture and elements hashes as its pivot alone, keeping the UUIDs from before bones had models.
      */
     @Override
     public int hashCode() {
-        int textureHash = this.texture == null ? 0 : Arrays.hashCode(this.texture.argb());
-        return 31 * (31 * textureHash + Objects.hashCode(this.elements)) + this.pivot.hashCode();
-    }
-
-    private static boolean samePixels(@Nullable DecodedImage a, @Nullable DecodedImage b) {
-        if (a == null || b == null) return a == b;
-        return a.width() == b.width() && a.height() == b.height() && Arrays.equals(a.argb(), b.argb());
+        return 31 * (31 * Objects.hashCode(this.texture) + Objects.hashCode(this.elements)) + this.pivot.hashCode();
     }
 }
