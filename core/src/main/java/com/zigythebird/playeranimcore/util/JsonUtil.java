@@ -61,12 +61,28 @@ public final class JsonUtil {
         }
     }
 
+    public static int convertToInt(JsonElement json, String memberName) {
+        if (json.isJsonPrimitive() && json.getAsJsonPrimitive().isNumber()) {
+            return json.getAsInt();
+        } else {
+            throw new JsonSyntaxException("Expected " + memberName + " to be a Int, was " + getType(json));
+        }
+    }
+
+    public static int getAsInt(JsonObject json, String memberName, int fallback) {
+        return json.has(memberName) ? convertToInt(json.get(memberName), memberName) : fallback;
+    }
+
     public static float getAsFloat(JsonObject json, String memberName) {
         if (json.has(memberName)) {
             return convertToFloat(json.get(memberName), memberName);
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a Float");
         }
+    }
+
+    public static float getAsFloat(JsonObject json, String memberName, float fallback) {
+        return json.has(memberName) ? convertToFloat(json.get(memberName), memberName) : fallback;
     }
 
     public static JsonObject convertToJsonObject(JsonElement json, String memberName) {
@@ -113,6 +129,12 @@ public final class JsonUtil {
         } else {
             throw new JsonSyntaxException("Missing " + memberName + ", expected to find a JsonArray");
         }
+    }
+
+    @Nullable
+    @Contract("_,_,!null->!null;_,_,null->_")
+    public static JsonArray getAsJsonArray(JsonObject json, String memberName, @Nullable JsonArray fallback) {
+        return json.has(memberName) ? convertToJsonArray(json.get(memberName), memberName) : fallback;
     }
 
     public static String getType(@Nullable JsonElement json) {

@@ -27,8 +27,11 @@ package com.zigythebird.playeranimcore.animation.layered;
 import com.zigythebird.playeranimcore.animation.AnimationData;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonConfiguration;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
+import com.zigythebird.playeranimcore.bones.CustomBone;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.BiConsumer;
 
 public interface IAnimation {
     FirstPersonConfiguration DEFAULT_FIRST_PERSON_CONFIG = new FirstPersonConfiguration();
@@ -101,4 +104,9 @@ public interface IAnimation {
     default boolean canRemove() {
         return false;
     }
+
+    /**
+     * Hands every drawn custom bone to the consumer with the animation that poses it.
+     */
+    default void collectModels(BiConsumer<IAnimation, CustomBone> consumer) {}
 }

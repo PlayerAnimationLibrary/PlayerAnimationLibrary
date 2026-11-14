@@ -27,7 +27,10 @@ package com.zigythebird.playeranimcore.animation.layered.modifier;
 import com.zigythebird.playeranimcore.animation.AnimationController;
 import com.zigythebird.playeranimcore.animation.layered.AnimationContainer;
 import com.zigythebird.playeranimcore.animation.layered.IAnimation;
+import com.zigythebird.playeranimcore.bones.CustomBone;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiConsumer;
 
 public abstract class AbstractModifier extends AnimationContainer<IAnimation> {
     protected IAnimation host;
@@ -53,5 +56,13 @@ public abstract class AbstractModifier extends AnimationContainer<IAnimation> {
     @Override
     public boolean canRemove() {
         return false;
+    }
+
+    /**
+     * The modifier poses the bones of the animation it holds.
+     */
+    @Override
+    public void collectModels(BiConsumer<IAnimation, CustomBone> consumer) {
+        if (this.anim != null) this.anim.collectModels((owner, bone) -> consumer.accept(this, bone));
     }
 }
