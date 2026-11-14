@@ -5,6 +5,7 @@ import com.zigythebird.playeranimcore.animation.layered.modifier.AbstractFadeMod
 import com.zigythebird.playeranimcore.animation.layered.modifier.AbstractModifier;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonConfiguration;
 import com.zigythebird.playeranimcore.api.firstPerson.FirstPersonMode;
+import com.zigythebird.playeranimcore.bones.CustomBone;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
@@ -41,6 +43,14 @@ public class ModifierLayer<T extends IAnimation> implements IAnimation {
         return animation;
     }
 
+    protected @Nullable IAnimation getTopAnimation() {
+        if (!this.modifiers.isEmpty()) {
+            return this.modifiers.getFirst();
+        } else {
+            return this.animation;
+        }
+    }
+
     @Override
     public void tick(AnimationData state) {
         for (int i = 0; i < modifiers.size(); i++) {
@@ -48,9 +58,8 @@ public class ModifierLayer<T extends IAnimation> implements IAnimation {
                 removeModifier(i--);
             }
         }
-        if (modifiers.size() > 0) {
-            modifiers.get(0).tick(state);
-        } else if (animation != null) animation.tick(state);
+        IAnimation top = getTopAnimation();
+        if (top != null) top.tick(state);
     }
 
     public void addModifier(@NotNull AbstractModifier modifier, int idx) {
@@ -141,41 +150,34 @@ public class ModifierLayer<T extends IAnimation> implements IAnimation {
 
     @Override
     public boolean isActive() {
-        if (!modifiers.isEmpty()) {
-            return modifiers.get(0).isActive();
-        } else if (animation != null) return animation.isActive();
+        IAnimation top = getTopAnimation();
+        if (top != null) return top.isActive();
         return false;
     }
 
     @Override
     public void get3DTransform(@NotNull PlayerAnimBone bone) {
-        if (!modifiers.isEmpty()) {
-            modifiers.getFirst().get3DTransform(bone);
-        } else if (animation != null) {
-            animation.get3DTransform(bone);
-        }
+        IAnimation top = getTopAnimation();
+        if (top != null) top.get3DTransform(bone);
     }
 
     @Override
     public void setupAnim(AnimationData state) {
-        if (!modifiers.isEmpty()) {
-            modifiers.get(0).setupAnim(state);
-        } else if (animation != null) animation.setupAnim(state);
+        IAnimation top = getTopAnimation();
+        if (top != null) top.setupAnim(state);
     }
 
     @Override
     public @NotNull FirstPersonMode getFirstPersonMode() {
-        if (!modifiers.isEmpty()) {
-            return modifiers.get(0).getFirstPersonMode();
-        } else if (animation != null) return animation.getFirstPersonMode();
+        IAnimation top = getTopAnimation();
+        if (top != null) return top.getFirstPersonMode();
         return IAnimation.super.getFirstPersonMode();
     }
 
     @Override
     public @NotNull FirstPersonConfiguration getFirstPersonConfiguration() {
-        if (!modifiers.isEmpty()) {
-            return modifiers.get(0).getFirstPersonConfiguration();
-        } else if (animation != null) return animation.getFirstPersonConfiguration();
+        IAnimation top = getTopAnimation();
+        if (top != null) return top.getFirstPersonConfiguration();
         return IAnimation.super.getFirstPersonConfiguration();
     }
 
@@ -185,5 +187,11 @@ public class ModifierLayer<T extends IAnimation> implements IAnimation {
                 "modifiers=" + modifiers +
                 ", animation=" + animation +
                 '}';
+    }
+
+    @Override
+    public void collectModels(Consumer<CustomBone> consumer) {
+        IAnimation top = getTopAnimation();
+        if (top != null) top.collectModels(consumer);
     }
 }

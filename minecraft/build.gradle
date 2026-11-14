@@ -85,6 +85,7 @@ dependencies {
     shadow(project(path: ":core")) { transitive = false }
 
     // Common
+    platformInclude("org.redlance.platformtools:webp:$platformtools_version:bundled") { transitive = false }
     platformInclude("org.redlance.common-utils:services:$rootProject.commonutils_version") { transitive = false }
     platformInclude("org.redlance.mochafloats:parser:$rootProject.molang_version") { transitive = false }
     platformInclude("org.redlance.mochafloats:lexer:$rootProject.molang_version") { transitive = false }
