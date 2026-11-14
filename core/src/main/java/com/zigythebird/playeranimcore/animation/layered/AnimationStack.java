@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * Player animation stack, can contain multiple active or passive layers, will always be evaluated from the lowest index.
@@ -154,7 +154,7 @@ public class AnimationStack implements IAnimation {
     }
 
     @Override
-    public void collectModels(Consumer<CustomBone> consumer) {
+    public void collectModels(BiConsumer<IAnimation, CustomBone> consumer) {
         for (Pair<Integer, IAnimation> layer : this.layers) {
             if (layer.right().isActive()) {
                 layer.right().collectModels(consumer);

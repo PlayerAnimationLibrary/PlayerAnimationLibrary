@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 
@@ -190,7 +190,7 @@ public class ModifierLayer<T extends IAnimation> implements IAnimation {
     }
 
     @Override
-    public void collectModels(Consumer<CustomBone> consumer) {
+    public void collectModels(BiConsumer<IAnimation, CustomBone> consumer) {
         IAnimation top = getTopAnimation();
         if (top != null) top.collectModels(consumer);
     }

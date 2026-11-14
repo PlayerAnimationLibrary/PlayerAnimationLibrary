@@ -31,7 +31,7 @@ import com.zigythebird.playeranimcore.bones.CustomBone;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public interface IAnimation {
     FirstPersonConfiguration DEFAULT_FIRST_PERSON_CONFIG = new FirstPersonConfiguration();
@@ -105,5 +105,8 @@ public interface IAnimation {
         return false;
     }
 
-    default void collectModels(Consumer<CustomBone> consumer) {}
+    /**
+     * Hands every drawn custom bone to the consumer with the animation that poses it.
+     */
+    default void collectModels(BiConsumer<IAnimation, CustomBone> consumer) {}
 }

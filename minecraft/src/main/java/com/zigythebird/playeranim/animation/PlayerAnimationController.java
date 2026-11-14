@@ -99,14 +99,14 @@ public class PlayerAnimationController extends HumanoidAnimationController {
     }
 
     @Override
-    protected CustomBone createCustomBone(String name, CustomModelBone data) {
+    protected CustomBone createCustomBone(String name, CustomModelBone data, @Nullable String baseParent) {
         if (data.hasModelData()) {
             try {
-                return new MinecraftCustomBone(name, data);
+                return new MinecraftCustomBone(name, data, baseParent, this::getBonePosition);
             } catch (Exception e) {
                 PlayerAnimLib.LOGGER.error("Failed to load custom model for bone: {}!", name, e);
             }
         }
-        return super.createCustomBone(name, data);
+        return super.createCustomBone(name, data, baseParent);
     }
 }

@@ -4,6 +4,8 @@ accessible field net/minecraft/client/renderer/LevelRenderer levelRenderState Ln
 accessible field net/minecraft/client/renderer/entity/layers/RenderLayer renderer Lnet/minecraft/client/renderer/entity/RenderLayerParent;
 accessible field net/minecraft/client/renderer/entity/LivingEntityRenderer layers Ljava/util/List;
 accessible field net/minecraft/client/resources/model/cuboid/CuboidModel GSON Lcom/google/gson/Gson;
+accessible class net/minecraft/client/resources/model/cuboid/CuboidModelElement$Deserializer
+accessible method net/minecraft/client/resources/model/cuboid/CuboidModelElement$Deserializer <init> ()V
 accessible method net/minecraft/client/renderer/texture/TextureAtlasSprite <init> (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/renderer/texture/SpriteContents;IIIII)V
 transitive-inject-interface net/minecraft/world/entity/Avatar com/zigythebird/playeranim/accessors/IAnimatedAvatar
 transitive-inject-interface net/minecraft/client/renderer/entity/state/AvatarRenderState com/zigythebird/playeranim/accessors/IAvatarAnimationState

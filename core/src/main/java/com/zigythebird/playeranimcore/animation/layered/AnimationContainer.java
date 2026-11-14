@@ -32,7 +32,7 @@ import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * A container to make swapping animation object easier
@@ -109,7 +109,7 @@ public class AnimationContainer<T extends IAnimation> implements IAnimation {
     }
 
     @Override
-    public void collectModels(Consumer<CustomBone> consumer) {
+    public void collectModels(BiConsumer<IAnimation, CustomBone> consumer) {
         if (this.anim != null) this.anim.collectModels(consumer);
     }
 }

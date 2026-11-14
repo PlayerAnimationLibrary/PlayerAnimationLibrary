@@ -75,7 +75,7 @@ final class AnimationBinaryV6 {
                 buf1 -> readBoneAnimation(buf1, isPlayerAnimator, version));
 
         Animation.Keyframes keyFrames = AnimationBinary.readEventKeyframes(buf);
-        Map<String, CustomModelBone> pivotBones = NetworkUtils.readMap(buf, ProtocolUtils::readString, byteBuf -> NetworkUtils.readCustomBone(byteBuf, version));
+        Map<String, CustomModelBone> pivotBones = NetworkUtils.readCustomBones(buf, version);
         Map<String, String> parents = NetworkUtils.readMap(buf, ProtocolUtils::readString, ProtocolUtils::readString);
 
         return new Animation(data, length, loopType, boneAnimations, keyFrames, pivotBones, parents);

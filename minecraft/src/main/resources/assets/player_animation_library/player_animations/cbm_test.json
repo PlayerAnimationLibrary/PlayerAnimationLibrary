@@ -18,7 +18,7 @@
     }
   },
   "parents": {
-    "left_arm": "cbm"
+    "left_arm": "cmm"
   },
   "animations": {
     "cbm_test1": {

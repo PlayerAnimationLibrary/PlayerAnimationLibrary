@@ -2,9 +2,14 @@ package com.zigythebird.playeranimcore.network;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.zigythebird.playeranimcore.util.JsonUtil;
 import io.netty.buffer.ByteBuf;
 import org.redlance.mocha.parser.util.network.ProtocolUtils;
 import org.redlance.mocha.parser.util.network.VarIntUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 class CustomModelUtils {
     private static final String[] DIRECTION_NAMES = {"down", "up", "north", "south", "west", "east"};
@@ -16,43 +21,54 @@ class CustomModelUtils {
      *    bit 0: hasFrom          (almost always set → low bit)
      *    bit 1: hasTo            (almost always set → low bit)
      *    bit 2: hasRotation
-     *    bit 3: noShade          (bit set = shade is false, default true → 0)
+     *    bit 3: hasShadeDirectionOverride
      *    bits 4-7: lightEmission (0-15)
      */
     static void writeBlockElement(ByteBuf buf, JsonObject element, int version) {
         boolean hasFrom = element.has("from");
         boolean hasTo = element.has("to");
         boolean hasRotation = element.has("rotation");
-        boolean noShade = element.has("shade") && !element.get("shade").getAsBoolean();
-        int lightEmission = element.has("light_emission") ? element.get("light_emission").getAsInt() : 0;
+        boolean hasShadeDirectionOverride = element.has("shade_direction_override");
+        int lightEmission = JsonUtil.getAsInt(element, "light_emission", 0);
+        if (lightEmission < 0 || lightEmission > 15) {
+            throw new JsonParseException("Expected 'light_emission' to be an Integer between (inclusive) 0 and 15");
+        }
 
         int flags = 0;
         if (hasFrom) flags |= 1;
         if (hasTo) flags |= 2;
         if (hasRotation) flags |= 4;
-        if (noShade) flags |= 8;
-        flags |= (lightEmission & 0xF) << 4;
+        if (hasShadeDirectionOverride) flags |= 8;
+        flags |= lightEmission << 4;
         VarIntUtils.writeVarInt(buf, flags);
 
-        if (hasFrom) writeJsonVec3f(buf, element.getAsJsonArray("from"));
-        if (hasTo) writeJsonVec3f(buf, element.getAsJsonArray("to"));
+        if (hasFrom) writeJsonVec3f(buf, element, "from");
+        if (hasTo) writeJsonVec3f(buf, element, "to");
+        if (hasShadeDirectionOverride) {
+            String direction = JsonUtil.getAsString(element, "shade_direction_override");
+            int index = indexOf(DIRECTION_NAMES, direction);
+            if (index == -1) throw new JsonParseException("Unknown shade direction override: " + direction);
+            VarIntUtils.writeVarInt(buf, index);
+        }
 
-        JsonObject faces = element.has("faces") ? element.getAsJsonObject("faces") : null;
+        JsonObject faces = JsonUtil.getAsJsonObject(element, "faces", null);
         int facesBitmask = 0;
         if (faces != null) {
-            for (int d = 0; d < 6; d++) {
-                if (faces.has(DIRECTION_NAMES[d])) facesBitmask |= (1 << d);
+            for (String name : faces.keySet()) {
+                int direction = indexOf(DIRECTION_NAMES, name);
+                if (direction == -1) throw new JsonParseException("Unknown facing: " + name);
+                facesBitmask |= 1 << direction;
             }
         }
         VarIntUtils.writeVarInt(buf, facesBitmask);
 
         for (int d = 0; d < 6; d++) {
             if ((facesBitmask & (1 << d)) == 0) continue;
-            writeBlockElementFace(buf, faces.getAsJsonObject(DIRECTION_NAMES[d]), version);
+            writeBlockElementFace(buf, JsonUtil.convertToJsonObject(faces.get(DIRECTION_NAMES[d]), DIRECTION_NAMES[d]), version);
         }
 
         if (hasRotation) {
-            writeBlockElementRotation(buf, element.getAsJsonObject("rotation"), version);
+            writeBlockElementRotation(buf, JsonUtil.convertToJsonObject(element.get("rotation"), "rotation"), version);
         }
     }
 
@@ -63,12 +79,12 @@ class CustomModelUtils {
         boolean hasFrom = (flags & 1) != 0;
         boolean hasTo = (flags & 2) != 0;
         boolean hasRotation = (flags & 4) != 0;
-        boolean noShade = (flags & 8) != 0;
+        boolean hasShadeDirectionOverride = (flags & 8) != 0;
         int lightEmission = (flags >> 4) & 0xF;
 
         if (hasFrom) element.add("from", readJsonVec3f(buf));
         if (hasTo) element.add("to", readJsonVec3f(buf));
-        if (noShade) element.addProperty("shade", false);
+        if (hasShadeDirectionOverride) element.addProperty("shade_direction_override", DIRECTION_NAMES[VarIntUtils.readVarInt(buf)]);
         if (lightEmission != 0) element.addProperty("light_emission", lightEmission);
 
         int facesBitmask = VarIntUtils.readVarInt(buf);
@@ -100,15 +116,13 @@ class CustomModelUtils {
     private static void writeBlockElementFace(ByteBuf buf, JsonObject face, int version) {
         boolean hasTexture = face.has("texture");
         boolean hasUVs = face.has("uv");
-        int tintIndex = face.has("tintindex") ? face.get("tintindex").getAsInt() : -1;
+        int tintIndex = JsonUtil.getAsInt(face, "tintindex", -1);
         boolean hasTint = tintIndex != -1;
 
         int cullDir = 7;
         if (face.has("cullface")) {
-            String cullName = face.get("cullface").getAsString();
-            for (int i = 0; i < 6; i++) {
-                if (DIRECTION_NAMES[i].equals(cullName)) { cullDir = i; break; }
-            }
+            int direction = indexOf(DIRECTION_NAMES, JsonUtil.getAsString(face, "cullface"));
+            if (direction != -1) cullDir = direction;
         }
         boolean hasRotation = face.has("rotation");
 
@@ -116,18 +130,19 @@ class CustomModelUtils {
                 | ((cullDir & 0x7) << 3) | (hasRotation ? (1 << 6) : 0);
         VarIntUtils.writeVarInt(buf, faceFlags);
 
-        if (hasTexture) ProtocolUtils.writeString(buf, face.get("texture").getAsString());
+        if (hasTexture) ProtocolUtils.writeString(buf, JsonUtil.getAsString(face, "texture"));
         if (hasTint) VarIntUtils.writeVarInt(buf, tintIndex);
 
         if (hasUVs) {
-            JsonArray uv = face.getAsJsonArray("uv");
-            buf.writeFloat(uv.get(0).getAsFloat());
-            buf.writeFloat(uv.get(1).getAsFloat());
-            buf.writeFloat(uv.get(2).getAsFloat());
-            buf.writeFloat(uv.get(3).getAsFloat());
+            JsonArray uv = JsonUtil.getAsJsonArray(face, "uv");
+            if (uv.size() != 4) throw new JsonParseException("Expected 4 uv values, found: " + uv.size());
+            buf.writeFloat(JsonUtil.convertToFloat(uv.get(0), "minU"));
+            buf.writeFloat(JsonUtil.convertToFloat(uv.get(1), "minV"));
+            buf.writeFloat(JsonUtil.convertToFloat(uv.get(2), "maxU"));
+            buf.writeFloat(JsonUtil.convertToFloat(uv.get(3), "maxV"));
         }
 
-        if (hasRotation) VarIntUtils.writeVarInt(buf, face.get("rotation").getAsInt());
+        if (hasRotation) VarIntUtils.writeVarInt(buf, JsonUtil.convertToInt(face.get("rotation"), "rotation"));
     }
 
     private static JsonObject readBlockElementFace(ByteBuf buf, int version) {
@@ -140,7 +155,8 @@ class CustomModelUtils {
 
         JsonObject face = new JsonObject();
 
-        if (hasTexture) face.addProperty("texture", ProtocolUtils.readString(buf));
+        // Unlike ProtocolUtils.readString, keeps "", which Minecraft takes as a texture name
+        if (hasTexture) face.addProperty("texture", buf.readSlice(VarIntUtils.readVarInt(buf)).toString(StandardCharsets.UTF_8));
         if (cullDir < 6) face.addProperty("cullface", DIRECTION_NAMES[cullDir]);
         if (hasTint) face.addProperty("tintindex", VarIntUtils.readVarInt(buf));
 
@@ -163,11 +179,14 @@ class CustomModelUtils {
      * rotFlags (varint): bit0=isEuler, bit1=rescale
      */
     private static void writeBlockElementRotation(ByteBuf buf, JsonObject rotation, int version) {
-        writeJsonVec3f(buf, rotation.getAsJsonArray("origin"));
+        writeJsonVec3f(buf, rotation, "origin");
 
         // MC logic: euler when axis/angle are absent
         boolean isEuler = !rotation.has("axis") && !rotation.has("angle");
-        boolean rescale = rotation.has("rescale") && rotation.get("rescale").getAsBoolean();
+        if (isEuler && !rotation.has("x") && !rotation.has("y") && !rotation.has("z")) {
+            throw new JsonParseException("Missing rotation value, expected either 'axis' and 'angle' or 'x', 'y' and 'z'");
+        }
+        boolean rescale = JsonUtil.getAsBoolean(rotation, "rescale", false);
 
         int rotFlags = 0;
         if (isEuler) rotFlags |= 1;
@@ -175,17 +194,15 @@ class CustomModelUtils {
         VarIntUtils.writeVarInt(buf, rotFlags);
 
         if (isEuler) {
-            buf.writeFloat(rotation.has("x") ? rotation.get("x").getAsFloat() : 0f);
-            buf.writeFloat(rotation.has("y") ? rotation.get("y").getAsFloat() : 0f);
-            buf.writeFloat(rotation.has("z") ? rotation.get("z").getAsFloat() : 0f);
+            buf.writeFloat(JsonUtil.getAsFloat(rotation, "x", 0f));
+            buf.writeFloat(JsonUtil.getAsFloat(rotation, "y", 0f));
+            buf.writeFloat(JsonUtil.getAsFloat(rotation, "z", 0f));
         } else {
-            String axisName = rotation.get("axis").getAsString();
-            int axis = 0;
-            for (int i = 0; i < 3; i++) {
-                if (AXIS_NAMES[i].equals(axisName)) { axis = i; break; }
-            }
+            String axisName = JsonUtil.getAsString(rotation, "axis");
+            int axis = indexOf(AXIS_NAMES, axisName.toLowerCase(Locale.ROOT));
+            if (axis == -1) throw new JsonParseException("Invalid rotation axis: " + axisName);
             VarIntUtils.writeVarInt(buf, axis);
-            buf.writeFloat(rotation.get("angle").getAsFloat());
+            buf.writeFloat(JsonUtil.getAsFloat(rotation, "angle"));
         }
     }
 
@@ -216,10 +233,12 @@ class CustomModelUtils {
         return rotation;
     }
 
-    private static void writeJsonVec3f(ByteBuf buf, JsonArray arr) {
-        buf.writeFloat(arr.get(0).getAsFloat());
-        buf.writeFloat(arr.get(1).getAsFloat());
-        buf.writeFloat(arr.get(2).getAsFloat());
+    private static void writeJsonVec3f(ByteBuf buf, JsonObject object, String key) {
+        JsonArray arr = JsonUtil.getAsJsonArray(object, key);
+        if (arr.size() != 3) throw new JsonParseException("Expected 3 " + key + " values, found: " + arr.size());
+        buf.writeFloat(JsonUtil.convertToFloat(arr.get(0), key + "[0]"));
+        buf.writeFloat(JsonUtil.convertToFloat(arr.get(1), key + "[1]"));
+        buf.writeFloat(JsonUtil.convertToFloat(arr.get(2), key + "[2]"));
     }
 
     private static JsonArray readJsonVec3f(ByteBuf buf) {
@@ -228,5 +247,12 @@ class CustomModelUtils {
         arr.add(buf.readFloat());
         arr.add(buf.readFloat());
         return arr;
+    }
+
+    private static int indexOf(String[] names, String name) {
+        for (int i = 0; i < names.length; i++) {
+            if (names[i].equals(name)) return i;
+        }
+        return -1;
     }
 }

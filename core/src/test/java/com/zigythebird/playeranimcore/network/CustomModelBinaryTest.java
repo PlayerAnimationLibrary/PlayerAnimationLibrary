@@ -2,6 +2,8 @@ package com.zigythebird.playeranimcore.network;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
@@ -11,10 +13,13 @@ import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.redlance.mocha.parser.util.network.ProtocolUtils;
 import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CustomModelBinaryTest {
@@ -49,12 +54,10 @@ public class CustomModelBinaryTest {
     private static void assertRoundTrip(CustomModelBone bone, int version) {
         ByteBuf buf = Unpooled.buffer();
         NetworkUtils.writeCustomBone(buf, bone, version);
-        CustomModelBone read = NetworkUtils.readCustomBone(buf, version);
+        CustomModelBone read = NetworkUtils.readCustomBone(buf, version, NetworkUtils.MAX_TEXTURE_PIXELS);
 
         Assertions.assertEquals(bone.pivot(), read.pivot(), "pivot mismatch");
-        if (bone.texture() != null && read.texture() != null) {
-            Assertions.assertArrayEquals(bone.texture().argb(), read.texture().argb(), "texture mismatch");
-        }
+        assertSameTexture(bone.texture(), read.texture());
 
         if (bone.elements() == null) {
             Assertions.assertNull(read.elements(), "expected null elements");
@@ -72,6 +75,42 @@ public class CustomModelBinaryTest {
 
         Assertions.assertFalse(buf.isReadable(), "buffer has leftover bytes");
         buf.release();
+    }
+
+    private static void assertSameTexture(DecodedImage expected, DecodedImage actual) {
+        Assertions.assertEquals(expected != null, actual != null, "texture presence mismatch");
+        if (expected != null) {
+            Assertions.assertEquals(expected.width(), actual.width(), "texture width mismatch");
+            Assertions.assertEquals(expected.height(), actual.height(), "texture height mismatch");
+            Assertions.assertArrayEquals(expected.argb(), actual.argb(), "texture mismatch");
+        }
+    }
+
+    private static JsonArray singleElement(JsonObject element) {
+        JsonArray elements = new JsonArray();
+        elements.add(element);
+        return elements;
+    }
+
+    private static JsonObject cube() {
+        JsonObject element = new JsonObject();
+        element.add("from", vec3(0, 0, 0));
+        element.add("to", vec3(16, 16, 16));
+        JsonObject faces = new JsonObject();
+        faces.add("up", makeFace("#top", null, null, -1, 0));
+        element.add("faces", faces);
+        return element;
+    }
+
+    private static void assertWriterRejects(JsonObject element) {
+        CustomModelBone bone = new CustomModelBone(new Vec3f(0, 0, 0), null, singleElement(element));
+        ByteBuf buf = Unpooled.buffer();
+        Assertions.assertThrows(JsonParseException.class, () -> NetworkUtils.writeCustomBone(buf, bone, 7));
+        buf.release();
+    }
+
+    private static String base64Png(DecodedImage image) throws IOException {
+        return Base64.getEncoder().encodeToString(image.toPng());
     }
 
     // ── Tests ──
@@ -120,12 +159,12 @@ public class CustomModelBinaryTest {
     }
 
     @Test
-    @DisplayName("Element with shade=false and light_emission")
+    @DisplayName("Element with shade_direction_override and light_emission")
     void shadeAndLightEmission() {
         JsonObject element = new JsonObject();
         element.add("from", vec3(0, 0, 0));
         element.add("to", vec3(8, 8, 8));
-        element.addProperty("shade", false);
+        element.addProperty("shade_direction_override", "up");
         element.addProperty("light_emission", 15);
 
         JsonObject faces = new JsonObject();
@@ -342,7 +381,7 @@ public class CustomModelBinaryTest {
         JsonObject element = new JsonObject();
         element.add("from", vec3(1, 2, 3));
         element.add("to", vec3(4, 5, 6));
-        element.addProperty("shade", false);
+        element.addProperty("shade_direction_override", "west");
         element.addProperty("light_emission", 7);
 
         JsonObject rot = new JsonObject();
@@ -364,5 +403,153 @@ public class CustomModelBinaryTest {
 
         CustomModelBone bone = new CustomModelBone(new Vec3f(4, 5, 6), DecodedImage.ofArgb(new int[]{0xFF112233, 0xFF445566, 0xFF778899, 0xFFAABBCC}, 2, 2), elements);
         assertRoundTrip(bone, 7);
+    }
+
+    @Test
+    @DisplayName("A rotation axis is carried the way Minecraft reads it")
+    void rotationAxisName() {
+        JsonObject element = cube();
+        JsonObject rotation = new JsonObject();
+        rotation.add("origin", vec3(8, 8, 8));
+        rotation.addProperty("axis", "Y");
+        rotation.addProperty("angle", 45f);
+        element.add("rotation", rotation);
+
+        ByteBuf buf = Unpooled.buffer();
+        NetworkUtils.writeCustomBone(buf, new CustomModelBone(new Vec3f(0, 0, 0), null, singleElement(element)), 7);
+        JsonObject read = NetworkUtils.readCustomBone(buf, 7, NetworkUtils.MAX_TEXTURE_PIXELS).elements().get(0).getAsJsonObject();
+        Assertions.assertEquals("y", read.getAsJsonObject("rotation").get("axis").getAsString(), "Minecraft lower-cases the axis");
+        buf.release();
+
+        rotation.addProperty("axis", "w");
+        assertWriterRejects(element);
+    }
+
+    @Test
+    @DisplayName("An empty face texture comes back as an empty string")
+    void emptyFaceTexture() {
+        JsonObject element = cube();
+        element.getAsJsonObject("faces").add("down", makeFace("", null, null, -1, 0));
+        assertRoundTrip(new CustomModelBone(new Vec3f(0, 0, 0), null, singleElement(element)), 7);
+    }
+
+    @Test
+    @DisplayName("The writer rejects what it cannot carry the way Minecraft reads it")
+    void writerRejects() {
+        JsonObject lightEmission = cube();
+        lightEmission.addProperty("light_emission", 16);
+        assertWriterRejects(lightEmission);
+
+        JsonObject shadeDirection = cube();
+        shadeDirection.addProperty("shade_direction_override", "sideways");
+        assertWriterRejects(shadeDirection);
+
+        JsonObject rotationWithoutValue = cube();
+        JsonObject rotation = new JsonObject();
+        rotation.add("origin", vec3(8, 8, 8));
+        rotationWithoutValue.add("rotation", rotation);
+        assertWriterRejects(rotationWithoutValue);
+
+        JsonObject unknownFacing = cube();
+        unknownFacing.getAsJsonObject("faces").add("front", makeFace("#top", null, null, -1, 0));
+        assertWriterRejects(unknownFacing);
+
+        JsonObject shortUv = cube();
+        JsonArray uv = new JsonArray();
+        uv.add(0);
+        uv.add(0);
+        uv.add(16);
+        shortUv.getAsJsonObject("faces").getAsJsonObject("up").add("uv", uv);
+        assertWriterRejects(shortUv);
+
+        JsonObject stringCoordinate = cube();
+        JsonArray from = new JsonArray();
+        from.add("0");
+        from.add(0);
+        from.add(0);
+        stringCoordinate.add("from", from);
+        assertWriterRejects(stringCoordinate);
+    }
+
+    @Test
+    @DisplayName("Textures past the pixels an animation may hold are refused")
+    void textureBudget() {
+        ByteBuf small = Unpooled.buffer();
+        NetworkUtils.writeCustomBone(small, new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[4], 2, 2), null), 7);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> NetworkUtils.readCustomBone(small, 7, 3));
+        small.release();
+
+        Map<String, CustomModelBone> bones = new LinkedHashMap<>();
+        bones.put("first", new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[2048 * 1024], 2048, 1024), null));
+        bones.put("second", new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[2048 * 1024], 2048, 1024), null));
+        ByteBuf full = Unpooled.buffer();
+        NetworkUtils.writeMap(full, bones, ProtocolUtils::writeString, (byteBuf, bone) -> NetworkUtils.writeCustomBone(byteBuf, bone, 7));
+        Assertions.assertEquals(2, NetworkUtils.readCustomBones(full, 7).size(), "textures that fill the budget exactly are read");
+        full.release();
+
+        bones.put("third", new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[1], 1, 1), null));
+        ByteBuf over = Unpooled.buffer();
+        NetworkUtils.writeMap(over, bones, ProtocolUtils::writeString, (byteBuf, bone) -> NetworkUtils.writeCustomBone(byteBuf, bone, 7));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> NetworkUtils.readCustomBones(over, 7));
+        over.release();
+    }
+
+    @Test
+    @DisplayName("A model is refused at load when its textures hold more pixels than an animation can be sent with")
+    void loadTextureBudget() throws IOException {
+        JsonObject bone = new JsonObject();
+        bone.add("pivot", vec3(0, 0, 0));
+        bone.addProperty("texture", base64Png(DecodedImage.ofArgb(new int[2049 * 2048], 2049, 2048)));
+        bone.add("elements", singleElement(cube()));
+        JsonObject model = new JsonObject();
+        model.add("prop", bone);
+        JsonObject json = new JsonObject();
+        json.add("model", model);
+        json.add("animations", new JsonObject());
+
+        Assertions.assertThrows(JsonParseException.class, () -> UniversalAnimLoader.loadAnimations(json));
+    }
+
+    @Test
+    @DisplayName("A loaded model equals and hashes as its copy read from the network")
+    void loadedModelEqualsReceived() throws IOException {
+        // A fully transparent pixel keeps its colour too
+        DecodedImage texture = DecodedImage.ofArgb(new int[]{0xFF112233, 0x00FF00FF, 0xFF778899, 0xFFAABBCC}, 2, 2);
+        // Every element value here is one the codec carries in another form or drops
+        String json = """
+                {
+                  "model": {
+                    "prop": {
+                      "pivot": [0, 12, 0],
+                      "texture": "%s",
+                      "elements": [{
+                        "name": "cube",
+                        "from": [0, 0, 0],
+                        "to": [8, 8, 8],
+                        "shade": false,
+                        "neoforge_data": {"color": -1},
+                        "rotation": {"origin": [4, 4, 4], "axis": "Y", "angle": 22.5},
+                        "faces": {
+                          "north": {"texture": "", "uv": [0.1, 0, 8, 8], "tintindex": 1},
+                          "up": {"texture": "#0"}
+                        }
+                      }]
+                    }
+                  },
+                  "animations": {"model_test": {"loop": true}}
+                }
+                """.formatted(base64Png(texture));
+        Animation loaded = UniversalAnimLoader.loadAnimations(JsonParser.parseString(json).getAsJsonObject()).get("model_test");
+
+        ByteBuf buf = Unpooled.buffer();
+        AnimationBinary.write(buf, loaded);
+        Animation received = AnimationBinary.read(buf);
+        buf.release();
+
+        CustomModelBone loadedBone = loaded.bones().get("prop");
+        CustomModelBone receivedBone = received.bones().get("prop");
+        Assertions.assertEquals(loadedBone, receivedBone, "the bone should equal its copy");
+        Assertions.assertEquals(loadedBone.hashCode(), receivedBone.hashCode(), "the bone should hash as its copy");
+        assertSameTexture(loadedBone.texture(), receivedBone.texture());
     }
 }
