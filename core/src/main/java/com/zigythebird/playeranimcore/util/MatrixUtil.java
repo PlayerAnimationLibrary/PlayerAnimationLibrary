@@ -63,10 +63,23 @@ public class MatrixUtil {
                 -matrix.m32() + pivot.z()
         );
 
-        Vector3f rotation = matrix.getEulerAnglesZYX(new Vector3f());
-        bone.rotation.set(rotation.x(), rotation.y(), rotation.z());
-
         Vector3f scale = matrix.getScale(new Vector3f());
+        Vector3f rotation = getEulerAnglesZYX(matrix, scale, new Vector3f());
+        bone.rotation.set(rotation.x(), rotation.y(), rotation.z());
         bone.scale.mul(scale.x(), scale.y(), scale.z());
+    }
+
+    /**
+     * {@link Matrix4f#getEulerAnglesZYX} takes the scale of a matrix for a part of its rotation, so here its
+     * {@code scale} is kept out of the angles. That method also loses the X and Z rotations at a Y rotation
+     * of 90 degrees, where both turn around the same axis, so there all of that rotation goes to X.
+     */
+    public static Vector3f getEulerAnglesZYX(Matrix4f matrix, Vector3f scale, Vector3f dest) {
+        float cosY = (float) Math.sqrt(matrix.m00() * matrix.m00() + matrix.m01() * matrix.m01());
+        float y = (float) Math.atan2(-matrix.m02(), cosY);
+        if (cosY > 1.0E-4F * Math.abs(matrix.m02())) {
+            return dest.set((float) Math.atan2(matrix.m12() * scale.z(), matrix.m22() * scale.y()), y, (float) Math.atan2(matrix.m01(), matrix.m00()));
+        }
+        return dest.set((float) Math.atan2(-matrix.m21() * scale.y(), matrix.m11() * scale.z()), y, 0);
     }
 }
