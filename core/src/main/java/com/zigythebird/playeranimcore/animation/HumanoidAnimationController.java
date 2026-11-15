@@ -62,8 +62,11 @@ public class HumanoidAnimationController extends AnimationController {
      */
     protected List<String> top_bones;
 
-    private float torsoBend;
-    private int torsoBendSign;
+    /**
+     * The torso bend as a transform for the {@link #top_bones}, only up to date while {@link #applyTorsoBend} is set.
+     */
+    private final Matrix4f torsoBendMatrix = new Matrix4f();
+    private boolean applyTorsoBend;
 
     /**
      * Instantiates a new {@code AnimationController}
@@ -112,23 +115,25 @@ public class HumanoidAnimationController extends AnimationController {
     @AutoreleasePool
     public void process(AnimationData state) {
         super.process(state);
-        this.torsoBend = bones.get("torso").bend;
-        float absBend = Math.abs(this.torsoBend);
-        if (absBend > 0.001 && (this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE)) {
-            this.torsoBendSign = (int) Math.signum(this.torsoBend);
-        } else this.torsoBendSign = 0;
+        PlayerAnimBone torso = bones.get("torso");
+        this.applyTorsoBend = Math.abs(torso.bend) > 0.001 && this.currentAnimation != null && this.currentAnimation.animation().data().getNullable(ExtraAnimationData.APPLY_BEND_TO_OTHER_BONES_KEY) == Boolean.TRUE;
+        if (!this.applyTorsoBend) return;
+
+        // The bend takes place in the space of the torso, but the bones come with their parents already applied,
+        // so the torso is taken off them for the bend and put back after it
+        MatrixUtil.prepMatrixForBone(this.torsoBendMatrix.identity(), torso, getBonePosition("torso"));
+        Matrix4f torsoInverse = this.torsoBendMatrix.invert(new Matrix4f());
+        // A torso scaled down to nothing leaves no space to bend in
+        this.applyTorsoBend = torsoInverse.isFinite();
+        this.torsoBendMatrix.translate(0, 18, 0).rotateX(torso.bend).translate(0, -18, 0).mul(torsoInverse);
     }
 
     @Override
     public PlayerAnimBone get3DTransformRaw(@NotNull PlayerAnimBone bone) {
         bone = super.get3DTransformRaw(bone);
         String name = bone.getName();
-        if (this.torsoBendSign != 0 && this.top_bones.contains(name)) {
-            Matrix4f matrix4f = new Matrix4f();
-            matrix4f.translate(0, 18, 0);
-            matrix4f.rotateX(this.torsoBend);
-            matrix4f.translate(0, -18, 0);
-            MatrixUtil.applyMatrixToBone(bone, matrix4f, getBonePosition(name));
+        if (this.applyTorsoBend && this.top_bones.contains(name)) {
+            MatrixUtil.applyMatrixToBone(bone, new Matrix4f(this.torsoBendMatrix), getBonePosition(name));
         }
         return bone;
     }
