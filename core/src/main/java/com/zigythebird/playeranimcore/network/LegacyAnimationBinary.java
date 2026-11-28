@@ -36,6 +36,7 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import io.netty.buffer.ByteBuf;
 import org.redlance.mocha.parser.ast.Expression;
 import org.redlance.mocha.parser.ast.FloatExpression;
+import org.redlance.mocha.parser.util.network.ProtocolUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -501,8 +502,7 @@ public final class LegacyAnimationBinary {
      * @return str
      */
     public static String getString(ByteBuf buf) {
-        int len = buf.readInt();
-        byte[] bytes = new byte[len];
+        byte[] bytes = new byte[ProtocolUtils.checkCount(buf, buf.readInt())];
         buf.readBytes(bytes);
         return new String(bytes, StandardCharsets.UTF_8);
     }

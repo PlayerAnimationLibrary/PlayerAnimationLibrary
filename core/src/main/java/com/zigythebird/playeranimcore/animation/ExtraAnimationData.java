@@ -6,10 +6,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
+import com.zigythebird.playeranimcore.network.NetworkUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.nio.ByteBuffer;
 import java.util.*;
 
 @ReflectionSupport(ReflectionSupport.Level.FULL)
@@ -46,10 +46,16 @@ public record ExtraAnimationData(Map<String, Object> data) {
         return data().containsKey(name);
     }
 
-    public @Nullable ByteBuffer getBinary(String name) {
+    public byte @Nullable [] getBinary(String name) {
         Object obj = getRaw(name);
         if (obj == null) return null;
+        return convertToBytes(name, obj);
+    }
 
+    private byte @Nullable [] convertToBytes(String name, Object obj) {
+        if (obj instanceof AnimationImage image) {
+            return image.file().bytes();
+        }
         if (obj instanceof String str) {
             try {
                 put(name, obj = Base64.getDecoder().decode(str));
@@ -58,12 +64,30 @@ public record ExtraAnimationData(Map<String, Object> data) {
             }
         }
         if (obj instanceof byte[] bytes) {
-            put(name, obj = ByteBuffer.wrap(bytes).asReadOnlyBuffer());
-        }
-        if (obj instanceof ByteBuffer buffer) {
-            return buffer.asReadOnlyBuffer();
+            return bytes;
         }
         return null;
+    }
+
+    /**
+     * Decodes a PNG or JPEG XL image on the first call.
+     *
+     * @throws IllegalArgumentException if the value is neither
+     * @throws org.redlance.smalt.MediaException if it is not a valid image of its format, or too large
+     */
+    public @Nullable AnimationImage getImage(String name) {
+        Object obj = getRaw(name);
+        if (obj == null) return null;
+
+        if (obj instanceof AnimationImage image) {
+            return image;
+        } else {
+            byte[] data = convertToBytes(name, obj);
+            if (data == null) return null;
+            AnimationImage image = AnimationImage.decode(data, NetworkUtils.MAX_TEXTURE_PIXELS);
+            put(name, image);
+            return image;
+        }
     }
 
     public Object getRaw(String name) {

@@ -27,19 +27,38 @@ package com.zigythebird.playeranim.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.zigythebird.playeranim.accessors.IAvatarAnimationState;
+import com.zigythebird.playeranim.animation.AvatarAnimManager;
+import com.zigythebird.playeranim.animation.cmm.MinecraftCustomBone;
 import com.zigythebird.playeranim.util.RenderUtil;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Collections;
+
 @Mixin(LivingEntityRenderer.class)
-public class LivingEntityRendererMixin<S extends LivingEntityRenderState> {
+public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends EntityRenderer<T, S> {
+    @Shadow
+    protected M model;
+
+    protected LivingEntityRendererMixin(EntityRendererProvider.Context context) {
+        super(context);
+    }
+
     @Inject(method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;scale(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;)V"))
     private void doTranslations(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, CallbackInfo ci) {
         if (state instanceof IAvatarAnimationState avatarRenderState) {
@@ -88,5 +107,36 @@ public class LivingEntityRendererMixin<S extends LivingEntityRenderState> {
                 poseStack.scale(-1.0F, -1.0F, 1.0F);
             }
         }
+    }
+
+    @Inject(
+            method = "submit(Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/model/EntityModel;setupAnim(Ljava/lang/Object;)V",
+                    shift = At.Shift.AFTER
+            )
+    )
+    public void pal$renderCustomModels(S state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, CallbackInfo ci) {
+        if (state.isInvisible || !(state instanceof IAvatarAnimationState avatarRenderState) || !(this.model instanceof HumanoidModel<?> humanoidModel)) return;
+
+        AvatarAnimManager animationPlayer = avatarRenderState.playerAnimLib$getAnimManager();
+        if (animationPlayer == null || !animationPlayer.isActive()) return;
+
+        animationPlayer.collectModels((owner, bone) -> {
+            if (!(bone instanceof MinecraftCustomBone mcBone)) return;
+
+            poseStack.pushPose();
+            mcBone.translateToBone(poseStack, humanoidModel, animationPlayer, owner);
+
+            submitNodeCollector.submitBlockModel(poseStack, mcBone.getRenderType(), Collections.singletonList(mcBone),
+                    BlockModelRenderState.EMPTY_TINTS,
+                    state.lightCoords,
+                    OverlayTexture.NO_OVERLAY,
+                    state.outlineColor
+            );
+
+            poseStack.popPose();
+        });
     }
 }

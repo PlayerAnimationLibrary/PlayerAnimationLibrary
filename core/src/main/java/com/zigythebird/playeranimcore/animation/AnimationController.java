@@ -58,6 +58,7 @@ import org.redlance.mocha.parser.ast.FloatExpression;
 import org.redlance.mocha.runtime.MolangInterpreter;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,7 +77,7 @@ public abstract class AnimationController implements IAnimation {
 	protected final Map<String, Vec3f> bonePositions;
 	protected final Map<String, AdvancedPlayerAnimBone> bones = new Object2ObjectOpenHashMap<>();
 	protected final Map<String, PlayerAnimBone> activeBones = new Object2ObjectOpenHashMap<>();
-	protected final Map<String, PivotBone> pivotBones = new Object2ObjectOpenHashMap<>();
+	protected final Map<String, CustomBone> pivotBones = new Object2ObjectOpenHashMap<>();
 	protected Queue<QueuedAnimation> animationQueue = new LinkedList<>();
 	protected final MolangInterpreter<AnimationController> molangRuntime;
 
@@ -658,6 +659,10 @@ public abstract class AnimationController implements IAnimation {
 		if (parentsMap.isEmpty()) return;
 
 		Set<String> processedBones = new HashSet<>();
+		// Before the custom bones above them take their parents' poses
+		for (CustomBone bone : this.pivotBones.values()) {
+			if (bone.getBaseParent() != null) processDrawnBone(bone, parentsMap, processedBones);
+		}
 		for (PlayerAnimBone bone : this.bones.values()) {
 			processBoneHierarchy(bone, parentsMap, processedBones);
 		}
@@ -668,16 +673,14 @@ public abstract class AnimationController implements IAnimation {
 
 	private void processBoneHierarchy(PlayerAnimBone bone, Map<String, String> parentsMap, Set<String> processedBones) {
 		String boneName = bone.getName();
-		if (processedBones.contains(boneName)) return;
+		// Marked before its parents, so looping parents stop here
+		if (!processedBones.add(boneName)) return;
 
 		String parentName = parentsMap.get(boneName);
-		if (parentName == null) {
-			processedBones.add(boneName);
-			return;
-		}
+		if (parentName == null) return;
 
-		PlayerAnimBone parent = this.pivotBones.get(parentName);
-		if (parent == null) parent = this.bones.get(parentName);
+		CustomBone customParent = this.pivotBones.get(parentName);
+		PlayerAnimBone parent = customParent != null ? customParent : this.bones.get(parentName);
 		if (parent == null) {
 			PlayerAnimLib.LOGGER.error("Parent {} not found for {}", parentName, boneName);
 			return;
@@ -686,9 +689,40 @@ public abstract class AnimationController implements IAnimation {
 		processBoneHierarchy(parent, parentsMap, processedBones);
 
 		this.activeBones.put(boneName, bone);
-		MatrixUtil.applyParentsToChild(bone, Collections.singletonList(parent), this::getBonePosition);
+		if (customParent == null || customParent.getBaseParent() == null) {
+			MatrixUtil.applyParentsToChild(bone, Collections.singletonList(parent), this::getBonePosition);
+		} else {
+			// A drawn parent leaves its base parent out
+			PlayerAnimBone baseParent = this.bones.get(customParent.getBaseParent());
+			processBoneHierarchy(baseParent, parentsMap, processedBones);
+			MatrixUtil.applyParentsToChild(bone, List.of(baseParent, parent), this::getBonePosition);
+		}
+	}
 
-		processedBones.add(boneName);
+	/**
+	 * The parents of a bone with a base parent lead to it, so they hold no loop.
+	 */
+	private void processDrawnBone(CustomBone bone, Map<String, String> parentsMap, Set<String> processedBones) {
+		if (!processedBones.add(bone.getName())) return;
+		this.activeBones.put(bone.getName(), bone);
+		if (!this.pivotBones.containsKey(parentsMap.get(bone.getName()))) return;
+
+		List<PlayerAnimBone> parents = new ArrayList<>();
+		collectCustomParents(bone.getName(), parentsMap, processedBones, parents);
+		MatrixUtil.applyParentsToChild(bone, parents, this::getBonePosition);
+	}
+
+	/**
+	 * Topmost first, up to the base parent or to a drawn bone, which already holds the poses above it.
+	 */
+	private void collectCustomParents(String boneName, Map<String, String> parentsMap, Set<String> processedBones, List<PlayerAnimBone> parents) {
+		String parentName = parentsMap.get(boneName);
+		CustomBone parent = parentName == null ? null : this.pivotBones.get(parentName);
+		if (parent == null) return;
+
+		if (parent.getBaseParent() != null) processDrawnBone(parent, parentsMap, processedBones);
+		else collectCustomParents(parentName, parentsMap, processedBones, parents);
+		parents.add(parent);
 	}
 
 	protected  <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, @Nullable CustomKeyFrameEvents.CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
@@ -746,6 +780,16 @@ public abstract class AnimationController implements IAnimation {
 		if (currentAnimation == null) return;
 		this.activeBones.clear();
 		resetEventKeyFrames();
+
+		for (CustomBone bone : this.pivotBones.values()) {
+			bone.close();
+		}
+		this.pivotBones.clear();
+		for (Map.Entry<String, CustomModelBone> entry : currentAnimation.animation().bones().entrySet()) {
+			String baseParent = entry.getValue().hasModelData() ? findBaseParent(entry.getKey(), new HashSet<>()) : null;
+			this.pivotBones.put(entry.getKey(), createCustomBone(entry.getKey(), entry.getValue(), baseParent));
+		}
+
 		for (AdvancedPlayerAnimBone bone : bones.values()) {
 			bone.setEnabled(currentAnimation.animation().getBone(bone.getName()) != null);
 		}
@@ -778,12 +822,29 @@ public abstract class AnimationController implements IAnimation {
 			if (this.bones.containsKey(entry)) this.bones.get(entry).setEnabled(true);
 		}
 
-		this.pivotBones.clear();
-		for (Map.Entry<String, Vec3f> entry : currentAnimation.animation().bones().entrySet()) {
-			this.pivotBones.put(entry.getKey(), new PivotBone(entry.getKey(), entry.getValue()));
-		}
-
 		this.postAnimationSetupConsumer.accept(this.bones::get);
+	}
+
+	private @Nullable String findBaseParent(String boneName, Set<String> passedBones) {
+		if (!passedBones.add(boneName)) return null;
+
+		Animation animation = this.currentAnimation.animation();
+		String parent = animation.parents().get(boneName);
+		if (parent == null) return null;
+		if (animation.bones().containsKey(parent)) return findBaseParent(parent, passedBones);
+		return this.bones.containsKey(parent) ? parent : null;
+	}
+
+	protected CustomBone createCustomBone(String name, CustomModelBone data, @Nullable String baseParent) {
+		return new CustomBone(name, data, baseParent);
+	}
+
+	@Override
+	public void collectModels(BiConsumer<IAnimation, CustomBone> consumer) {
+		for (CustomBone customBone : this.pivotBones.values()) {
+			if (!customBone.getData().hasModelData()) continue;
+			consumer.accept(this, customBone);
+		}
 	}
 
 	/**
@@ -957,6 +1018,12 @@ public abstract class AnimationController implements IAnimation {
 			if (this.animationState == State.RUNNING) {
 				tick += 1;
 			}
+		}
+
+		// Not in process(), which a stopped controller no longer gets
+		if (this.animationState == State.STOPPED && !this.pivotBones.isEmpty()) {
+			for (CustomBone bone : this.pivotBones.values()) bone.close();
+			this.pivotBones.clear();
 		}
 	}
 

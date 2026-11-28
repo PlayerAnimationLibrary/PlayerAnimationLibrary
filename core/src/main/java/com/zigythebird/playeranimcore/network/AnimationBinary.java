@@ -1,6 +1,7 @@
 package com.zigythebird.playeranimcore.network;
 
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.animation.ExtraAnimationData;
 import com.zigythebird.playeranimcore.animation.keyframe.BoneAnimation;
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
@@ -12,7 +13,6 @@ import com.zigythebird.playeranimcore.easing.EasingType;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
 import com.zigythebird.playeranimcore.enums.TransformType;
 import com.zigythebird.playeranimcore.loading.PlayerAnimatorLoader;
-import com.zigythebird.playeranimcore.math.Vec3f;
 import io.netty.buffer.ByteBuf;
 import org.redlance.mocha.parser.ast.Expression;
 import org.redlance.mocha.parser.ast.FloatExpression;
@@ -36,9 +36,10 @@ public final class AnimationBinary {
      * Version 4: Fixed some issues with the body bone.
      * Version 5: Fixed the Y position axis on items being negated.
      * Version 6: Compact binary format - bit-packed header, presence flags for bone axes, compact keyframe encoding.
+     * Version 7: Custom bone models
      */
     public static int getCurrentVersion() {
-        return 6;
+        return 7;
     }
 
     public static void write(ByteBuf buf, Animation animation) {
@@ -83,7 +84,7 @@ public final class AnimationBinary {
         }
 
         writeEventKeyframes(buf, animation.keyFrames());
-        NetworkUtils.writeMap(buf, animation.bones(), ProtocolUtils::writeString, NetworkUtils::writeVec3f);
+        NetworkUtils.writeMap(buf, animation.bones(), ProtocolUtils::writeString, (byteBuf, bone) -> NetworkUtils.writeCustomBone(byteBuf, bone, version));
         NetworkUtils.writeMap(buf, animation.parents(), ProtocolUtils::writeString, ProtocolUtils::writeString);
     }
 
@@ -183,7 +184,7 @@ public final class AnimationBinary {
         }
 
         Animation.Keyframes keyFrames = readEventKeyframes(buf);
-        Map<String, Vec3f> pivotBones = NetworkUtils.readMap(buf, ProtocolUtils::readString, NetworkUtils::readVec3f);
+        Map<String, CustomModelBone> pivotBones = NetworkUtils.readCustomBones(buf, version);
         Map<String, String> parents = NetworkUtils.readMap(buf, ProtocolUtils::readString, ProtocolUtils::readString);
 
         return new Animation(data, length, loopType, boneAnimations, keyFrames, pivotBones, parents);
@@ -207,7 +208,7 @@ public final class AnimationBinary {
     }
 
     public static List<Keyframe> readKeyframeList(ByteBuf buf, boolean shouldStartFromDefault, boolean isScale) {
-        int count = VarIntUtils.readVarInt(buf);
+        int count = ProtocolUtils.readCount(buf);
         List<Keyframe> list = new ArrayList<>(count);
 
         for (int i = 0; i < count; ++i) {
@@ -226,7 +227,7 @@ public final class AnimationBinary {
 
     static Animation.Keyframes readEventKeyframes(ByteBuf buf) {
         // Sounds
-        int soundCount = VarIntUtils.readVarInt(buf);
+        int soundCount = ProtocolUtils.readCount(buf);
         SoundKeyframeData[] sounds = new SoundKeyframeData[soundCount];
         for (int i = 0; i < soundCount; i++) {
             float startTick = buf.readFloat();
@@ -235,7 +236,7 @@ public final class AnimationBinary {
         }
 
         // Particles
-        int particleCount = VarIntUtils.readVarInt(buf);
+        int particleCount = ProtocolUtils.readCount(buf);
         ParticleKeyframeData[] particles = new ParticleKeyframeData[particleCount];
         for (int i = 0; i < particleCount; i++) {
             float startTick = buf.readFloat();
@@ -246,7 +247,7 @@ public final class AnimationBinary {
         }
 
         // Instructions
-        int customInstructionCount = VarIntUtils.readVarInt(buf);
+        int customInstructionCount = ProtocolUtils.readCount(buf);
         CustomInstructionKeyframeData[] customInstructions = new CustomInstructionKeyframeData[customInstructionCount];
         for (int i = 0; i < customInstructionCount; i++) {
             float startTick = buf.readFloat();
