@@ -25,19 +25,35 @@
 package com.zigythebird.playeranimcore.animation.keyframe.event.data;
 
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
+import com.zigythebird.playeranimcore.loading.AnimationLoader;
 
 import java.util.Objects;
 
 /**
  * Sound {@link Keyframe} instruction holder
+ * <p>
+ * The expected keyframe data format is one of the below:
+ * <pre>{@code
+ * namespace:soundid
+ * namespace:soundid|volume|pitch
+ * }</pre>
  */
 public class SoundKeyframeData extends KeyFrameData {
 	private final String sound;
+
+	private final String identifier;
+	private final float volume;
+	private final float pitch;
 
 	public SoundKeyframeData(Float startTick, String sound) {
 		super(startTick);
 
 		this.sound = sound;
+
+		String[] segments = sound.split("\\|");
+		this.identifier = segments[0];
+		this.volume = segments.length > 1 ? AnimationLoader.parseFloat(segments[1], 1) : 1;
+		this.pitch = segments.length > 2 ? AnimationLoader.parseFloat(segments[2], 1) : 1;
 	}
 
 	/**
@@ -45,6 +61,18 @@ public class SoundKeyframeData extends KeyFrameData {
 	 */
 	public String getSound() {
 		return this.sound;
+	}
+
+	public String getIdentifier() {
+		return this.identifier;
+	}
+
+	public float getVolume() {
+		return this.volume;
+	}
+
+	public float getPitch() {
+		return this.pitch;
 	}
 
 	@Override
