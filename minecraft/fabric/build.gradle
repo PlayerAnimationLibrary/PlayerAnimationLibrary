@@ -34,7 +34,6 @@ dependencies {
     implementation api(include("org.redlance.mochafloats:lexer:$rootProject.molang_version")) {
         transitive = false
     }
-    modRuntimeOnly include("org.javassist:javassist:$rootProject.javassist_version")
 
     shadowCommon(project(path: ":minecraft:common", configuration: "namedElements")) { transitive = false }
     shadowCommon(project(path: ":core")) { transitive = false }

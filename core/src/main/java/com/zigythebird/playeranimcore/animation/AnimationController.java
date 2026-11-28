@@ -708,14 +708,12 @@ public abstract class AnimationController implements IAnimation {
 	protected  <T extends KeyFrameData> void handleCustomKeyframe(T[] keyframes, @Nullable CustomKeyFrameEvents.CustomKeyFrameHandler<T> main, CustomKeyFrameEvents.CustomKeyFrameHandler<T> event, float animationTick, AnimationData animationData) {
 		for (T keyframeData : keyframes) {
 			if (animationTick >= keyframeData.getStartTick() && this.executedKeyFrames.add(keyframeData)) {
-
-				EventResult result = main == null ? EventResult.PASS : main.handle(animationTick, this, keyframeData, animationData);
-				if (result == EventResult.PASS) {
-					result = event.handle(animationTick, this, keyframeData, animationData);
-				}
-
-				if (result == EventResult.FAIL) {
-					return;
+				try {
+					EventResult result = main == null ? EventResult.PASS : main.handle(animationTick, this, keyframeData, animationData);
+					if (result == EventResult.PASS) result = event.handle(animationTick, this, keyframeData, animationData);
+					if (result == EventResult.FAIL) return;
+				} catch (Exception ex) {
+					PlayerAnimLib.LOGGER.error("Failed to handle event {} from {}!", keyframeData, this, ex);
 				}
 			}
 		}

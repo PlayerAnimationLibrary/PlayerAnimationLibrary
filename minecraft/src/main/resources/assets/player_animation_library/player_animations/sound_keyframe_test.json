@@ -1,0 +1,17 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "sound_test": {
+      "loop": true,
+      "animation_length": 3,
+      "bones": {
+        "left_arm": {}
+      },
+      "sound_effects": {
+        "1": {
+          "effect": "entity.horse.angry|4|ва"
+        }
+      }
+    }
+  }
+}
