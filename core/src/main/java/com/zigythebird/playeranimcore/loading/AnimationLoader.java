@@ -139,7 +139,7 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 			List<FloatObjectPair<JsonElement>> list = new ObjectArrayList<>();
 
 			for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-				float timestamp = readTimestamp(entry.getKey());
+				float timestamp = parseFloat(entry.getKey(), 0);
 
 				if (timestamp == 0 && !list.isEmpty())
 					throw new JsonParseException("Invalid keyframe data - multiple starting keyframes?" + entry.getKey());
@@ -389,11 +389,12 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 		return length == 0 ? Float.MAX_VALUE : length;
 	}
 
-	private static float readTimestamp(String timestamp) {
+	public static float parseFloat(String input, float defaultValue) {
 		try {
-			return Float.parseFloat(timestamp);
-		} catch (Throwable th) {
-			return 0;
+			return Float.parseFloat(input);
+		} catch (Exception ex) {
+			PlayerAnimLib.LOGGER.warn("Failed to parse float for input: \"{}\"", input);
+			return defaultValue;
 		}
 	}
 }

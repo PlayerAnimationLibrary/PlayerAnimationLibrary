@@ -1,3 +1,4 @@
 - Apply body bone transform after LivingEntityRenderer.scale
 - Fix Catmull-Rom using the segment start as the previous point
 - Fixed a rare crash that occurred when using certain modifiers
+- Fix sound crash

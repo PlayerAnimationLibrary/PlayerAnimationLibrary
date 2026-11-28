@@ -37,36 +37,27 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.Avatar;
 
 import java.util.Optional;
 
 /**
  * Built-in helper for a {@link CustomKeyFrameEvents.CustomKeyFrameHandler CustomKeyFrameHandler} that automatically plays the sound defined in the keyframe data
- * <p>
- * The expected keyframe data format is one of the below:
- * <pre>{@code
- * namespace:soundid
- * namespace:soundid|volume|pitch
- * }</pre>
  */
 @J2ObjCIncompatible
 public class AutoPlayingSoundKeyframeHandler implements CustomKeyFrameEvents.CustomKeyFrameHandler<SoundKeyframeData> {
     @Override
     public EventResult handle(float animationTick, AnimationController controller, SoundKeyframeData keyFrameData, AnimationData animationData) {
-        Vec3 position = controller instanceof PlayerAnimationController player ? player.getAvatar().position() : null;
-        if (position == null) return EventResult.PASS;
+        Avatar avatar = controller instanceof PlayerAnimationController player ? player.getAvatar() : null;
+        if (avatar == null) return EventResult.PASS;
 
-        String[] segments = keyFrameData.getSound().split("\\|");
-        Identifier rl = Identifier.tryParse(segments[0]);
+        Identifier rl = Identifier.tryParse(keyFrameData.getIdentifier());
         if (rl == null) return EventResult.PASS;
 
-        Optional<Holder.Reference<SoundEvent>> soundEvent = BuiltInRegistries.SOUND_EVENT.get(rl);
+        Optional<Holder.Reference<SoundEvent>> soundEvent = BuiltInRegistries.SOUND_EVENT.get(rl).filter(Holder.Reference::isBound);
         if (soundEvent.isEmpty()) return EventResult.PASS;
 
-        float volume = segments.length > 1 ? Float.parseFloat(segments[1]) : 1;
-        float pitch = segments.length > 2 ? Float.parseFloat(segments[2]) : 1;
-        ClientUtil.getLevel().playSound(null, position.x, position.y, position.z, soundEvent.get(), SoundSource.PLAYERS, volume, pitch);
+        ClientUtil.getLevel().playLocalSound(avatar, soundEvent.get().value(), SoundSource.PLAYERS, keyFrameData.getVolume(), keyFrameData.getPitch());
         return EventResult.SUCCESS;
     }
 }

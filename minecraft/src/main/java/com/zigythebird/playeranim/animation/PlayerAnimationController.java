@@ -88,4 +88,12 @@ public class PlayerAnimationController extends HumanoidAnimationController {
         RenderUtil.translateMatrixToBone(poseStack, this.activeBones.get(name));
         return poseStack;
     }
+
+    @Override
+    public String toString() {
+        return "AnimationController{" +
+                "avatar=" + this.avatar.toString() +
+                ", super=" + super.toString() +
+                '}';
+    }
 }
