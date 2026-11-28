@@ -29,6 +29,7 @@ import com.zigythebird.playeranimcore.animation.AnimationData;
 import com.zigythebird.playeranimcore.bones.PlayerAnimBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -91,6 +92,8 @@ public class AdjustmentModifier extends AbstractModifier {
     public boolean fadeOut = true;
     /// Whether the adjustment should be applied at all
     public boolean enabled = true;
+
+    @Nullable
     private AnimationData data;
 
     protected BiFunction<String, AnimationData, Optional<PartModifier>> source;
@@ -170,7 +173,7 @@ public class AdjustmentModifier extends AbstractModifier {
 
         Optional<PartModifier> partModifier = source.apply(bone.getName(), data);
 
-        float fade = getFadeIn() * getFadeOut(data.getPartialTick());
+        float fade = getFadeIn() * getFadeOut(this.data == null ? 0 : this.data.getPartialTick());
         if (partModifier.isPresent()) {
             super.get3DTransform(bone);
             transformBone(bone, partModifier.get(), fade);

@@ -98,6 +98,8 @@ public abstract class AnimationController implements IAnimation {
 	protected Consumer<Function<String, AdvancedPlayerAnimBone>> postAnimationSetupConsumer = function -> {};
 	protected Function<AnimationController, EasingType> overrideEasingTypeFunction = controller -> null;
 	private final Set<KeyFrameData> executedKeyFrames = new ObjectOpenHashSet<>();
+
+	@Nullable
 	protected AnimationData animationData;
 
 	protected Function<AnimationController, FirstPersonMode> firstPersonMode = null;
@@ -277,8 +279,9 @@ public abstract class AnimationController implements IAnimation {
 		return this.animationState.isActive();
 	}
 
+	@Nullable
 	public AnimationData getAnimationData() {
-		return animationData;
+		return this.animationData;
 	}
 
 	/**
@@ -544,7 +547,7 @@ public abstract class AnimationController implements IAnimation {
 	 * @param adjustedTick The controller-adjusted tick for animation purposes
 	 */
 	@AutoreleasePool
-	private void processCurrentAnimation(float adjustedTick, AnimationData animationData) {
+	private void processCurrentAnimation(float adjustedTick, @NotNull AnimationData animationData) {
 		QueuedAnimation queued = this.currentAnimation;
 		if (queued == null) {
 			this.animationState = State.STOPPED;
