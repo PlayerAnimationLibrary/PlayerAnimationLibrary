@@ -320,7 +320,7 @@ public class AnimationLoader implements JsonDeserializer<Animation> {
 
 			if (frame.easingType() == EasingType.CATMULLROM) {
 				frames.set(i, new Keyframe(frame.length(), frame.startValue(), frame.endValue(), frame.easingType(), ObjectArrayList.of(
-						i == 0 ? frame.startValue() : frames.get(i - 1).endValue(),
+						i < 2 ? frame.startValue() : frames.get(i - 2).endValue(),
 						i + 1 >= frames.size() ? frame.endValue() : frames.get(i + 1).endValue()
 				)));
 			}
