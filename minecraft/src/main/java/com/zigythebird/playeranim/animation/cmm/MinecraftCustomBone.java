@@ -7,7 +7,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.zigythebird.playeranim.PlayerAnimLibMod;
+import com.zigythebird.playeranim.util.AnimationImageTexture;
 import com.zigythebird.playeranim.util.RenderUtil;
+import com.zigythebird.playeranimcore.animation.AnimationImage;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.animation.layered.IAnimation;
 import com.zigythebird.playeranimcore.bones.CustomBone;
@@ -22,7 +24,6 @@ import net.minecraft.client.renderer.block.dispatch.BlockModelRotation;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
@@ -40,9 +41,9 @@ import net.minecraft.resources.Identifier;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.system.MemoryUtil;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.lang.ref.Cleaner;
 import java.lang.reflect.Type;
 import java.util.ArrayDeque;
@@ -92,7 +93,7 @@ public class MinecraftCustomBone extends CustomBone implements ModelBaker, Model
     private final @Nullable Function<HumanoidModel<?>, ModelPart> basePart;
     private final @Nullable LayerBone layerBone;
 
-    public MinecraftCustomBone(String name, CustomModelBone data, @Nullable String baseParent, Function<String, Vec3f> bonePositions) throws IOException {
+    public MinecraftCustomBone(String name, CustomModelBone data, @Nullable String baseParent, Function<String, Vec3f> bonePositions) {
         super(name, data, baseParent);
         this.pose = new PlayerAnimBone(name);
         this.basePart = baseParent == null ? null : PARTS.get(LAYER_BONES.getOrDefault(baseParent, baseParent));
@@ -104,7 +105,7 @@ public class MinecraftCustomBone extends CustomBone implements ModelBaker, Model
             blockElements.add(ELEMENT_DESERIALIZER.deserialize(element, CuboidModelElement.class, this));
         }
 
-        this.sprite = loadAtlasSprite(Objects.requireNonNull(data.texture()).toPng());
+        this.sprite = loadAtlasSprite(Objects.requireNonNull(data.texture()));
         this.textureRelease = CLEANER.register(this, releaseTexture(this.sprite.atlasLocation()));
         this.renderType = RenderTypes.entityTranslucent(this.sprite.atlasLocation());
         this.geometry = UnbakedCuboidGeometry.bake(blockElements, TextureSlots.EMPTY, this, BlockModelRotation.IDENTITY, this);
@@ -206,16 +207,15 @@ public class MinecraftCustomBone extends CustomBone implements ModelBaker, Model
         return key.compute(this);
     }
 
-    private static TextureAtlasSprite loadAtlasSprite(byte[] texture) throws IOException {
+    private static TextureAtlasSprite loadAtlasSprite(AnimationImage texture) {
         RenderSystem.assertOnRenderThread();
-        NativeImage image = NativeImage.read(texture);
-
         Identifier texId = Objects.requireNonNullElseGet(RELEASED_TEXTURES.poll(), () -> PlayerAnimLibMod.id("cmb/texture_" + TEXTURE_COUNTER.getAndIncrement()));
-        DynamicTexture dynTex = new DynamicTexture(texId::toString, image);
-        Minecraft.getInstance().getTextureManager().register(texId, dynTex);
+        Minecraft.getInstance().getTextureManager().register(texId, new AnimationImageTexture(texId::toString, texture));
 
-        int w = image.getWidth();
-        int h = image.getHeight();
+        int w = texture.width();
+        int h = texture.height();
+        // Over the texture's own memory, which closing would free: it is never closed
+        NativeImage image = new NativeImage(NativeImage.Format.RGBA, w, h, false, MemoryUtil.memAddress(texture.pixels()));
         SpriteContents contents = new SpriteContents(texId, new FrameSize(w, h), image);
         return new TextureAtlasSprite(texId, contents, w, h, 0, 0, 0);
     }

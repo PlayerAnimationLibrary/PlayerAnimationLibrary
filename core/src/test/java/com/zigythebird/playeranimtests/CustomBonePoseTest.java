@@ -9,12 +9,11 @@ import com.zigythebird.playeranimcore.animation.layered.AnimationStack;
 import com.zigythebird.playeranimcore.animation.layered.IAnimation;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import com.zigythebird.playeranimtests.framework.TestAnimationController;
+import com.zigythebird.playeranimtests.framework.TestImages;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.redlance.platformtools.webp.decoder.DecodedImage;
 
-import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,21 +26,21 @@ public class CustomBonePoseTest {
 
     @Test
     @DisplayName("A bone without a model takes its vanilla parent's pose")
-    public void pivotUnderVanilla() throws IOException {
+    public void pivotUnderVanilla() {
         TestAnimationController controller = play("{\"p\": %1$s}", "{\"p\": \"head\"}");
         assertYaw(controller, "p", 35);
     }
 
     @Test
     @DisplayName("A drawn bone leaves its vanilla parent's pose to the part")
-    public void drawnUnderVanilla() throws IOException {
+    public void drawnUnderVanilla() {
         TestAnimationController controller = play("{\"d\": %2$s}", "{\"d\": \"head\"}");
         assertYaw(controller, "d", 15);
     }
 
     @Test
     @DisplayName("A drawn bone under a bone without a model takes that bone as it is posed itself")
-    public void drawnUnderPivot() throws IOException {
+    public void drawnUnderPivot() {
         TestAnimationController controller = play("{\"p\": %1$s, \"d\": %2$s}", "{\"p\": \"head\", \"d\": \"p\"}");
         assertYaw(controller, "p", 35);
         assertYaw(controller, "d", 30);
@@ -49,7 +48,7 @@ public class CustomBonePoseTest {
 
     @Test
     @DisplayName("A bone without a model under a drawn bone takes the vanilla bone the drawn one leaves out")
-    public void pivotUnderDrawn() throws IOException {
+    public void pivotUnderDrawn() {
         TestAnimationController controller = play("{\"t\": %2$s, \"c\": %1$s}", "{\"t\": \"head\", \"c\": \"t\"}");
         assertYaw(controller, "t", 15);
         assertYaw(controller, "c", 50);
@@ -57,7 +56,7 @@ public class CustomBonePoseTest {
 
     @Test
     @DisplayName("A drawn bone under both kinds takes every custom bone up to the vanilla one")
-    public void drawnUnderPivotUnderDrawn() throws IOException {
+    public void drawnUnderPivotUnderDrawn() {
         TestAnimationController controller = play("{\"t\": %2$s, \"c\": %1$s, \"d\": %2$s}", "{\"t\": \"head\", \"c\": \"t\", \"d\": \"c\"}");
         assertYaw(controller, "c", 50);
         assertYaw(controller, "d", 45);
@@ -65,7 +64,7 @@ public class CustomBonePoseTest {
 
     @Test
     @DisplayName("Drawn bones of the same name in two layers are each posed by their own controller")
-    public void sameNameInTwoLayers() throws IOException {
+    public void sameNameInTwoLayers() {
         TestAnimationController lower = play("{\"d\": %2$s}", "{}", 15);
         TestAnimationController upper = play("{\"d\": %2$s}", "{}", 30);
         AnimationStack stack = new AnimationStack();
@@ -78,14 +77,14 @@ public class CustomBonePoseTest {
         Assertions.assertEquals(Math.toRadians(30), yaws.get(upper), 1e-4, "the upper layer's bone should keep its own pose");
     }
 
-    private static TestAnimationController play(String model, String parents) throws IOException {
+    private static TestAnimationController play(String model, String parents) {
         return play(model, parents, 15);
     }
 
     /**
      * %1$s in the model is a bone with a pivot only, %2$s a drawn one.
      */
-    private static TestAnimationController play(String model, String parents, float customTurn) throws IOException {
+    private static TestAnimationController play(String model, String parents, float customTurn) {
         JsonObject modelJson = JsonParser.parseString(model.formatted(PIVOT, drawn())).getAsJsonObject();
         JsonObject bones = new JsonObject();
         bones.add("head", turn(20));
@@ -107,8 +106,8 @@ public class CustomBonePoseTest {
         return controller;
     }
 
-    private static String drawn() throws IOException {
-        String texture = Base64.getEncoder().encodeToString(DecodedImage.ofArgb(new int[]{0xFFFFFFFF}, 1, 1).toPng());
+    private static String drawn() {
+        String texture = Base64.getEncoder().encodeToString(TestImages.png(1, 1, 0xFFFFFFFF));
         return "{\"pivot\": [0, 28, 0], \"texture\": \"" + texture + "\", \"elements\": [{\"from\": [0, 0, 0], \"to\": [1, 1, 1], \"faces\": {\"up\": {\"texture\": \"#texture\"}}}]}";
     }
 

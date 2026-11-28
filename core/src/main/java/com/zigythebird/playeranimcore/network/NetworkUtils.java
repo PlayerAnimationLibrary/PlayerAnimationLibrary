@@ -2,24 +2,15 @@ package com.zigythebird.playeranimcore.network;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.zigythebird.playeranimcore.animation.AnimationImage;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.util.JsonUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.redlance.platformtools.webp.decoder.DecodedImage;
-import org.redlance.platformtools.webp.decoder.PlatformWebPDecoder;
-import org.redlance.platformtools.webp.encoder.PlatformWebPEncoder;
 import org.redlance.mocha.parser.util.network.ProtocolUtils;
 import org.redlance.mocha.parser.util.network.VarIntUtils;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -65,37 +56,19 @@ public class NetworkUtils {
     }
 
     /**
-     * boneFlags (varint): bit0=hasTexture, bit1=isWebP, bit2=hasElements
+     * boneFlags (varint): bit0=hasTexture, bit1=isJpegXl (else PNG), bit2=hasElements
      */
     public static CustomModelBone readCustomBone(ByteBuf buf, int version, long maxTexturePixels) {
         Vec3f pivot = readVec3f(buf);
 
-        DecodedImage texture = null;
+        AnimationImage texture = null;
         JsonArray elements = null;
 
         if (version >= 7) {
             int boneFlags = VarIntUtils.readVarInt(buf);
 
             if ((boneFlags & 1) != 0) {
-                boolean isWebP = (boneFlags & 2) != 0;
-
-                byte[] rawTexture = new byte[ProtocolUtils.readCount(buf)];
-                buf.readBytes(rawTexture);
-
-                try {
-                    int[] size = isWebP ? PlatformWebPDecoder.INSTANCE.getInfo(rawTexture) : getPngSize(rawTexture);
-                    if ((long) size[0] * size[1] > maxTexturePixels) {
-                        throw new IllegalArgumentException("Texture of " + size[0] + "x" + size[1] + " is over the " + maxTexturePixels + " pixels left for this animation");
-                    }
-
-                    if (isWebP) {
-                        texture = PlatformWebPDecoder.INSTANCE.decode(rawTexture);
-                    } else {
-                        texture = DecodedImage.fromPng(rawTexture);
-                    }
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
+                texture = AnimationImage.read(buf, ProtocolUtils.readCount(buf), (boneFlags & 2) != 0, maxTexturePixels);
             }
 
             if ((boneFlags & 4) != 0) {
@@ -114,30 +87,19 @@ public class NetworkUtils {
         writeVec3f(buf, bone.pivot());
 
         if (version >= 7) {
-            boolean isWebPEncoderAvailable = PlatformWebPEncoder.INSTANCE.isAvailable();
+            AnimationImage.Encoded texture = bone.texture() == null ? null : bone.texture().network();
 
             int boneFlags = 0;
-            if (bone.texture() != null) {
+            if (texture != null) {
                 boneFlags |= 1;
-                if (isWebPEncoderAvailable) boneFlags |= 2;
+                if (texture.jxl()) boneFlags |= 2;
             }
             if (bone.elements() != null) boneFlags |= 4;
             VarIntUtils.writeVarInt(buf, boneFlags);
 
-            if (bone.texture() != null) {
-                byte[] imageData;
-                try {
-                    if (isWebPEncoderAvailable) {
-                        imageData = PlatformWebPEncoder.INSTANCE.encodeLossless(bone.texture());
-                    } else {
-                        imageData = bone.texture().toPng();
-                    }
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-
-                VarIntUtils.writeVarInt(buf, imageData.length);
-                buf.writeBytes(imageData);
+            if (texture != null) {
+                VarIntUtils.writeVarInt(buf, texture.bytes().length);
+                buf.writeBytes(texture.bytes());
             }
 
             if (bone.elements() != null) {
@@ -146,16 +108,6 @@ public class NetworkUtils {
                     CustomModelUtils.writeBlockElement(buf, el.getAsJsonObject(), version);
                 }
             }
-        }
-    }
-
-    private static int[] getPngSize(byte[] png) throws IOException {
-        ImageReader reader = ImageIO.getImageReadersByFormatName("png").next();
-        try (ImageInputStream input = new MemoryCacheImageInputStream(new ByteArrayInputStream(png))) {
-            reader.setInput(input);
-            return new int[]{reader.getWidth(0), reader.getHeight(0)};
-        } finally {
-            reader.dispose();
         }
     }
 

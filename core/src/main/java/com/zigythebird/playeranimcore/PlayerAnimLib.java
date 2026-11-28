@@ -5,13 +5,13 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.AnimationImage;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.loading.AnimationLoader;
 import com.zigythebird.playeranimcore.loading.KeyFrameLoader;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import com.zigythebird.playeranimcore.math.Vec3f;
-import org.redlance.platformtools.webp.WebPDiagnostics;
-import org.redlance.platformtools.webp.decoder.DecodedImage;
+import org.redlance.smalt.MediaRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class PlayerAnimLib {
     public static final Type ANIMATIONS_MAP_TYPE = new TypeToken<Map<String, Animation>>() {}.getType();
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(CustomModelBone.class, new CustomModelBone.Deserializer())
-            .registerTypeAdapter(DecodedImage.class, new CustomModelBone.ImageDeserializer())
+            .registerTypeAdapter(AnimationImage.class, new CustomModelBone.ImageDeserializer())
             .registerTypeAdapter(Vec3f.class, new Vec3f.Deserializer())
             .registerTypeAdapter(Animation.Keyframes.class, new KeyFrameLoader())
             .registerTypeAdapter(Animation.class, new AnimationLoader())
@@ -35,6 +35,7 @@ public class PlayerAnimLib {
             .create();
 
     static {
-        WebPDiagnostics.summary(PlayerAnimLib.LOGGER::info);
+        PlayerAnimLib.LOGGER.info("Image codecs: Vector API {}, {} threads",
+                MediaRuntime.isVectorized() ? MediaRuntime.vectorBits() + " bits" : "off", MediaRuntime.parallelism());
     }
 }

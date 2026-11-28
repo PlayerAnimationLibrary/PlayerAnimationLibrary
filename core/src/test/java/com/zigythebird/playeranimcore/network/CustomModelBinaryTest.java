@@ -5,9 +5,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.zigythebird.playeranimcore.animation.Animation;
+import com.zigythebird.playeranimcore.animation.AnimationImage;
 import com.zigythebird.playeranimcore.animation.CustomModelBone;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
 import com.zigythebird.playeranimcore.math.Vec3f;
+import com.zigythebird.playeranimtests.framework.TestImages;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.Assertions;
@@ -15,10 +17,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.redlance.mocha.parser.util.network.ProtocolUtils;
 import org.redlance.mocha.parser.util.network.VarIntUtils;
-import org.redlance.platformtools.webp.decoder.DecodedImage;
+import org.redlance.smalt.MediaException;
+import org.redlance.smalt.image.jxl.JxlAnimationEncoder;
+import org.redlance.smalt.image.jxl.JxlDecoder;
+import org.redlance.smalt.image.jxl.JxlEncoder;
+import org.redlance.smalt.image.jxl.JxlEncoderOptions;
+import org.redlance.smalt.io.MediaSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -78,12 +87,12 @@ public class CustomModelBinaryTest {
         buf.release();
     }
 
-    private static void assertSameTexture(DecodedImage expected, DecodedImage actual) {
+    private static void assertSameTexture(AnimationImage expected, AnimationImage actual) {
         Assertions.assertEquals(expected != null, actual != null, "texture presence mismatch");
         if (expected != null) {
             Assertions.assertEquals(expected.width(), actual.width(), "texture width mismatch");
             Assertions.assertEquals(expected.height(), actual.height(), "texture height mismatch");
-            Assertions.assertArrayEquals(expected.argb(), actual.argb(), "texture mismatch");
+            Assertions.assertEquals(expected.pixels(), actual.pixels(), "texture mismatch");
         }
     }
 
@@ -110,8 +119,20 @@ public class CustomModelBinaryTest {
         buf.release();
     }
 
-    private static String base64Png(DecodedImage image) throws IOException {
-        return Base64.getEncoder().encodeToString(image.toPng());
+    private static String base64Png(int width, int height, int... argb) {
+        return Base64.getEncoder().encodeToString(TestImages.png(width, height, argb));
+    }
+
+    /**
+     * A bone of only a texture, as a packet carries it.
+     */
+    private static ByteBuf receivedTexture(byte[] file, boolean jxl) {
+        ByteBuf buf = Unpooled.buffer();
+        NetworkUtils.writeVec3f(buf, new Vec3f(0, 0, 0));
+        VarIntUtils.writeVarInt(buf, jxl ? 3 : 1);
+        VarIntUtils.writeVarInt(buf, file.length);
+        buf.writeBytes(file);
+        return buf;
     }
 
     // ── Tests ──
@@ -133,7 +154,7 @@ public class CustomModelBinaryTest {
     @Test
     @DisplayName("Bone with texture bytes")
     void boneWithTexture() {
-        DecodedImage tex = DecodedImage.ofArgb(new int[] {0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFFFFFFFF}, 2, 2);
+        AnimationImage tex = TestImages.image(2, 2, 0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFFFFFFFF);
         CustomModelBone bone = new CustomModelBone(new Vec3f(0, 0, 0), tex, null);
         assertRoundTrip(bone, 7);
     }
@@ -297,7 +318,7 @@ public class CustomModelBinaryTest {
             elements.add(element);
         }
 
-        CustomModelBone bone = new CustomModelBone(new Vec3f(8, 8, 8), DecodedImage.ofArgb(new int[]{0xFFAA0000, 0xFF00BB00, 0xFF0000CC, 0xFFDDDDDD}, 2, 2), elements);
+        CustomModelBone bone = new CustomModelBone(new Vec3f(8, 8, 8), TestImages.image(2, 2, 0xFFAA0000, 0xFF00BB00, 0xFF0000CC, 0xFFDDDDDD), elements);
         assertRoundTrip(bone, 7);
     }
 
@@ -402,7 +423,7 @@ public class CustomModelBinaryTest {
         JsonArray elements = new JsonArray();
         elements.add(element);
 
-        CustomModelBone bone = new CustomModelBone(new Vec3f(4, 5, 6), DecodedImage.ofArgb(new int[]{0xFF112233, 0xFF445566, 0xFF778899, 0xFFAABBCC}, 2, 2), elements);
+        CustomModelBone bone = new CustomModelBone(new Vec3f(4, 5, 6), TestImages.image(2, 2, 0xFF112233, 0xFF445566, 0xFF778899, 0xFFAABBCC), elements);
         assertRoundTrip(bone, 7);
     }
 
@@ -492,31 +513,39 @@ public class CustomModelBinaryTest {
     @DisplayName("Textures past the pixels an animation may hold are refused")
     void textureBudget() {
         ByteBuf small = Unpooled.buffer();
-        NetworkUtils.writeCustomBone(small, new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[4], 2, 2), null), 7);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> NetworkUtils.readCustomBone(small, 7, 3));
+        NetworkUtils.writeCustomBone(small, new CustomModelBone(new Vec3f(0, 0, 0), TestImages.image(2, 2, new int[4]), null), 7);
+        Assertions.assertThrows(MediaException.LimitExceeded.class, () -> NetworkUtils.readCustomBone(small, 7, 3));
         small.release();
 
+        byte[] large = TestImages.png(64, 64, new int[64 * 64]);
+        byte[] largeJxl = TestImages.jxl(64, 64, new int[64 * 64]);
+        for (ByteBuf received : new ByteBuf[]{receivedTexture(large, false), receivedTexture(largeJxl, true)}) {
+            Assertions.assertThrows(MediaException.LimitExceeded.class, () -> NetworkUtils.readCustomBone(received, 7, 64 * 64 - 1));
+            received.release();
+        }
+
         Map<String, CustomModelBone> bones = new LinkedHashMap<>();
-        bones.put("first", new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[2048 * 1024], 2048, 1024), null));
-        bones.put("second", new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[2048 * 1024], 2048, 1024), null));
+        AnimationImage half = TestImages.image(2048, 1024, new int[2048 * 1024]);
+        bones.put("first", new CustomModelBone(new Vec3f(0, 0, 0), half, null));
+        bones.put("second", new CustomModelBone(new Vec3f(0, 0, 0), half, null));
         ByteBuf full = Unpooled.buffer();
         NetworkUtils.writeMap(full, bones, ProtocolUtils::writeString, (byteBuf, bone) -> NetworkUtils.writeCustomBone(byteBuf, bone, 7));
         Assertions.assertEquals(2, NetworkUtils.readCustomBones(full, 7).size(), "textures that fill the budget exactly are read");
         full.release();
 
-        bones.put("third", new CustomModelBone(new Vec3f(0, 0, 0), DecodedImage.ofArgb(new int[1], 1, 1), null));
+        bones.put("third", new CustomModelBone(new Vec3f(0, 0, 0), TestImages.image(1, 1, 0), null));
         ByteBuf over = Unpooled.buffer();
         NetworkUtils.writeMap(over, bones, ProtocolUtils::writeString, (byteBuf, bone) -> NetworkUtils.writeCustomBone(byteBuf, bone, 7));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> NetworkUtils.readCustomBones(over, 7));
+        Assertions.assertThrows(MediaException.LimitExceeded.class, () -> NetworkUtils.readCustomBones(over, 7));
         over.release();
     }
 
     @Test
     @DisplayName("A model is refused at load when its textures hold more pixels than an animation can be sent with")
-    void loadTextureBudget() throws IOException {
+    void loadTextureBudget() {
         JsonObject bone = new JsonObject();
         bone.add("pivot", vec3(0, 0, 0));
-        bone.addProperty("texture", base64Png(DecodedImage.ofArgb(new int[2049 * 2048], 2049, 2048)));
+        bone.addProperty("texture", base64Png(2049, 2048, new int[2049 * 2048]));
         bone.add("elements", singleElement(cube()));
         JsonObject model = new JsonObject();
         model.add("prop", bone);
@@ -529,8 +558,7 @@ public class CustomModelBinaryTest {
 
     @Test
     @DisplayName("A loaded model equals and hashes as its copy read from the network")
-    void loadedModelEqualsReceived() throws IOException {
-        DecodedImage texture = DecodedImage.ofArgb(new int[]{0xFF112233, 0xFF445566, 0xFF778899, 0xFFAABBCC}, 2, 2);
+    void loadedModelEqualsReceived() {
         // Every element value here is one the codec carries in another form or drops
         String json = """
                 {
@@ -554,7 +582,7 @@ public class CustomModelBinaryTest {
                   },
                   "animations": {"model_test": {"loop": true}}
                 }
-                """.formatted(base64Png(texture));
+                """.formatted(base64Png(2, 2, 0xFF112233, 0x00445566, 0x80778899, 0xFFAABBCC));
         Animation loaded = UniversalAnimLoader.loadAnimations(JsonParser.parseString(json).getAsJsonObject()).get("model_test");
 
         ByteBuf buf = Unpooled.buffer();
@@ -567,5 +595,106 @@ public class CustomModelBinaryTest {
         Assertions.assertEquals(loadedBone, receivedBone, "the bone should equal its copy");
         Assertions.assertEquals(loadedBone.hashCode(), receivedBone.hashCode(), "the bone should hash as its copy");
         assertSameTexture(loadedBone.texture(), receivedBone.texture());
+    }
+
+    @Test
+    @DisplayName("A received texture is forwarded as the file it came in, PNG or JPEG XL")
+    void forwardsReceivedFile() {
+        int[] pixels = {0xFF112233, 0x00445566, 0x80778899, 0xFFAABBCC};
+        byte[] png = TestImages.png(2, 2, pixels);
+        byte[] jxl = TestImages.jxl(2, 2, pixels);
+        for (ByteBuf received : new ByteBuf[]{receivedTexture(png, false), receivedTexture(jxl, true)}) {
+            ByteBuf packet = received.copy();
+            CustomModelBone bone = NetworkUtils.readCustomBone(received, 7, NetworkUtils.MAX_TEXTURE_PIXELS);
+            received.release();
+
+            ByteBuf forwarded = Unpooled.buffer();
+            NetworkUtils.writeCustomBone(forwarded, bone, 7);
+            Assertions.assertEquals(packet, forwarded, "the bone should be forwarded byte for byte");
+            packet.release();
+            forwarded.release();
+        }
+    }
+
+    @Test
+    @DisplayName("A received texture that holds more than its image is refused, since it would be forwarded as it came")
+    void refusesReceivedExtras() {
+        int[] pixels = {0xFF112233, 0x00445566, 0x80778899, 0xFFAABBCC};
+        byte[] png = TestImages.png(2, 2, pixels);
+        byte[] jxl = TestImages.jxl(2, 2, pixels);
+        byte[] boxed = TestImages.jxlInContainer(2, 2, pixels);
+        ByteBuf[] packets = {receivedTexture(Arrays.copyOf(png, png.length + 1), false),
+                receivedTexture(Arrays.copyOf(jxl, jxl.length + 1), true), receivedTexture(boxed, true)};
+        for (ByteBuf received : packets) {
+            Assertions.assertThrows(MediaException.Unsupported.class, () -> NetworkUtils.readCustomBone(received, 7, NetworkUtils.MAX_TEXTURE_PIXELS));
+            received.release();
+        }
+    }
+
+    @Test
+    @DisplayName("A received JPEG XL texture coded otherwise than the mod codes its own is refused, though it loads from a file")
+    void refusesReceivedOtherCoding() {
+        int[] pixels = new int[32 * 32];
+        for (int i = 0; i < pixels.length; i++) {
+            pixels[i] = 0xFF000000 | (i * 7 & 0xFF) << 16 | (i / 32 * 8 & 0xFF) << 8 | (i % 32 * 8 & 0xFF);
+        }
+        // A lossy file is a bare codestream of one frame, so only its coding sets it apart
+        byte[] lossy = JxlEncoder.encode(TestImages.picture(32, 32, pixels), JxlEncoderOptions.ofDistance(1.0f));
+        ByteBuf received = receivedTexture(lossy, true);
+        Assertions.assertThrows(MediaException.Unsupported.class, () -> NetworkUtils.readCustomBone(received, 7, NetworkUtils.MAX_TEXTURE_PIXELS));
+        received.release();
+
+        AnimationImage loaded = AnimationImage.decode(lossy, Long.MAX_VALUE);
+        ByteBuf buf = Unpooled.buffer();
+        NetworkUtils.writeCustomBone(buf, new CustomModelBone(new Vec3f(0, 0, 0), loaded, null), 7);
+        assertSameTexture(loaded, NetworkUtils.readCustomBone(buf, 7, NetworkUtils.MAX_TEXTURE_PIXELS).texture());
+        buf.release();
+    }
+
+    @Test
+    @DisplayName("A received JPEG XL texture is refused from its first header, without its other frame headers being read")
+    void refusesReceivedBeforeFrames() {
+        JxlAnimationEncoder animation = new JxlAnimationEncoder(2, 2, JxlEncoderOptions.lossless());
+        animation.addFrame(TestImages.picture(2, 2, 0xFF112233, 0xFF445566, 0xFF778899, 0xFFAABBCC), Duration.ofMillis(100));
+        animation.addFrame(TestImages.picture(2, 2, 0xFFCCBBAA, 0xFF998877, 0xFF665544, 0xFF332211), Duration.ofMillis(100));
+        byte[] file = animation.finish();
+
+        // The longest start of the file whose frame headers cannot be read: it ends inside the header of the second frame
+        int cut = file.length - 1;
+        while (cut > 0 && !isMalformed(Arrays.copyOf(file, cut))) {
+            cut--;
+        }
+        Assertions.assertTrue(cut > 0, "no cut ends inside the second frame header");
+        ByteBuf received = receivedTexture(Arrays.copyOf(file, cut), true);
+        Assertions.assertThrows(MediaException.Unsupported.class, () -> NetworkUtils.readCustomBone(received, 7, NetworkUtils.MAX_TEXTURE_PIXELS));
+        received.release();
+    }
+
+    private static boolean isMalformed(byte[] file) {
+        try (MediaSource source = MediaSource.of(file)) {
+            JxlDecoder.probe(source);
+            return false;
+        } catch (MediaException.Malformed e) {
+            return true;
+        }
+    }
+
+    @Test
+    @DisplayName("A texture loaded from a file, PNG or JPEG XL, is sent as JPEG XL encoded once from its pixels")
+    void sendsLoadedTextureAsJxl() {
+        int[] pixels = {0xFF112233, 0x00445566, 0x80778899, 0xFFAABBCC};
+        byte[] boxed = TestImages.jxlInContainer(2, 2, pixels);
+        for (AnimationImage texture : new AnimationImage[]{TestImages.image(2, 2, pixels), AnimationImage.decode(boxed, Long.MAX_VALUE)}) {
+            Assertions.assertTrue(texture.network().jxl());
+            Assertions.assertSame(texture.network().bytes(), texture.network().bytes(), "encoded once");
+            Assertions.assertNotSame(texture.file().bytes(), texture.network().bytes(), "encoded from the pixels");
+
+            ByteBuf buf = Unpooled.buffer();
+            NetworkUtils.writeCustomBone(buf, new CustomModelBone(new Vec3f(0, 0, 0), texture, null), 7);
+            CustomModelBone read = NetworkUtils.readCustomBone(buf, 7, NetworkUtils.MAX_TEXTURE_PIXELS);
+            Assertions.assertTrue(read.texture().file().jxl());
+            assertSameTexture(texture, read.texture());
+            buf.release();
+        }
     }
 }

@@ -6,11 +6,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.j2objc.annotations.ReflectionSupport;
 import com.zigythebird.playeranimcore.enums.AnimationFormat;
+import com.zigythebird.playeranimcore.network.NetworkUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.redlance.platformtools.webp.decoder.DecodedImage;
 
-import java.io.IOException;
 import java.util.*;
 
 @ReflectionSupport(ReflectionSupport.Level.FULL)
@@ -54,12 +53,8 @@ public record ExtraAnimationData(Map<String, Object> data) {
     }
 
     private byte @Nullable [] convertToBytes(String name, Object obj) {
-        if (obj instanceof DecodedImage image) {
-            try {
-                return image.toPng();
-            } catch (IOException e) {
-                return null;
-            }
+        if (obj instanceof AnimationImage image) {
+            return image.file().bytes();
         }
         if (obj instanceof String str) {
             try {
@@ -74,16 +69,22 @@ public record ExtraAnimationData(Map<String, Object> data) {
         return null;
     }
 
-    public @Nullable DecodedImage getImage(String name) throws IOException {
+    /**
+     * Decodes a PNG or JPEG XL image on the first call.
+     *
+     * @throws IllegalArgumentException if the value is neither
+     * @throws org.redlance.smalt.MediaException if it is not a valid image of its format, or too large
+     */
+    public @Nullable AnimationImage getImage(String name) {
         Object obj = getRaw(name);
         if (obj == null) return null;
 
-        if (obj instanceof DecodedImage image) {
+        if (obj instanceof AnimationImage image) {
             return image;
         } else {
             byte[] data = convertToBytes(name, obj);
             if (data == null) return null;
-            DecodedImage image = DecodedImage.fromPng(data);
+            AnimationImage image = AnimationImage.decode(data, NetworkUtils.MAX_TEXTURE_PIXELS);
             put(name, image);
             return image;
         }

@@ -5,14 +5,13 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import com.zigythebird.playeranimcore.network.NetworkUtils;
 import com.zigythebird.playeranimcore.util.JsonUtil;
 import org.jetbrains.annotations.Nullable;
-import org.redlance.platformtools.webp.decoder.DecodedImage;
+import org.redlance.smalt.MediaException;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Base64;
 import java.util.Objects;
 
-public record CustomModelBone(Vec3f pivot, @Nullable DecodedImage texture, @Nullable JsonArray elements) {
+public record CustomModelBone(Vec3f pivot, @Nullable AnimationImage texture, @Nullable JsonArray elements) {
     public static class Deserializer implements JsonDeserializer<CustomModelBone> {
         @Override
         public CustomModelBone deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext ctx) throws JsonParseException {
@@ -20,18 +19,18 @@ public record CustomModelBone(Vec3f pivot, @Nullable DecodedImage texture, @Null
             JsonArray elements = JsonUtil.getAsJsonArray(obj, "elements", null);
             return new CustomModelBone(
                     ctx.deserialize(JsonUtil.getAsJsonArray(obj, "pivot"), Vec3f.class),
-                    obj.has("texture") ? ctx.deserialize(obj.get("texture"), DecodedImage.class) : null,
+                    obj.has("texture") ? ctx.deserialize(obj.get("texture"), AnimationImage.class) : null,
                     elements == null || elements.isEmpty() ? null : NetworkUtils.toNetworkElements(elements)
             );
         }
     }
 
-    public static class ImageDeserializer implements JsonDeserializer<DecodedImage> {
+    public static class ImageDeserializer implements JsonDeserializer<AnimationImage> {
         @Override
-        public DecodedImage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext ctx) throws JsonParseException {
+        public AnimationImage deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext ctx) throws JsonParseException {
             try {
-                return DecodedImage.fromPng(Base64.getDecoder().decode(json.getAsString()));
-            } catch (IOException e) {
+                return AnimationImage.decode(Base64.getDecoder().decode(json.getAsString()), NetworkUtils.MAX_TEXTURE_PIXELS);
+            } catch (MediaException | IllegalArgumentException e) {
                 throw new JsonParseException(e);
             }
         }

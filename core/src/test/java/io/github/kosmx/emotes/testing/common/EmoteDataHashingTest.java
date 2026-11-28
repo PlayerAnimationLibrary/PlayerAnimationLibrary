@@ -6,11 +6,11 @@ import com.zigythebird.playeranimcore.animation.Animation;
 import com.zigythebird.playeranimcore.animation.keyframe.Keyframe;
 import com.zigythebird.playeranimcore.easing.EasingType;
 import com.zigythebird.playeranimcore.loading.UniversalAnimLoader;
+import com.zigythebird.playeranimtests.framework.TestImages;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
-import org.redlance.platformtools.webp.decoder.DecodedImage;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +70,7 @@ public class EmoteDataHashingTest {
         // The same size as the model's own, so only the pixels differ
         int[] black = new int[16 * 16];
         Arrays.fill(black, 0xFF000000);
-        String otherTexture = Base64.getEncoder().encodeToString(DecodedImage.ofArgb(black, 16, 16).toPng());
+        String otherTexture = Base64.getEncoder().encodeToString(TestImages.png(16, 16, black));
         json.getAsJsonObject("model").getAsJsonObject("cmm").addProperty("texture", otherTexture);
         Animation retextured = UniversalAnimLoader.loadAnimations(json).values().iterator().next();
 
