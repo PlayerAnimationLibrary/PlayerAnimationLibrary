@@ -1,2 +1,3 @@
-- Fixed a denial of service: a crafted emote's Molang (an unbounded or deeply nested loop, or a huge die_roll) could peg the server's network thread or freeze clients; untrusted animation Molang is now bounded and aborts safely
-- Updated mochafloats to 6.2.0
+- Apply body bone transform after LivingEntityRenderer.scale
+- Fix Catmull-Rom using the segment start as the previous point
+- Fixed a rare crash that occurred when using certain modifiers
